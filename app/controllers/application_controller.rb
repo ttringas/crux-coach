@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!, unless: :public_page?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :current_climber_profile
 
@@ -21,5 +22,10 @@ class ApplicationController < ActionController::Base
 
   def public_page?
     controller_name == "pages" && action_name == "home"
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
   end
 end

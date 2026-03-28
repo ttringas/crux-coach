@@ -1,0 +1,48 @@
+<h2 class="text-2xl font-semibold">Style & Context</h2>
+<p class="text-slate-400 mt-2">Highlight what comes easy and what needs work.</p>
+
+<%= form_with model: profile, url: onboarding_path(5), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
+  <% styles = %w[power endurance technique flexibility compression slab steep coordination] %>
+  <div>
+    <p class="text-sm text-slate-300 mb-3">Strengths</p>
+    <div class="grid md:grid-cols-2 gap-2">
+      <% styles.each do |style| %>
+        <label class="flex items-center gap-2 text-sm text-slate-300">
+          <%= check_box_tag "climber_profile[style_strengths][]", style, profile.style_strengths.include?(style), class: "rounded bg-slate-800 border-slate-700" %>
+          <span><%= style.humanize %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <div>
+    <p class="text-sm text-slate-300 mb-3">Weaknesses</p>
+    <div class="grid md:grid-cols-2 gap-2">
+      <% styles.each do |style| %>
+        <label class="flex items-center gap-2 text-sm text-slate-300">
+          <%= check_box_tag "climber_profile[style_weaknesses][]", style, profile.style_weaknesses.include?(style), class: "rounded bg-slate-800 border-slate-700" %>
+          <span><%= style.humanize %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <div>
+    <p class="text-sm text-slate-300 mb-3">Preferred disciplines</p>
+    <% disciplines = %w[bouldering sport trad outdoor board] %>
+    <div class="grid md:grid-cols-2 gap-2">
+      <% disciplines.each do |disc| %>
+        <label class="flex items-center gap-2 text-sm text-slate-300">
+          <%= check_box_tag "climber_profile[preferred_disciplines][]", disc, profile.preferred_disciplines.include?(disc), class: "rounded bg-slate-800 border-slate-700" %>
+          <span><%= disc.humanize %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <div>
+    <%= f.label :additional_context, "Additional context", class: "text-sm text-slate-300" %>
+    <%= f.text_area :additional_context, rows: 3, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+  </div>
+  <div class="flex items-center justify-between">
+    <%= link_to "Back", onboarding_path(4), class: "text-slate-400" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+  </div>
+<% end %>

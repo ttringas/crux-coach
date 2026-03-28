@@ -1,0 +1,31 @@
+<h2 class="text-2xl font-semibold">Equipment & Schedule</h2>
+<p class="text-slate-400 mt-2">Let us know what you have access to and how often you train.</p>
+
+<%= form_with model: profile, url: onboarding_path(3), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
+  <div>
+    <p class="text-sm text-slate-300 mb-3">Available equipment</p>
+    <% equipment = %w[hangboard campus_board kilter moonboard tension weights pull_up_bar rings] %>
+    <div class="grid md:grid-cols-2 gap-2">
+      <% equipment.each do |item| %>
+        <label class="flex items-center gap-2 text-sm text-slate-300">
+          <%= check_box_tag "climber_profile[available_equipment][]", item, profile.available_equipment.include?(item), class: "rounded bg-slate-800 border-slate-700" %>
+          <span><%= item.humanize %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :weekly_training_days, "Training days per week", class: "text-sm text-slate-300" %>
+      <%= f.number_field :weekly_training_days, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :session_duration_minutes, "Typical session duration (min)", class: "text-sm text-slate-300" %>
+      <%= f.number_field :session_duration_minutes, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+  </div>
+  <div class="flex items-center justify-between">
+    <%= link_to "Back", onboarding_path(2), class: "text-slate-400" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+  </div>
+<% end %>

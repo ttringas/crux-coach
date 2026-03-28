@@ -1,0 +1,32 @@
+<h2 class="text-2xl font-semibold">Basics</h2>
+<p class="text-slate-400 mt-2">Set your starting point so we can build the right training load.</p>
+
+<%= form_with model: profile, url: onboarding_path(1), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-4" do |f| %>
+  <div>
+    <label class="text-sm text-slate-300">Name</label>
+    <%= text_field_tag "user[name]", current_user.name, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :years_climbing, class: "text-sm text-slate-300" %>
+      <%= f.number_field :years_climbing, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :training_age_months, "Training age (months)", class: "text-sm text-slate-300" %>
+      <%= f.number_field :training_age_months, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :current_max_boulder_grade, class: "text-sm text-slate-300" %>
+      <%= f.text_field :current_max_boulder_grade, placeholder: "V6", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :current_max_sport_grade, class: "text-sm text-slate-300" %>
+      <%= f.text_field :current_max_sport_grade, placeholder: "5.12a", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+  </div>
+<% end %>

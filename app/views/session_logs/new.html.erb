@@ -1,0 +1,93 @@
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-semibold mb-6">Log Session</h1>
+
+  <div data-controller="tabs" class="bg-slate-900 border border-slate-800 rounded-2xl">
+    <div class="flex border-b border-slate-800">
+      <button class="flex-1 px-4 py-3 text-sm text-slate-300 border-b-2 border-amber-500" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="natural">
+        Natural Language
+      </button>
+      <button class="flex-1 px-4 py-3 text-sm text-slate-400" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="manual">
+        Manual Entry
+      </button>
+    </div>
+
+    <div class="p-6" data-tabs-target="panel" data-tabs-name="natural">
+      <%= form_with model: @session_log, url: session_logs_path, class: "space-y-4", data: { controller: "session-parser" } do |f| %>
+        <div>
+          <%= f.label :raw_input, "Describe your session", class: "text-sm text-slate-300" %>
+          <%= f.text_area :raw_input, rows: 6, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+        </div>
+        <%= f.hidden_field :session_type, value: "climbing" %>
+        <%= f.hidden_field :date, value: Date.current %>
+        <div class="flex items-center gap-3">
+          <button type="button" class="border border-slate-700 px-4 py-2 rounded-md text-slate-200" data-action="click->session-parser#parse" data-session-parser-target="button">
+            Parse Session
+          </button>
+          <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+        </div>
+
+        <%= turbo_frame_tag "session_parse_preview", data: { session_parser_target: "preview" } do %>
+          <div class="mt-4 bg-slate-800/60 border border-slate-700 rounded-lg p-4 text-sm text-slate-300">
+            Structured preview will appear here after parsing.
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="p-6 hidden" data-tabs-target="panel" data-tabs-name="manual">
+      <%= form_with model: @session_log, url: session_logs_path, class: "space-y-4" do |f| %>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <%= f.label :session_type, class: "text-sm text-slate-300" %>
+            <%= f.select :session_type, SessionLog.session_types.keys.map { |k| [k.humanize, k] }, {}, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :date, class: "text-sm text-slate-300" %>
+            <%= f.date_field :date, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <%= f.label :duration_minutes, "Duration (min)", class: "text-sm text-slate-300" %>
+            <%= f.number_field :duration_minutes, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div data-controller="slider">
+            <%= f.label :perceived_exertion, "RPE", class: "text-sm text-slate-300" %>
+            <div class="flex items-center gap-3 mt-2">
+              <%= f.range_field :perceived_exertion, in: 1..10, value: 6, class: "w-full", data: { slider_target: "range" } %>
+              <span class="text-amber-400" data-slider-target="value">6</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div data-controller="slider">
+            <%= f.label :finger_soreness, "Finger soreness", class: "text-sm text-slate-300" %>
+            <div class="flex items-center gap-3 mt-2">
+              <%= f.range_field :finger_soreness, in: 1..5, value: 2, class: "w-full", data: { slider_target: "range" } %>
+              <span class="text-amber-400" data-slider-target="value">2</span>
+            </div>
+          </div>
+          <div data-controller="slider">
+            <%= f.label :general_soreness, "General soreness", class: "text-sm text-slate-300" %>
+            <div class="flex items-center gap-3 mt-2">
+              <%= f.range_field :general_soreness, in: 1..5, value: 2, class: "w-full", data: { slider_target: "range" } %>
+              <span class="text-amber-400" data-slider-target="value">2</span>
+            </div>
+          </div>
+          <div data-controller="slider">
+            <%= f.label :energy_level, "Energy", class: "text-sm text-slate-300" %>
+            <div class="flex items-center gap-3 mt-2">
+              <%= f.range_field :energy_level, in: 1..5, value: 3, class: "w-full", data: { slider_target: "range" } %>
+              <span class="text-amber-400" data-slider-target="value">3</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <%= f.label :notes, class: "text-sm text-slate-300" %>
+          <%= f.text_area :notes, rows: 4, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+        </div>
+        <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+      <% end %>
+    </div>
+  </div>
+</div>

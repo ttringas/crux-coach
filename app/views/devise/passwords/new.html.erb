@@ -1,0 +1,19 @@
+<div class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-6 py-16">
+  <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
+    <h1 class="text-2xl font-semibold">Reset your password</h1>
+    <p class="text-sm text-slate-400 mt-2">We'll email you reset instructions.</p>
+
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name)) do |f| %>
+      <div class="mt-6">
+        <%= f.label :email, class: "text-sm text-slate-300" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100" %>
+      </div>
+
+      <%= f.submit "Send reset link", class: "mt-6 w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-md" %>
+    <% end %>
+
+    <div class="mt-6 text-sm text-slate-400">
+      <%= link_to "Back to sign in", new_user_session_path, class: "text-amber-400" %>
+    </div>
+  </div>
+</div>

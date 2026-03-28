@@ -1,0 +1,41 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold"><%= @athlete.user.name.presence || @athlete.user.email %></h1>
+      <p class="text-slate-400 text-sm">Athlete profile overview</p>
+    </div>
+    <%= link_to "Edit Plan", edit_coach_athlete_path(@athlete), class: "text-amber-400" %>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold">Current Plan</h2>
+    <% if @current_plan %>
+      <div class="mt-4 text-sm text-slate-300">
+        Week of <span class="text-slate-100"><%= @current_plan.week_of.strftime("%b %d, %Y") %></span>
+      </div>
+      <div class="mt-2 text-sm text-slate-400"><%= @current_plan.summary.presence || "No summary yet." %></div>
+      <div class="mt-4 text-sm text-amber-200">Coach notes: <%= @current_plan.coach_notes.presence || "None" %></div>
+    <% else %>
+      <div class="mt-4 text-slate-300">No plan available yet.</div>
+    <% end %>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold">Recent Sessions</h2>
+    <div class="mt-4 space-y-3">
+      <% if @recent_sessions.any? %>
+        <% @recent_sessions.each do |log| %>
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <div class="text-slate-100"><%= log.session_type.humanize %></div>
+              <div class="text-xs text-slate-400"><%= log.date.strftime("%b %d") %></div>
+            </div>
+            <span class="text-xs text-slate-400"><%= log.duration_minutes || "-" %> min</span>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-slate-300">No sessions logged yet.</div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="max-w-6xl mx-auto px-6 py-16">
+    <header class="flex items-center justify-between">
+      <div class="text-lg font-semibold tracking-wide">Crux Coach</div>
+      <div class="space-x-4 text-sm">
+        <%= link_to "Sign in", new_user_session_path, class: "text-slate-300 hover:text-amber-300" %>
+        <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" %>
+      </div>
+    </header>
+
+    <section class="mt-16 grid gap-12 lg:grid-cols-2 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Climbing Coach</h1>
+        <p class="mt-4 text-slate-300 text-lg">Adaptive plans that respect your goals, time, and injuries. No noise, just structured training built around your climbing reality.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-6 py-3 rounded-md font-semibold" %>
+          <%= link_to "See How It Works", new_user_session_path, class: "border border-slate-700 px-6 py-3 rounded-md text-slate-200" %>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
+        <h3 class="text-sm uppercase tracking-widest text-amber-400">Adaptive Planning</h3>
+        <p class="mt-4 text-slate-300">Weekly blocks update automatically based on session logs, energy, and soreness. Coaches can refine plans when needed.</p>
+        <div class="mt-8 grid grid-cols-2 gap-4 text-sm text-slate-300">
+          <div class="bg-slate-800/60 rounded-lg p-4">
+            <div class="text-amber-400 font-semibold">7-day plan</div>
+            <div class="mt-2">Sessions mapped to your schedule.</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-lg p-4">
+            <div class="text-amber-400 font-semibold">Smart deloads</div>
+            <div class="mt-2">Auto adjusts when fatigue spikes.</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-lg p-4">
+            <div class="text-amber-400 font-semibold">Coach optional</div>
+            <div class="mt-2">Add human feedback anytime.</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-lg p-4">
+            <div class="text-amber-400 font-semibold">Injury aware</div>
+            <div class="mt-2">Plans respect limitations.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-20 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-amber-400 font-semibold">Personalized Blocks</h3>
+        <p class="mt-3 text-sm text-slate-300">Power, endurance, and technique cycles that match your season.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-amber-400 font-semibold">Detailed Sessions</h3>
+        <p class="mt-3 text-sm text-slate-300">Exercise prescriptions, intensity, and timing in one place.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-amber-400 font-semibold">Fast Logging</h3>
+        <p class="mt-3 text-sm text-slate-300">Natural language capture or manual detail for every session.</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-amber-400 font-semibold">Progress Signals</h3>
+        <p class="mt-3 text-sm text-slate-300">Track grades, volume, and consistency over time.</p>
+      </div>
+    </section>
+  </div>
+</div>

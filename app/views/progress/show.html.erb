@@ -1,0 +1,47 @@
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-semibold">Progress</h1>
+    <p class="text-slate-400 text-sm">Trends from the last 12 weeks.</p>
+  </div>
+
+  <% if @session_logs.any? %>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold">Sessions per Week</h2>
+        <div class="mt-4 grid grid-cols-12 gap-2 items-end h-40">
+          <% last_weeks = @sessions_per_week.keys.sort.last(12) %>
+          <% last_weeks.each do |week| %>
+            <% count = @sessions_per_week[week].size %>
+            <div class="bg-amber-500/70 rounded-sm" style="height: <%= [count * 20, 10].max %>px"></div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold">Grade History</h2>
+        <div class="mt-4 space-y-2 text-sm text-slate-300">
+          <% @grade_history.last(6).each do |entry| %>
+            <div class="flex items-center justify-between">
+              <span><%= entry[:date].strftime("%b %d") %></span>
+              <span class="text-amber-400"><%= entry[:grade].presence || "-" %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold">Volume Trends</h2>
+      <div class="mt-4 grid grid-cols-12 gap-2 items-end h-32">
+        <% @volume_trends.last(12).each do |entry| %>
+          <% height = entry[:minutes].to_i / 3 %>
+          <div class="bg-slate-700 rounded-sm" style="height: <%= [height, 8].max %>px"></div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-300">
+      No data yet. Log a few sessions to unlock progress insights.
+    </div>
+  <% end %>
+</div>

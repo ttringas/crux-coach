@@ -1,0 +1,55 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold">Week of <%= @weekly_plan.week_of.strftime("%b %d, %Y") %></h1>
+    <p class="text-slate-400 text-sm">Plan history and session detail.</p>
+  </div>
+  <%= link_to "Back to Current", weekly_plans_path, class: "text-amber-400" %>
+</div>
+
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+  <div class="mt-6 grid gap-4">
+    <% @week_dates.each_with_index do |date, index| %>
+      <% sessions = @planned_sessions[index] || [] %>
+      <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-slate-400"><%= date.strftime("%A") %></div>
+            <div class="text-lg font-semibold"><%= date.strftime("%b %d") %></div>
+          </div>
+          <div class="text-xs px-2 py-1 rounded-full border border-slate-700 text-slate-300">
+            <%= sessions.any? ? "Completed" : "Rest" %>
+          </div>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <% if sessions.any? %>
+            <% sessions.each do |session| %>
+              <div class="bg-slate-900 border border-slate-700 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-amber-400 text-xs uppercase"><%= session.session_type %> · <%= session.intensity.humanize %></div>
+                    <div class="text-slate-100 font-semibold"><%= session.title %></div>
+                  </div>
+                  <div class="text-xs text-slate-400"><%= session.estimated_duration_minutes || "-" %> min</div>
+                </div>
+                <div class="mt-3">
+                  <%= turbo_frame_tag dom_id(session, :details) do %>
+                    <%= link_to "View details", weekly_plan_path(@weekly_plan, session_id: session.id), data: { turbo_frame: dom_id(session, :details) }, class: "text-amber-400 text-sm" %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-sm text-slate-400">Rest day or open slot.</div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @weekly_plan.coach_notes.present? %>
+    <div class="mt-6 bg-slate-900 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
+      Coach notes: <%= @weekly_plan.coach_notes %>
+    </div>
+  <% end %>
+</div>
