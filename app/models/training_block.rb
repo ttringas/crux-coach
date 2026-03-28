@@ -3,7 +3,7 @@ class TrainingBlock < ApplicationRecord
 
   has_many :weekly_plans, dependent: :destroy
 
-  enum focus: {
+  enum :focus, {
     power: 0,
     power_endurance: 1,
     endurance: 2,
@@ -13,7 +13,7 @@ class TrainingBlock < ApplicationRecord
     project: 6
   }
 
-  enum status: { active: 0, completed: 1, abandoned: 2 }
+  enum :status, { active: 0, completed: 1, abandoned: 2 }
 
   validates :name, presence: true
   validates :focus, :status, presence: true

@@ -2,7 +2,7 @@ class SessionLog < ApplicationRecord
   belongs_to :climber_profile
   belongs_to :planned_session, optional: true
 
-  enum session_type: {
+  enum :session_type, {
     climbing: 0,
     board: 1,
     hangboard: 2,

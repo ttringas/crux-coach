@@ -1,7 +1,7 @@
 class AiInteraction < ApplicationRecord
   belongs_to :user
 
-  enum interaction_type: {
+  enum :interaction_type, {
     plan_generation: 0,
     session_parsing: 1,
     profile_analysis: 2,

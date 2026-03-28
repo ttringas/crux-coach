@@ -4,7 +4,7 @@ class WeeklyPlan < ApplicationRecord
 
   has_many :planned_sessions, dependent: :destroy
 
-  enum status: { draft: 0, active: 1, completed: 2 }
+  enum :status, { draft: 0, active: 1, completed: 2 }
 
   validates :week_number, numericality: { greater_than: 0, allow_nil: true }
   validates :week_of, presence: true
