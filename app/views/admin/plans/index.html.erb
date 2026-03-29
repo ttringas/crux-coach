@@ -1,0 +1,41 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-semibold">All Training Plans</h1>
+    <p class="text-slate-400 text-sm"><%= @weekly_plans.count %> plans generated</p>
+  </div>
+
+  <div class="space-y-4">
+    <% @weekly_plans.each do |plan| %>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-amber-400 text-xs uppercase tracking-wide">
+              <%= plan.training_block&.focus&.humanize || "No block" %> · Week <%= plan.week_number || "-" %>
+            </div>
+            <div class="text-lg font-semibold mt-1">
+              <%= plan.climber_profile.user.name.presence || plan.climber_profile.user.email %>
+            </div>
+            <div class="text-sm text-slate-400 mt-1">
+              Week of <%= plan.week_of.strftime("%b %d, %Y") %> · 
+              Status: <span class="text-amber-400"><%= plan.status %></span> ·
+              <%= plan.planned_sessions.count %> sessions ·
+              <%= plan.coach_modified? ? "Coach modified" : "AI generated" %>
+            </div>
+          </div>
+          <%= link_to "View Details", admin_plan_path(plan), class: "text-amber-400 text-sm" %>
+        </div>
+        <% if plan.summary.present? %>
+          <div class="mt-3 text-sm text-slate-300 border-t border-slate-800 pt-3">
+            <%= plan.summary %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @weekly_plans.empty? %>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-300">
+        No plans generated yet.
+      </div>
+    <% end %>
+  </div>
+</div>

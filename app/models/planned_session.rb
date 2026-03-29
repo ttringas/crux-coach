@@ -16,6 +16,6 @@ class PlannedSession < ApplicationRecord
 
   validates :day_of_week, inclusion: { in: 0..6 }
   validates :title, presence: true
-  validates :estimated_duration_minutes, numericality: { greater_than: 0, allow_nil: true }
+  validates :estimated_duration_minutes, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   validates :session_type, :intensity, presence: true
 end

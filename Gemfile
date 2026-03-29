@@ -62,3 +62,5 @@ gem "faker", "~> 3.6"
 gem "ruby-openai", "~> 8.3"
 
 gem "shoulda-matchers", "~> 7.0", :group => :test
+
+gem "dotenv-rails", "~> 3.2", :groups => [:development, :test]

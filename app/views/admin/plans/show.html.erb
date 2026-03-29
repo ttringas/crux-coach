@@ -1,0 +1,130 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">Plan Details</h1>
+      <p class="text-slate-400 text-sm">
+        <%= @climber.user.name.presence || @climber.user.email %> ·
+        Week of <%= @weekly_plan.week_of.strftime("%b %d, %Y") %>
+      </p>
+    </div>
+    <%= link_to "← All Plans", admin_plans_path, class: "text-amber-400" %>
+  </div>
+
+  <!-- Climber Profile Summary -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-amber-400">Climber Profile</h2>
+    <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm text-slate-300">
+      <div>
+        <div class="text-slate-400">Level</div>
+        <div>Boulder: <span class="text-slate-100"><%= @climber.current_max_boulder_grade || "-" %></span></div>
+        <div>Sport: <span class="text-slate-100"><%= @climber.current_max_sport_grade || "-" %></span></div>
+      </div>
+      <div>
+        <div class="text-slate-400">Experience</div>
+        <div><span class="text-slate-100"><%= @climber.years_climbing || "-" %></span> years climbing</div>
+        <div><span class="text-slate-100"><%= @climber.training_age_months || "-" %></span> months training</div>
+      </div>
+      <div>
+        <div class="text-slate-400">Schedule</div>
+        <div><span class="text-slate-100"><%= @climber.weekly_training_days || "-" %></span> days/week</div>
+        <div><span class="text-slate-100"><%= @climber.session_duration_minutes || "-" %></span> min/session</div>
+      </div>
+    </div>
+    <div class="mt-4 grid md:grid-cols-2 gap-4 text-sm text-slate-300">
+      <div>
+        <div class="text-slate-400">Goals</div>
+        <div class="text-slate-100 mt-1"><%= @climber.goals_short_term.presence || "-" %></div>
+      </div>
+      <div>
+        <div class="text-slate-400">Equipment</div>
+        <div class="text-slate-100 mt-1"><%= @climber.available_equipment.join(", ").presence || "-" %></div>
+      </div>
+    </div>
+    <% if @climber.injuries.present? && @climber.injuries.any? %>
+      <div class="mt-4 text-sm">
+        <div class="text-red-300">Active Injuries</div>
+        <% @climber.injuries.each do |injury| %>
+          <div class="text-slate-300"><%= injury["area"] %> — <%= injury["severity"] %> (<%= injury["notes"] %>)</div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Training Block -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-amber-400">Training Block</h2>
+    <% if @weekly_plan.training_block %>
+      <div class="mt-3 text-sm text-slate-300">
+        <div><span class="text-slate-100 font-semibold"><%= @weekly_plan.training_block.name %></span> — <%= @weekly_plan.training_block.focus.humanize %></div>
+        <div class="mt-1">Week <%= @weekly_plan.week_number %> of <%= @weekly_plan.training_block.weeks_planned || "?" %></div>
+        <% if @weekly_plan.training_block.ai_reasoning.present? %>
+          <div class="mt-2 text-slate-400 italic"><%= @weekly_plan.training_block.ai_reasoning %></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Plan Summary -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-amber-400">Plan Summary</h2>
+    <div class="mt-3 text-sm text-slate-300">
+      <p><%= @weekly_plan.summary.presence || "No summary available." %></p>
+      <div class="mt-2 text-xs text-slate-500">
+        Status: <%= @weekly_plan.status %> ·
+        <%= @weekly_plan.coach_modified? ? "Coach modified" : "AI generated" %> ·
+        Created: <%= @weekly_plan.created_at.strftime("%b %d %Y %I:%M %p") %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Sessions -->
+  <div class="space-y-4">
+    <h2 class="text-lg font-semibold">Daily Sessions (<%= @weekly_plan.planned_sessions.count %>)</h2>
+    <% days = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday] %>
+    <% @weekly_plan.planned_sessions.order(:day_of_week).each do |session| %>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-amber-400 text-xs uppercase tracking-wide">
+              <%= days[session.day_of_week] || "Day #{session.day_of_week}" %> · <%= session.session_type.humanize %> · <%= session.intensity.humanize %>
+            </div>
+            <div class="text-lg font-semibold mt-1"><%= session.title %></div>
+          </div>
+          <div class="text-sm text-slate-400"><%= session.estimated_duration_minutes || "-" %> min</div>
+        </div>
+        <% if session.description.present? %>
+          <div class="mt-3 text-sm text-slate-300 whitespace-pre-wrap"><%= session.description %></div>
+        <% end %>
+        <% if session.exercises.present? && session.exercises.any? %>
+          <div class="mt-4 border-t border-slate-800 pt-3">
+            <div class="text-xs text-slate-400 uppercase tracking-wide mb-2">Exercises</div>
+            <div class="space-y-2">
+              <% session.exercises.each do |ex| %>
+                <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-3 text-sm">
+                  <div class="text-slate-100 font-semibold"><%= ex["name"] %></div>
+                  <div class="text-slate-400 text-xs mt-1">
+                    <% parts = [] %>
+                    <% parts << "#{ex["sets"]} sets" if ex["sets"].present? %>
+                    <% parts << "#{ex["reps"]} reps" if ex["reps"].present? %>
+                    <% parts << ex["duration"] if ex["duration"].present? %>
+                    <% parts << "Rest: #{ex["rest"]}" if ex["rest"].present? %>
+                    <%= parts.join(" · ") %>
+                  </div>
+                  <% if ex["notes"].present? %>
+                    <div class="text-slate-400 text-xs mt-1 italic"><%= ex["notes"] %></div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Raw AI Output -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-amber-400">Raw AI Output</h2>
+    <pre class="mt-3 text-xs text-slate-400 overflow-x-auto whitespace-pre-wrap bg-slate-800/60 rounded-lg p-4"><%= JSON.pretty_generate(@weekly_plan.ai_generated_plan) rescue @weekly_plan.ai_generated_plan.to_s %></pre>
+  </div>
+</div>

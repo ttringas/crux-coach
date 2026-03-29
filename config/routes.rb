@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get "ai_usage", to: "ai_usage#index"
+    resources :plans, only: %i[index show]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

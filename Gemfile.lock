@@ -99,6 +99,9 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.6.2)
     dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     drb (2.2.3)
     ed25519 (1.4.0)
     erb (6.0.2)
@@ -405,6 +408,7 @@ DEPENDENCIES
   brakeman
   debug
   devise (~> 5.0)
+  dotenv-rails (~> 3.2)
   factory_bot_rails (~> 6.5)
   faker (~> 3.6)
   importmap-rails
