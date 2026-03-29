@@ -87,17 +87,23 @@
       <% duration_hint = exercise["duration"].presence %>
       <% exercise_name = exercise["name"] || exercise["title"] || "Exercise" %>
       <% reps_label = exercise["reps"].present? ? exercise["reps"].to_s : nil %>
+      <% library_match = @exercise_library_matches[index] %>
 
       <div
         class="rounded-xl border p-4 transition bg-slate-900 border-slate-800"
         data-exercise-index="<%= index %>"
       >
         <!-- Exercise header -->
-        <div class="flex items-center justify-between mb-1" data-action="click->exercise-log#toggle">
+        <div class="flex items-center justify-between mb-1 gap-3" data-action="click->exercise-log#toggle">
           <div class="font-semibold text-base"><%= exercise_name %></div>
-          <% if duration_hint %>
-            <div class="flex-shrink-0 text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded"><%= duration_hint %></div>
-          <% end %>
+          <div class="flex items-center gap-2">
+            <% if library_match %>
+              <%= link_to "Watch demo", exercise_library_entry_path(library_match), class: "text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition", data: { turbo_frame: "_top" } %>
+            <% end %>
+            <% if duration_hint %>
+              <div class="flex-shrink-0 text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded"><%= duration_hint %></div>
+            <% end %>
+          </div>
         </div>
         <% if exercise["notes"].present? %>
           <div class="text-xs text-slate-400 italic mb-3"><%= exercise["notes"] %></div>

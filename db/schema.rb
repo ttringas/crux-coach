@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_29_011058) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_29_101902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -87,6 +87,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_29_011058) do
     t.datetime "updated_at", null: false
     t.index ["accepting_athletes"], name: "index_coaches_on_accepting_athletes"
     t.index ["user_id"], name: "index_coaches_on_user_id", unique: true
+  end
+
+  create_table "exercise_library_entries", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "category", null: false
+    t.jsonb "tags", default: [], null: false
+    t.string "youtube_video_id", null: false
+    t.string "video_title"
+    t.string "channel_name"
+    t.text "description"
+    t.string "duration_estimate"
+    t.text "searchable_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_exercise_library_entries_on_category"
+    t.index ["slug"], name: "index_exercise_library_entries_on_slug", unique: true
+    t.index ["youtube_video_id"], name: "index_exercise_library_entries_on_youtube_video_id", unique: true
   end
 
   create_table "planned_sessions", force: :cascade do |t|

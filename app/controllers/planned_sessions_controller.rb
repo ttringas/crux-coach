@@ -5,6 +5,7 @@ class PlannedSessionsController < ApplicationController
 
   def show
     @immersive_layout = true
+    @exercise_library_matches = ExerciseLibrary::Matcher.new.match_exercises(@planned_session.exercises)
   end
 
   def update

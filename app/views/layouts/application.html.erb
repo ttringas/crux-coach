@@ -32,6 +32,10 @@
                 <%= render "shared/nav_icon", name: "plan" %>
                 <span>Plan</span>
               <% end %>
+              <%= link_to exercise_library_entries_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70" do %>
+                <%= render "shared/nav_icon", name: "library" %>
+                <span>Library</span>
+              <% end %>
               <%= link_to progress_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70" do %>
                 <%= render "shared/nav_icon", name: "progress" %>
                 <span>Progress</span>

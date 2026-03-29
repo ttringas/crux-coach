@@ -1,0 +1,49 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <div class="text-xs uppercase tracking-wide text-slate-500"><%= @entry.category.humanize %></div>
+    <h1 class="text-2xl font-semibold"><%= @entry.name %></h1>
+    <p class="text-sm text-slate-400 mt-1"><%= @entry.video_title %></p>
+    <div class="text-xs text-slate-500 mt-1"><%= @entry.channel_name %></div>
+  </div>
+  <%= link_to "Back to Library", exercise_library_entries_path, class: "text-sm text-amber-300 hover:text-amber-200" %>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+    <div class="aspect-video overflow-hidden rounded-xl border border-slate-800">
+      <iframe
+        src="<%= @entry.youtube_embed_url %>"
+        title="<%= @entry.video_title %>"
+        class="w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <% if @entry.description.present? %>
+      <p class="mt-4 text-sm text-slate-300"><%= @entry.description %></p>
+    <% end %>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
+    <div>
+      <div class="text-xs uppercase tracking-wide text-slate-500">Category</div>
+      <div class="text-sm text-slate-200"><%= @entry.category.humanize %></div>
+    </div>
+    <% if @entry.duration_estimate.present? %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">Duration</div>
+        <div class="text-sm text-slate-200"><%= @entry.duration_estimate %></div>
+      </div>
+    <% end %>
+    <% if @entry.display_tags.any? %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500 mb-2">Tags</div>
+        <div class="flex flex-wrap gap-2">
+          <% @entry.display_tags.each do |tag| %>
+            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= tag %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :weekly_plans, path: "plan" do
     resources :planned_sessions, path: "session", only: %i[show update]
   end
+  resources :exercise_library_entries, path: "library", only: %i[index show]
   resources :session_logs, path: "log" do
     post :parse, on: :collection
   end

@@ -178,3 +178,10 @@ PlannedSession.find_or_initialize_by(weekly_plan: plan_two, day_of_week: 5, titl
   session.intensity = :moderate
   session.exercises = []
 end
+
+library_path = ExerciseLibrary::Importer::DEFAULT_PATH
+if File.exist?(library_path)
+  ExerciseLibrary::Importer.import_from_json!(library_path)
+else
+  puts "Exercise library seed skipped: #{library_path} not found."
+end
