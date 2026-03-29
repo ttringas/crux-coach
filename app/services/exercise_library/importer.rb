@@ -2,7 +2,7 @@ require "json"
 
 module ExerciseLibrary
   class Importer
-    DEFAULT_PATH = "/Users/tylertringas/.openclaw/workspace/research/crux-coach-video-library.json".freeze
+    DEFAULT_PATH = Rails.root.join("db", "seeds", "exercise_library.json").to_s.freeze
 
     def self.import_from_json!(path = DEFAULT_PATH)
       payload = JSON.parse(File.read(path))

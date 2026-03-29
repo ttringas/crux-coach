@@ -1,0 +1,627 @@
+{
+  "exercises": [
+    {
+      "name": "Quiet Feet Footwork Drills",
+      "category": "climbing",
+      "tags": [
+        "beginner",
+        "footwork",
+        "quiet-feet",
+        "technique"
+      ],
+      "youtube_video_id": "6IUF1HrYUJ8",
+      "video_title": "Essential Footwork Drills - EVERY climber should be doing this! | Fundamentals Series",
+      "channel": "Lattice Training",
+      "description": "Clear progressive footwork drills focused on precision, silent placements, and transferable technique for all grades.",
+      "duration_estimate": "9 min"
+    },
+    {
+      "name": "Flagging Technique",
+      "category": "climbing",
+      "tags": [
+        "beginner",
+        "technique",
+        "balance",
+        "flagging"
+      ],
+      "youtube_video_id": "jLsii8s6acM",
+      "video_title": "How to Flag - A Climbing Technique for Achieving Balance",
+      "channel": "Movement for Climbers",
+      "description": "Excellent movement breakdown with on-wall demos showing when and why to flag for balance and body control.",
+      "duration_estimate": "9 min"
+    },
+    {
+      "name": "Drop Knee Technique",
+      "category": "climbing",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "technique",
+        "drop-knee"
+      ],
+      "youtube_video_id": "U0v9xxqEjfY",
+      "video_title": "What the Heck is a Drop Knee?",
+      "channel": "Movement for Climbers",
+      "description": "Simple explanation of drop-knee mechanics, positioning, and common errors that make the move feel awkward.",
+      "duration_estimate": "8 min"
+    },
+    {
+      "name": "Heel and Toe Hook Technique",
+      "category": "climbing",
+      "tags": [
+        "intermediate",
+        "technique",
+        "heel-hook",
+        "toe-hook"
+      ],
+      "youtube_video_id": "8YsTIMdugmU",
+      "video_title": "How to Heel & Toe hook || The two most powerful climbing techniques",
+      "channel": "Emil Abrahamsson",
+      "description": "Strong demo-focused tutorial covering both heel and toe hooks with practical examples and body-position cues.",
+      "duration_estimate": "12 min"
+    },
+    {
+      "name": "Dynamic Climbing and Dynos",
+      "category": "climbing",
+      "tags": [
+        "intermediate",
+        "dynamic",
+        "dyno",
+        "coordination"
+      ],
+      "youtube_video_id": "2i6E_hKGzVg",
+      "video_title": "The cheat code of dynamic climbing #bouldering",
+      "channel": "Hannah Morris Bouldering",
+      "description": "Short but useful demo highlighting timing and movement pattern for dynamic climbing rather than just jumping wildly like a goblin.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Body Positioning Fundamentals",
+      "category": "climbing",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "body-positioning",
+        "technique"
+      ],
+      "youtube_video_id": "zxW-b2pFu5U",
+      "video_title": "Your Biggest Climbing Mistakes FIXED - V0-V4",
+      "channel": "Lattice Training",
+      "description": "Addresses common beginner body-position mistakes with practical corrections that map well to app coaching cues.",
+      "duration_estimate": "6 min"
+    },
+    {
+      "name": "Half Crimp Max Hangs",
+      "category": "hangboard",
+      "tags": [
+        "intermediate",
+        "finger-strength",
+        "half-crimp",
+        "max-hangs"
+      ],
+      "youtube_video_id": "1XVmaFtaBkc",
+      "video_title": "Max Hangs for Finger Strength (How To)",
+      "channel": "Paradigm Climbing",
+      "description": "Concise and specific max-hang demo with straightforward protocol explanation; easy to pair with structured plans.",
+      "duration_estimate": "3 min"
+    },
+    {
+      "name": "Open Hand Hangs",
+      "category": "hangboard",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "open-hand",
+        "fingerboard"
+      ],
+      "youtube_video_id": "sSKCkTj7ktI",
+      "video_title": "Hangboard Edge Hang - Open Hand",
+      "channel": "Climb Strong",
+      "description": "Very clean single-exercise demo showing open-hand position on the edge without unnecessary fluff.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Hangboard Basics and Grip Selection",
+      "category": "hangboard",
+      "tags": [
+        "beginner",
+        "hangboard",
+        "grip-types",
+        "fingerboard"
+      ],
+      "youtube_video_id": "yUIRzwyQx_E",
+      "video_title": "Climbers Guide to Hangboarding",
+      "channel": "Lattice Training",
+      "description": "Great starter resource covering setup, grip types, and hangboard structure from a trusted climbing training source.",
+      "duration_estimate": "14 min"
+    },
+    {
+      "name": "Hangboard Repeaters",
+      "category": "hangboard",
+      "tags": [
+        "intermediate",
+        "repeaters",
+        "endurance",
+        "fingerboard"
+      ],
+      "youtube_video_id": "P6F-vEE0D9w",
+      "video_title": "Bodyweight Repeaters | Intermediate Hangboard Session | Lattice Training Tutorial #Shorts",
+      "channel": "Lattice Training",
+      "description": "Short demo of a classic repeater format that can plug directly into an app-prescribed session.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Grip Types for Half Crimp and Open Hand",
+      "category": "hangboard",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "half-crimp",
+        "open-hand",
+        "grip-types"
+      ],
+      "youtube_video_id": "6QLTTLg7ABQ",
+      "video_title": "Hangboard Grip Types w/Louis Parkinson",
+      "channel": "Catalyst Climbing",
+      "description": "Useful visual explanation of grip selection and finger positions, especially for distinguishing half crimp vs open hand.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "One-Arm Hangs",
+      "category": "hangboard",
+      "tags": [
+        "advanced",
+        "one-arm-hang",
+        "finger-strength"
+      ],
+      "youtube_video_id": "N41TlscejU4",
+      "video_title": "How to ONE ARM HANG on the 10mm! | my finger strength journey",
+      "channel": "Baos Climbing",
+      "description": "Solid demonstration of one-arm finger strength progression and loading ideas for advanced climbers.",
+      "duration_estimate": "6 min"
+    },
+    {
+      "name": "Finger Strength Session with Elite Climber",
+      "category": "hangboard",
+      "tags": [
+        "intermediate",
+        "advanced",
+        "finger-strength",
+        "protocol"
+      ],
+      "youtube_video_id": "ETs6CLcBmWI",
+      "video_title": "How to get STRONG FINGERS with Alex Megos",
+      "channel": "Alexander Megos",
+      "description": "Shows real-world high-level finger training with technique cues from an elite climber, useful as inspiration and reference.",
+      "duration_estimate": "12 min"
+    },
+    {
+      "name": "Moonboard Basics",
+      "category": "board",
+      "tags": [
+        "beginner",
+        "moonboard",
+        "board-training"
+      ],
+      "youtube_video_id": "EtQOMnrTMKA",
+      "video_title": "Introduction to Board Climbing & Training | Moonboard and Woodie System Board",
+      "channel": "Lattice Training",
+      "description": "Strong intro to board climbing concepts, movement demands, and how Moonboard-style systems differ from general gym climbing.",
+      "duration_estimate": "6 min"
+    },
+    {
+      "name": "Board Climbing Technique",
+      "category": "board",
+      "tags": [
+        "intermediate",
+        "board-training",
+        "technique",
+        "moonboard"
+      ],
+      "youtube_video_id": "3mrHLqhEJX0",
+      "video_title": "Techniques that Make or Break Your Board Climbing",
+      "channel": "Hooper's Beta",
+      "description": "Deep technique-focused breakdown of why board climbing feels different and how to move better on steep standardized boards.",
+      "duration_estimate": "17 min"
+    },
+    {
+      "name": "Kilterboard Basics",
+      "category": "board",
+      "tags": [
+        "beginner",
+        "kilterboard",
+        "board-training"
+      ],
+      "youtube_video_id": "vmwqRRccbGA",
+      "video_title": "Tommy Caldwell's Ultimate Training Setup // KILTERBOARD",
+      "channel": "Kilter Climbing Grips",
+      "description": "Quick orientation to Kilterboard setup and use, helpful for climbers new to LED board systems.",
+      "duration_estimate": "4 min"
+    },
+    {
+      "name": "Board Training Programming",
+      "category": "board",
+      "tags": [
+        "intermediate",
+        "programming",
+        "board-training"
+      ],
+      "youtube_video_id": "OQFvG00h6p4",
+      "video_title": "How to Write Your Own Training Plan | Plan Writing Series",
+      "channel": "Lattice Training",
+      "description": "Not board-only, but excellent for teaching how to structure a board-focused training block inside a broader plan.",
+      "duration_estimate": "11 min"
+    },
+    {
+      "name": "Limit Bouldering on Boards",
+      "category": "board",
+      "tags": [
+        "intermediate",
+        "advanced",
+        "limit-bouldering",
+        "board-training"
+      ],
+      "youtube_video_id": "jN5O4vo-C5Y",
+      "video_title": "Limit Bouldering (How To)",
+      "channel": "Paradigm Climbing",
+      "description": "Super concise explanation of limit bouldering that maps directly to hard board sessions and intent-based training.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Weighted Pull-Ups",
+      "category": "strength",
+      "tags": [
+        "intermediate",
+        "pull-ups",
+        "weighted",
+        "upper-body"
+      ],
+      "youtube_video_id": "yKXyrydXTPE",
+      "video_title": "Weighted Pull-ups for Bouldering? | Emil Abrahamsson Tier List",
+      "channel": "R\u00fangne",
+      "description": "Useful discussion and demonstration of when weighted pull-ups are valuable for climbers and how they fit training priorities.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "One-Arm Pull-Up Progression",
+      "category": "strength",
+      "tags": [
+        "advanced",
+        "pull-ups",
+        "one-arm",
+        "progression"
+      ],
+      "youtube_video_id": "QOptBg5rBtg",
+      "video_title": "One Arm Pull-up - The Most Important Technique #shorts",
+      "channel": "Geek Climber",
+      "description": "Short, technique-centered cueing for one-arm pull-up mechanics; good reference clip for advanced progressions.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Rows for Climbers",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "rows",
+        "pulling"
+      ],
+      "youtube_video_id": "53ZAvMMyhhc",
+      "video_title": "The PERFECT Pulling Exercise Rock Climbers Always Forget About",
+      "channel": "Hooper's Beta",
+      "description": "Targets neglected pulling patterns and explains why rows matter for shoulder balance and performance.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Push-Up Progression for Climbers",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "push-ups",
+        "antagonist",
+        "upper-body"
+      ],
+      "youtube_video_id": "ixlOzOv6ZR0",
+      "video_title": "Climbers Over-Complicate Pullup Training",
+      "channel": "Hooper's Beta",
+      "description": "Broader pull-up video, but useful as a complement to simple bodyweight pushing and pulling progressions in climber strength plans.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Shoulder Press and Shoulder Stability",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "shoulder-press",
+        "shoulder-health"
+      ],
+      "youtube_video_id": "86EIzTK2l1s",
+      "video_title": "3 Essential Shoulder Exercises for Climbers!",
+      "channel": "Kyra Condie",
+      "description": "Practical shoulder-strengthening drills from an elite climber that support pressing strength and long-term shoulder resilience.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Front Lever Progressions",
+      "category": "strength",
+      "tags": [
+        "advanced",
+        "core",
+        "front-lever",
+        "body-tension"
+      ],
+      "youtube_video_id": "nt2DOn4lp68",
+      "video_title": "Front Levers For Climbing: 4 Progressions To Get You Stronger",
+      "channel": "Lattice Training",
+      "description": "Detailed progression ladder for front lever development and body tension, highly relevant for steep climbing strength.",
+      "duration_estimate": "21 min"
+    },
+    {
+      "name": "L-Sit Progression",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "core",
+        "l-sit"
+      ],
+      "youtube_video_id": "a4qGW79QtrE",
+      "video_title": "HOW to Do L Sit for BEGINNERS",
+      "channel": "Vitaly Pavlenko",
+      "description": "Simple beginner-friendly L-sit progression demo that can slot neatly into a climber core day.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Ab Wheel Rollouts",
+      "category": "strength",
+      "tags": [
+        "intermediate",
+        "core",
+        "ab-wheel"
+      ],
+      "youtube_video_id": "A4r871iLuWk",
+      "video_title": "ab wheel - unsponsored review",
+      "channel": "Hybrid Calisthenics",
+      "description": "Covers ab-wheel use and setup in an accessible way; useful for exercise library inclusion even though it is not climbing-specific.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Deadlift for Climbers",
+      "category": "strength",
+      "tags": [
+        "intermediate",
+        "deadlift",
+        "lower-body",
+        "posterior-chain"
+      ],
+      "youtube_video_id": "ifNyUw2fEBw",
+      "video_title": "I Was Wrong About Deadlifting (Why and How Climbers Should Do It)",
+      "channel": "Hooper's Beta",
+      "description": "Good rationale plus movement discussion for including deadlifts in climber programs without turning every session into powerlifting cosplay.",
+      "duration_estimate": "19 min"
+    },
+    {
+      "name": "Cossack Squat Mobility Strength",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "intermediate",
+        "squat",
+        "mobility",
+        "legs"
+      ],
+      "youtube_video_id": "VdN137mr2mM",
+      "video_title": "How to do Cossack Squats (3 Mistakes!)",
+      "channel": "Lattice Training",
+      "description": "Great coaching cues for a squat variation that improves hip mobility and leg strength useful for high steps and wide positions.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Reverse Wrist Curls",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "antagonist",
+        "forearms",
+        "reverse-wrist-curl"
+      ],
+      "youtube_video_id": "vkgivMdRSuE",
+      "video_title": "Dumbbell Reverse Wrist Curl Demo",
+      "channel": "Pinkpoint Climbing & Strength Coaching",
+      "description": "Straightforward demonstration of a key forearm antagonist exercise for elbow health and balanced arm training.",
+      "duration_estimate": "2 min"
+    },
+    {
+      "name": "External Rotation",
+      "category": "strength",
+      "tags": [
+        "beginner",
+        "antagonist",
+        "rotator-cuff",
+        "external-rotation"
+      ],
+      "youtube_video_id": "Ck5vdTf0W30",
+      "video_title": "External Rotations (How To)",
+      "channel": "Paradigm Climbing",
+      "description": "Clean quick demo of a staple rotator cuff movement that belongs in almost every climber prehab library.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "ARC Training Basics",
+      "category": "cardio",
+      "tags": [
+        "beginner",
+        "arc",
+        "endurance",
+        "aerobic"
+      ],
+      "youtube_video_id": "c0iB-LDx4oA",
+      "video_title": "ARCing for Beginners",
+      "channel": "Lattice Training",
+      "description": "Directly relevant primer on ARC training with simple guidance for intensity and duration.",
+      "duration_estimate": "2 min"
+    },
+    {
+      "name": "Running for Climbers",
+      "category": "cardio",
+      "tags": [
+        "beginner",
+        "running",
+        "conditioning"
+      ],
+      "youtube_video_id": "AjwwZxSfd6w",
+      "video_title": "Does Running Help or Hurt Climbing // Jonathan Siegrist",
+      "channel": "The Struggle Climbing Show",
+      "description": "Thoughtful discussion of where running fits for climbers, helpful for contextualizing cardio inside training plans.",
+      "duration_estimate": "8 min"
+    },
+    {
+      "name": "Jump Rope Conditioning",
+      "category": "cardio",
+      "tags": [
+        "beginner",
+        "jump-rope",
+        "coordination",
+        "conditioning"
+      ],
+      "youtube_video_id": "vEJ7XbbAMAg",
+      "video_title": "JUMP ROPE LIKE A PRO IN 2 MINUTES l LEARN HOW TO SKIP",
+      "channel": "Dayan Kole",
+      "description": "Fast, clear jump-rope technique demo that works well for warm-ups or short conditioning blocks.",
+      "duration_estimate": "2 min"
+    },
+    {
+      "name": "Aerobic Endurance Intervals",
+      "category": "cardio",
+      "tags": [
+        "intermediate",
+        "endurance",
+        "aerobic",
+        "conditioning"
+      ],
+      "youtube_video_id": "-iURICEHJFw",
+      "video_title": "This improved my endurance by 13%!",
+      "channel": "Orangutang Rock Climbing",
+      "description": "Short demonstration of endurance-focused training ideas that can supplement ARC or circuit-style conditioning.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Hip Mobility for High Steps",
+      "category": "mobility",
+      "tags": [
+        "beginner",
+        "hip-mobility",
+        "high-steps"
+      ],
+      "youtube_video_id": "PNd0BF44deU",
+      "video_title": "Unlock Your Climbing Potential with Strong Hip Flexors: Don't Let Mobility Limit Your High Steps",
+      "channel": "The Climbing Doctor",
+      "description": "Targeted hip mobility and strength cueing for one of the most climbing-specific movement limitations.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Thoracic Spine Mobility",
+      "category": "mobility",
+      "tags": [
+        "beginner",
+        "thoracic",
+        "spine",
+        "mobility"
+      ],
+      "youtube_video_id": "dui0p1vU7_Q",
+      "video_title": "Thoracic Spine Mobility for Climbers",
+      "channel": "The Climbing Doctor",
+      "description": "Short and focused thoracic mobility drill set for overhead movement quality and better rotation.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Wrist Mobility and Stretching",
+      "category": "mobility",
+      "tags": [
+        "beginner",
+        "wrist",
+        "mobility",
+        "prehab"
+      ],
+      "youtube_video_id": "uPVASOKqn50",
+      "video_title": "Dynamic Climbing Wrist Stretch",
+      "channel": "The Climbing Doctor",
+      "description": "Excellent quick wrist prep sequence that is practical before climbing or fingerboard sessions.",
+      "duration_estimate": "1 min"
+    },
+    {
+      "name": "Finger Care and Stretching",
+      "category": "mobility",
+      "tags": [
+        "beginner",
+        "fingers",
+        "mobility",
+        "recovery"
+      ],
+      "youtube_video_id": "JcnOWfgnXM0",
+      "video_title": "Finger Care For Climbers",
+      "channel": "Lattice Training",
+      "description": "Broader finger care resource with useful mobility and recovery elements for inclusion after high finger-load sessions.",
+      "duration_estimate": "10 min"
+    },
+    {
+      "name": "Yoga for Climbers Cooldown",
+      "category": "mobility",
+      "tags": [
+        "beginner",
+        "yoga",
+        "cooldown",
+        "recovery"
+      ],
+      "youtube_video_id": "6Dem3-OupYQ",
+      "video_title": "8 Minute Yoga Routine - For Climbing, Warm Ups and Cool Downs",
+      "channel": "Lattice Training",
+      "description": "Nicely packaged short yoga flow that works as either mobility work or cooldown inside the app.",
+      "duration_estimate": "9 min"
+    },
+    {
+      "name": "Climbing Warm-Up Routine",
+      "category": "warm_up",
+      "tags": [
+        "beginner",
+        "warm-up",
+        "climbing-specific"
+      ],
+      "youtube_video_id": "Lfiyx_DNl2w",
+      "video_title": "Climbing Warm Up (Super Quick)",
+      "channel": "Lattice Training",
+      "description": "Strong climbing-specific warm-up flow with enough structure to turn into a guided pre-session routine.",
+      "duration_estimate": "12 min"
+    },
+    {
+      "name": "General Warm-Up for Climbing",
+      "category": "warm_up",
+      "tags": [
+        "beginner",
+        "warm-up",
+        "general-prep"
+      ],
+      "youtube_video_id": "AJrBzYrThhs",
+      "video_title": "8 MIN GENERAL WARMUP FOR CLIMBING",
+      "channel": "Core Climber",
+      "description": "Easy general prep option for home or gym use before climbing, strength, or board sessions.",
+      "duration_estimate": "8 min"
+    },
+    {
+      "name": "Resistance Band Warm-Up",
+      "category": "warm_up",
+      "tags": [
+        "beginner",
+        "band-exercises",
+        "shoulders",
+        "warm-up"
+      ],
+      "youtube_video_id": "e7qM0Emu_48",
+      "video_title": "The Climbing Doc l Episode 27- Rubber Band Exercises for Climbers!",
+      "channel": "The Climbing Doc",
+      "description": "Band-based shoulder activation and prehab drills that fit perfectly into warm-up or recovery sessions.",
+      "duration_estimate": "5 min"
+    }
+  ]
+}
