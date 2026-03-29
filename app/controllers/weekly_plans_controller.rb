@@ -11,17 +11,6 @@ class WeeklyPlansController < ApplicationController
     @weekly_plan = @profile.weekly_plans.find(params[:id])
     @week_dates = week_dates_for(@weekly_plan)
     @planned_sessions = sessions_by_day(@weekly_plan)
-
-    if params[:session_id].present?
-      @expanded_session = @weekly_plan.planned_sessions.find(params[:session_id])
-      if turbo_frame_request?
-        render inline: <<~ERB, locals: { session: @expanded_session }
-          <%= turbo_frame_tag dom_id(session, :details) do %>
-            <%= render "weekly_plans/session_details", session: session %>
-          <% end %>
-        ERB
-      end
-    end
   end
 
   def create

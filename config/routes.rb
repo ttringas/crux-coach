@@ -10,7 +10,9 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#show"
   resources :onboarding, only: %i[show update]
   resource :profile, only: %i[show edit update]
-  resources :weekly_plans, path: "plan"
+  resources :weekly_plans, path: "plan" do
+    resources :planned_sessions, path: "session", only: %i[show update]
+  end
   resources :session_logs, path: "log" do
     post :parse, on: :collection
   end

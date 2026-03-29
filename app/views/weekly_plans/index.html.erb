@@ -30,27 +30,46 @@
               <div class="text-lg font-semibold"><%= date.strftime("%b %d") %></div>
             </div>
             <div class="text-xs px-2 py-1 rounded-full border border-slate-700 text-slate-300">
-              <%= sessions.any? ? "Upcoming" : "Rest" %>
+              <%= sessions.any? ? "Sessions" : "Rest" %>
             </div>
           </div>
 
           <div class="mt-4 space-y-3">
             <% if sessions.any? %>
               <% sessions.each do |session| %>
-                <div class="bg-slate-900 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+                <% total_exercises = session.exercises.size %>
+                <% completed_exercises = session.exercise_logs.count { |log| log["completed"] } %>
+                <% status = session.status || "pending" %>
+                <% status_classes = case status
+                  when "completed" then "border-green-500/30 bg-green-500/5"
+                  when "in_progress" then "border-amber-500/30 bg-amber-500/5"
+                  when "skipped" then "border-slate-600/60 bg-slate-800/60"
+                  else "border-slate-700 bg-slate-900"
+                end %>
+                <%= link_to weekly_plan_planned_session_path(@weekly_plan, session), class: "block rounded-lg border p-4 transition hover:border-slate-500 #{status_classes}" do %>
                   <div class="flex items-center justify-between">
-                    <div>
-                      <div class="text-sm text-slate-400 uppercase tracking-wide"><%= session.session_type %> · <%= session.intensity.humanize %></div>
-                      <div class="text-slate-100 font-semibold"><%= session.title %></div>
+                    <div class="flex items-center gap-3">
+                      <% if status == "pending" %>
+                        <span class="h-2 w-2 rounded-full bg-slate-500"></span>
+                      <% elsif status == "in_progress" %>
+                        <span class="h-3 w-3 rounded-full border-2 border-amber-400 border-t-transparent animate-spin"></span>
+                      <% elsif status == "completed" %>
+                        <span class="h-4 w-4 rounded-full border border-green-400 text-green-300 flex items-center justify-center text-[10px]">✓</span>
+                      <% else %>
+                        <span class="h-4 w-4 rounded-full border border-slate-500 text-slate-300 flex items-center justify-center text-[10px]">–</span>
+                      <% end %>
+                      <div>
+                        <div class="text-sm text-slate-400 uppercase tracking-wide"><%= session.session_type %> · <%= session.intensity.humanize %></div>
+                        <div class="text-slate-100 font-semibold"><%= session.title %></div>
+                      </div>
                     </div>
                     <div class="text-xs text-slate-400"><%= session.estimated_duration_minutes || "-" %> min</div>
                   </div>
-                  <div class="mt-3">
-                    <%= turbo_frame_tag dom_id(session, :details) do %>
-                      <%= link_to "View details", weekly_plan_path(@weekly_plan, session_id: session.id), data: { turbo_frame: dom_id(session, :details), turbo_action: "replace" }, class: "text-amber-400 text-sm" %>
-                    <% end %>
+                  <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                    <span><%= total_exercises.positive? ? "#{completed_exercises}/#{total_exercises} exercises done" : "No exercises logged" %></span>
+                    <span class="uppercase tracking-wide"><%= status.humanize %></span>
                   </div>
-                </div>
+                <% end %>
               <% end %>
             <% else %>
               <div class="text-sm text-slate-400">Rest day or open slot.</div>

@@ -12,7 +12,7 @@
 
   <body class="bg-slate-950 text-slate-100 min-h-screen">
     <div data-controller="mobile-nav" class="min-h-screen">
-      <% if user_signed_in? %>
+      <% if user_signed_in? && !@immersive_layout %>
         <div class="md:flex">
           <div class="fixed inset-0 bg-slate-950/80 z-30 hidden" data-mobile-nav-target="overlay" data-action="click->mobile-nav#close"></div>
           <aside class="fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-40 transform -translate-x-full transition md:translate-x-0 md:static md:inset-auto" data-mobile-nav-target="sidebar">
@@ -103,6 +103,21 @@
             </main>
           </div>
         </div>
+      <% elsif user_signed_in? %>
+        <main class="min-h-screen">
+          <% if notice.present? %>
+            <div class="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              <%= notice %>
+            </div>
+          <% end %>
+          <% if alert.present? %>
+            <div class="mb-6 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              <%= alert %>
+            </div>
+          <% end %>
+
+          <%= yield %>
+        </main>
       <% else %>
         <main>
           <%= yield %>

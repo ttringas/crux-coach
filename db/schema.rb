@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_28_234834) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_29_011058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_28_234834) do
     t.jsonb "exercises", default: [], null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.text "session_notes"
+    t.jsonb "exercise_logs", default: [], null: false
+    t.integer "perceived_exertion"
+    t.integer "energy_level"
+    t.integer "finger_soreness"
+    t.integer "general_soreness"
     t.index ["session_type"], name: "index_planned_sessions_on_session_type"
     t.index ["weekly_plan_id", "day_of_week"], name: "index_planned_sessions_on_weekly_plan_id_and_day_of_week"
     t.index ["weekly_plan_id"], name: "index_planned_sessions_on_weekly_plan_id"

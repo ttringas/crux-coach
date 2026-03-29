@@ -13,7 +13,7 @@
           <p class="text-slate-300 mt-2"><%= @today_session.description.presence || "Session details ready in the plan." %></p>
           <div class="mt-4 text-sm text-slate-400">Estimated <%= @today_session.estimated_duration_minutes || "-" %> min · <%= @today_session.intensity.humanize %></div>
           <div class="mt-5 flex flex-wrap gap-3">
-            <%= link_to "Start Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+            <%= link_to "Start Session", weekly_plan_planned_session_path(@current_plan, @today_session), class: "bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
             <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
           </div>
         </div>
@@ -23,7 +23,11 @@
         <div class="mt-4 text-slate-300">No plan yet. Complete onboarding to generate your first week.</div>
       <% end %>
       <div class="mt-6 flex flex-wrap gap-3">
-        <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+        <% if @today_session %>
+          <%= link_to "Log Today's Session", weekly_plan_planned_session_path(@current_plan, @today_session), class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+        <% else %>
+          <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+        <% end %>
         <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
       </div>
     </div>
@@ -97,6 +101,9 @@
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Quick Actions</h2>
       <div class="mt-4 grid gap-3">
+        <% if @today_session %>
+          <%= link_to "Log Today's Session", weekly_plan_planned_session_path(@current_plan, @today_session), class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+        <% end %>
         <%= link_to "Log a Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
         <%= link_to "Edit Profile", edit_profile_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
         <%= link_to "Browse Coaches", coaches_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>

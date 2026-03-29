@@ -1,0 +1,230 @@
+<% logs_by_index = @planned_session.exercise_logs.index_by { |log| log["exercise_index"].to_i } %>
+
+<div
+  class="min-h-screen bg-slate-950 text-slate-100 px-4 py-6"
+  data-controller="session-timer exercise-log session-completion"
+  data-session-timer-started-at-value="<%= @planned_session.started_at&.iso8601 %>"
+  data-exercise-log-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
+  data-session-completion-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
+  data-action="session-status:updated->session-timer#statusUpdated"
+>
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to "<-", weekly_plan_path(@weekly_plan), class: "text-2xl text-slate-300 hover:text-slate-100" %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-400"><%= @planned_session.session_type %></div>
+        <h1 class="text-2xl font-semibold"><%= @planned_session.title %></h1>
+      </div>
+    </div>
+    <div class="text-right">
+      <div class="text-xs text-slate-400">Status</div>
+      <div class="text-sm text-slate-200" data-session-completion-target="statusLabel"><%= @planned_session.status.humanize %></div>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-center gap-2 mb-6">
+    <div class="text-4xl font-semibold text-amber-400" data-session-timer-target="display">0:00</div>
+    <div class="text-xs text-slate-500">Session timer</div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-300">
+      <div><span class="text-slate-500">Type:</span> <%= @planned_session.session_type.humanize %></div>
+      <div><span class="text-slate-500">Intensity:</span> <%= @planned_session.intensity.humanize %></div>
+      <div><span class="text-slate-500">Est. Duration:</span> <%= @planned_session.estimated_duration_minutes || "-" %> min</div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3 mb-8">
+    <%= button_tag "Start Session",
+      type: "button",
+      class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition #{@planned_session.pending? ? "" : "hidden"}",
+      data: { action: "session-completion#start", session_completion_target: "startButton" } %>
+    <%= button_tag "Complete Session",
+      type: "button",
+      class: "bg-emerald-400 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-emerald-300 active:bg-emerald-500 transition #{@planned_session.in_progress? ? "" : "hidden"}",
+      data: { action: "session-completion#complete", session_completion_target: "completeButton" } %>
+    <%= button_tag "Skip Session",
+      type: "button",
+      class: "border border-slate-700 px-4 py-2 rounded-md text-slate-300 hover:border-slate-500 #{@planned_session.completed? || @planned_session.skipped? ? "hidden" : ""}",
+      data: { action: "session-completion#skip", session_completion_target: "skipButton" } %>
+  </div>
+
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-lg font-semibold">Exercises</h2>
+    <div class="text-xs text-slate-500" data-exercise-log-target="saveStatus"></div>
+  </div>
+
+  <div class="space-y-4">
+    <% @planned_session.exercises.each_with_index do |exercise, index| %>
+      <% log = logs_by_index[index] || {} %>
+      <% completed = log["completed"] %>
+      <% rest_value = exercise["rest"].to_s %>
+      <% rest_seconds = if rest_value =~ /(\d+)\s*(sec|second)/i
+        Regexp.last_match(1).to_i
+      elsif rest_value =~ /(\d+)\s*(min|minute)/i
+        Regexp.last_match(1).to_i * 60
+      elsif rest_value =~ /^\d+$/
+        rest_value.to_i
+      else
+        60
+      end %>
+      <% prescribed_bits = [] %>
+      <% if exercise["sets"].present? && exercise["reps"].present? %>
+        <% prescribed_bits << "#{exercise["sets"]} x #{exercise["reps"]}" %>
+      <% elsif exercise["sets"].present? %>
+        <% prescribed_bits << "Sets: #{exercise["sets"]}" %>
+      <% elsif exercise["reps"].present? %>
+        <% prescribed_bits << "Reps: #{exercise["reps"]}" %>
+      <% end %>
+      <% prescribed_bits << "Duration: #{exercise["duration"]}" if exercise["duration"].present? %>
+      <% prescribed_bits << "Rest: #{exercise["rest"]}" if exercise["rest"].present? %>
+
+      <div
+        class="rounded-xl border p-4 transition bg-slate-900 border-slate-800 <%= completed ? "bg-green-500/5 border-green-500/20" : "" %>"
+        data-exercise-index="<%= index %>"
+      >
+        <div class="flex items-start justify-between gap-4" data-action="click->exercise-log#toggle">
+          <div>
+            <div class="text-base font-semibold"><%= exercise["name"] || exercise["title"] || "Exercise" %></div>
+            <div class="text-xs text-slate-400 mt-1">Prescribed: <%= prescribed_bits.any? ? prescribed_bits.join(" - ") : "Follow the session description." %></div>
+          </div>
+          <label class="flex items-center gap-2 text-xs text-slate-400">
+            <input
+              type="checkbox"
+              class="h-4 w-4 rounded border-slate-700 bg-slate-900 text-emerald-400"
+              <%= "checked" if completed %>
+              data-action="change->exercise-log#queueSave"
+              data-exercise-log-field="completed"
+            />
+            Done
+          </label>
+        </div>
+
+        <div class="mt-4 grid gap-3 hidden" data-exercise-details>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs text-slate-400">Actual sets
+              <input
+                type="number"
+                inputmode="numeric"
+                class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                value="<%= log["actual_sets"] %>"
+                data-action="blur->exercise-log#queueSave"
+                data-exercise-log-field="actual_sets"
+              />
+            </label>
+            <label class="text-xs text-slate-400">Actual reps
+              <input
+                type="number"
+                inputmode="numeric"
+                class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                value="<%= log["actual_reps"] %>"
+                data-action="blur->exercise-log#queueSave"
+                data-exercise-log-field="actual_reps"
+              />
+            </label>
+            <label class="text-xs text-slate-400">Actual weight
+              <input
+                type="number"
+                step="0.5"
+                inputmode="decimal"
+                class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                value="<%= log["actual_weight"] %>"
+                data-action="blur->exercise-log#queueSave"
+                data-exercise-log-field="actual_weight"
+              />
+            </label>
+            <label class="text-xs text-slate-400">Actual duration
+              <input
+                type="text"
+                class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                value="<%= log["actual_duration"] %>"
+                data-action="blur->exercise-log#queueSave"
+                data-exercise-log-field="actual_duration"
+              />
+            </label>
+          </div>
+
+          <label class="text-xs text-slate-400">Notes
+            <textarea
+              rows="2"
+              class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              data-action="blur->exercise-log#queueSave"
+              data-exercise-log-field="notes"
+            ><%= log["notes"] %></textarea>
+          </label>
+
+          <% if rest_value.present? %>
+            <div class="flex items-center justify-between border border-slate-800 rounded-lg px-3 py-2" data-controller="rest-timer" data-rest-timer-duration-value="<%= rest_seconds %>">
+              <div>
+                <div class="text-xs text-slate-500">Rest timer</div>
+                <div class="text-sm text-slate-200" data-rest-timer-target="display">0:00</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full border border-amber-500/40" data-rest-timer-target="ring"></div>
+                <button type="button" class="text-xs text-amber-300 border border-amber-400/40 rounded-md px-3 py-1" data-action="rest-timer#start">Start</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-10 bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <h3 class="text-sm font-semibold text-slate-200">Session Notes</h3>
+    <textarea
+      rows="4"
+      class="mt-3 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+      data-exercise-log-target="sessionNotes"
+      data-action="blur->exercise-log#queueSave"
+    ><%= @planned_session.session_notes %></textarea>
+
+    <div class="mt-6 grid gap-4">
+      <label class="text-xs text-slate-400">RPE (1-10)
+        <input
+          type="range"
+          min="1"
+          max="10"
+          value="<%= @planned_session.perceived_exertion || 6 %>"
+          class="mt-2 w-full"
+          data-exercise-log-target="perceivedExertion"
+          data-action="change->exercise-log#queueSave"
+        />
+      </label>
+      <label class="text-xs text-slate-400">Energy level (1-5)
+        <input
+          type="range"
+          min="1"
+          max="5"
+          value="<%= @planned_session.energy_level || 3 %>"
+          class="mt-2 w-full"
+          data-exercise-log-target="energyLevel"
+          data-action="change->exercise-log#queueSave"
+        />
+      </label>
+      <label class="text-xs text-slate-400">Finger soreness (1-5)
+        <input
+          type="range"
+          min="1"
+          max="5"
+          value="<%= @planned_session.finger_soreness || 2 %>"
+          class="mt-2 w-full"
+          data-exercise-log-target="fingerSoreness"
+          data-action="change->exercise-log#queueSave"
+        />
+      </label>
+      <label class="text-xs text-slate-400">General soreness (1-5)
+        <input
+          type="range"
+          min="1"
+          max="5"
+          value="<%= @planned_session.general_soreness || 2 %>"
+          class="mt-2 w-full"
+          data-exercise-log-target="generalSoreness"
+          data-action="change->exercise-log#queueSave"
+        />
+      </label>
+    </div>
+  </div>
+</div>
