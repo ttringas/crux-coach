@@ -1,4 +1,4 @@
-module Coach
+module CoachPortal
   class AthletesController < ApplicationController
     before_action :require_coach
     before_action :set_athlete

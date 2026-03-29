@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-semibold"><%= @athlete.user.name.presence || @athlete.user.email %></h1>
       <p class="text-slate-400 text-sm">Athlete profile overview</p>
     </div>
-    <%= link_to "Edit Plan", edit_coach_athlete_path(@athlete), class: "text-amber-400" %>
+    <%= link_to "Edit Plan", edit_coach_portal_athlete_path(@athlete), class: "text-amber-400" %>
   </div>
 
   <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">

@@ -1,4 +1,4 @@
-module Coach
+module CoachPortal
   class DashboardController < ApplicationController
     before_action :require_coach
 

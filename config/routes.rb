@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   get "progress", to: "progress#show"
   resources :coaches, only: %i[index show]
 
-  namespace :coach do
+  namespace :coach_portal do
     get "dashboard", to: "dashboard#show"
     resources :athletes, only: %i[show edit update]
   end

@@ -14,7 +14,7 @@
               <div class="text-slate-100 font-semibold"><%= athlete.user.name.presence || athlete.user.email %></div>
               <div class="text-xs text-slate-400">Current max boulder: <%= athlete.current_max_boulder_grade || "-" %></div>
             </div>
-            <%= link_to "View", coach_athlete_path(athlete), class: "text-amber-400 text-sm" %>
+            <%= link_to "View", coach_portal_athlete_path(athlete), class: "text-amber-400 text-sm" %>
           </div>
         <% end %>
       <% else %>
