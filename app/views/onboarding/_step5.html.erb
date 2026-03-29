@@ -8,7 +8,7 @@
     <div class="grid md:grid-cols-2 gap-2">
       <% styles.each do |style| %>
         <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[style_strengths][]", style, profile.style_strengths.include?(style), class: "rounded bg-slate-800 border-slate-700" %>
+          <%= check_box_tag "climber_profile[style_strengths][]", style, profile.style_strengths.include?(style), class: "bg-slate-800 border-slate-600" %>
           <span><%= style.humanize %></span>
         </label>
       <% end %>
@@ -19,7 +19,7 @@
     <div class="grid md:grid-cols-2 gap-2">
       <% styles.each do |style| %>
         <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[style_weaknesses][]", style, profile.style_weaknesses.include?(style), class: "rounded bg-slate-800 border-slate-700" %>
+          <%= check_box_tag "climber_profile[style_weaknesses][]", style, profile.style_weaknesses.include?(style), class: "bg-slate-800 border-slate-600" %>
           <span><%= style.humanize %></span>
         </label>
       <% end %>
@@ -31,7 +31,7 @@
     <div class="grid md:grid-cols-2 gap-2">
       <% disciplines.each do |disc| %>
         <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[preferred_disciplines][]", disc, profile.preferred_disciplines.include?(disc), class: "rounded bg-slate-800 border-slate-700" %>
+          <%= check_box_tag "climber_profile[preferred_disciplines][]", disc, profile.preferred_disciplines.include?(disc), class: "bg-slate-800 border-slate-600" %>
           <span><%= disc.humanize %></span>
         </label>
       <% end %>
@@ -39,10 +39,10 @@
   </div>
   <div>
     <%= f.label :additional_context, "Additional context", class: "text-sm text-slate-300" %>
-    <%= f.text_area :additional_context, rows: 3, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    <%= f.text_area :additional_context, rows: 3, placeholder: "Anything else we should consider?", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
   </div>
   <div class="flex items-center justify-between">
     <%= link_to "Back", onboarding_path(4), class: "text-slate-400" %>
-    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
   </div>
 <% end %>

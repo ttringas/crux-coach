@@ -1,24 +1,26 @@
 <div class="min-h-screen bg-slate-950 text-slate-100">
-  <div class="max-w-6xl mx-auto px-6 py-16">
+  <div class="max-w-6xl mx-auto px-4 md:px-6 py-16">
     <header class="flex items-center justify-between">
       <div class="text-lg font-semibold tracking-wide">Crux Coach</div>
       <div class="space-x-4 text-sm">
         <%= link_to "Sign in", new_user_session_path, class: "text-slate-300 hover:text-amber-300" %>
-        <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" %>
+        <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
       </div>
     </header>
 
-    <section class="mt-16 grid gap-12 lg:grid-cols-2 items-center">
+    <section class="mt-16 grid gap-12 lg:grid-cols-2 items-center relative overflow-hidden rounded-3xl border border-slate-800/70 bg-gradient-to-br from-slate-950 via-slate-900/70 to-slate-950 p-8 md:p-12 shadow-xl">
+      <div class="absolute -top-32 -right-24 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-slate-700/30 blur-3xl"></div>
       <div>
         <h1 class="text-4xl md:text-5xl font-semibold leading-tight">Your AI Climbing Coach</h1>
         <p class="mt-4 text-slate-300 text-lg">Adaptive plans that respect your goals, time, and injuries. No noise, just structured training built around your climbing reality.</p>
         <div class="mt-8 flex flex-wrap gap-4">
-          <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-6 py-3 rounded-md font-semibold" %>
-          <%= link_to "See How It Works", new_user_session_path, class: "border border-slate-700 px-6 py-3 rounded-md text-slate-200" %>
+          <%= link_to "Get Started Free", new_user_registration_path, class: "bg-amber-500 text-slate-950 px-6 py-3 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+          <%= link_to "See How It Works", new_user_session_path, class: "border border-slate-700 px-6 py-3 rounded-md text-slate-200 hover:border-slate-500 transition" %>
         </div>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
-        <h3 class="text-sm uppercase tracking-widest text-amber-400">Adaptive Planning</h3>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-xl relative">
+        <h3 class="text-sm text-slate-400 uppercase tracking-wide">Adaptive Planning</h3>
         <p class="mt-4 text-slate-300">Weekly blocks update automatically based on session logs, energy, and soreness. Coaches can refine plans when needed.</p>
         <div class="mt-8 grid grid-cols-2 gap-4 text-sm text-slate-300">
           <div class="bg-slate-800/60 rounded-lg p-4">
@@ -42,19 +44,19 @@
     </section>
 
     <section class="mt-20 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700">
         <h3 class="text-amber-400 font-semibold">Personalized Blocks</h3>
         <p class="mt-3 text-sm text-slate-300">Power, endurance, and technique cycles that match your season.</p>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700">
         <h3 class="text-amber-400 font-semibold">Detailed Sessions</h3>
         <p class="mt-3 text-sm text-slate-300">Exercise prescriptions, intensity, and timing in one place.</p>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700">
         <h3 class="text-amber-400 font-semibold">Fast Logging</h3>
         <p class="mt-3 text-sm text-slate-300">Natural language capture or manual detail for every session.</p>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 transition hover:border-slate-700">
         <h3 class="text-amber-400 font-semibold">Progress Signals</h3>
         <p class="mt-3 text-sm text-slate-300">Track grades, volume, and consistency over time.</p>
       </div>

@@ -7,29 +7,29 @@
     <%= link_to "Back", session_logs_path, class: "text-amber-400" %>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 transition hover:border-slate-700">
     <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-300">
       <div>
-        <div class="text-slate-400">Duration</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Duration</div>
         <div class="text-slate-100"><%= @session_log.duration_minutes || "-" %> min</div>
       </div>
       <div>
-        <div class="text-slate-400">RPE</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">RPE</div>
         <div class="text-slate-100"><%= @session_log.perceived_exertion || "-" %></div>
       </div>
       <div>
-        <div class="text-slate-400">Energy</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Energy</div>
         <div class="text-slate-100"><%= @session_log.energy_level || "-" %></div>
       </div>
     </div>
 
     <div class="text-sm text-slate-300">
-      <div class="text-slate-400">Notes</div>
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Notes</div>
       <p class="text-slate-100"><%= @session_log.notes.presence || "No notes." %></p>
     </div>
 
     <div class="text-sm text-slate-300">
-      <div class="text-slate-400">Raw input</div>
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Raw input</div>
       <p class="text-slate-100"><%= @session_log.raw_input.presence || "-" %></p>
     </div>
   </div>

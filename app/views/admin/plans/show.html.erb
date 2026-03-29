@@ -11,32 +11,32 @@
   </div>
 
   <!-- Climber Profile Summary -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-    <h2 class="text-lg font-semibold text-amber-400">Climber Profile</h2>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
+    <h2 class="text-lg font-semibold">Climber Profile</h2>
     <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm text-slate-300">
       <div>
-        <div class="text-slate-400">Level</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Level</div>
         <div>Boulder: <span class="text-slate-100"><%= @climber.current_max_boulder_grade || "-" %></span></div>
         <div>Sport: <span class="text-slate-100"><%= @climber.current_max_sport_grade || "-" %></span></div>
       </div>
       <div>
-        <div class="text-slate-400">Experience</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Experience</div>
         <div><span class="text-slate-100"><%= @climber.years_climbing || "-" %></span> years climbing</div>
         <div><span class="text-slate-100"><%= @climber.training_age_months || "-" %></span> months training</div>
       </div>
       <div>
-        <div class="text-slate-400">Schedule</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Schedule</div>
         <div><span class="text-slate-100"><%= @climber.weekly_training_days || "-" %></span> days/week</div>
         <div><span class="text-slate-100"><%= @climber.session_duration_minutes || "-" %></span> min/session</div>
       </div>
     </div>
     <div class="mt-4 grid md:grid-cols-2 gap-4 text-sm text-slate-300">
       <div>
-        <div class="text-slate-400">Goals</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Goals</div>
         <div class="text-slate-100 mt-1"><%= @climber.goals_short_term.presence || "-" %></div>
       </div>
       <div>
-        <div class="text-slate-400">Equipment</div>
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Equipment</div>
         <div class="text-slate-100 mt-1"><%= @climber.available_equipment.join(", ").presence || "-" %></div>
       </div>
     </div>
@@ -51,8 +51,8 @@
   </div>
 
   <!-- Training Block -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-    <h2 class="text-lg font-semibold text-amber-400">Training Block</h2>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
+    <h2 class="text-lg font-semibold">Training Block</h2>
     <% if @weekly_plan.training_block %>
       <div class="mt-3 text-sm text-slate-300">
         <div><span class="text-slate-100 font-semibold"><%= @weekly_plan.training_block.name %></span> — <%= @weekly_plan.training_block.focus.humanize %></div>
@@ -65,8 +65,8 @@
   </div>
 
   <!-- Plan Summary -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-    <h2 class="text-lg font-semibold text-amber-400">Plan Summary</h2>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
+    <h2 class="text-lg font-semibold">Plan Summary</h2>
     <div class="mt-3 text-sm text-slate-300">
       <p><%= @weekly_plan.summary.presence || "No summary available." %></p>
       <div class="mt-2 text-xs text-slate-500">
@@ -82,10 +82,10 @@
     <h2 class="text-lg font-semibold">Daily Sessions (<%= @weekly_plan.planned_sessions.count %>)</h2>
     <% days = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday] %>
     <% @weekly_plan.planned_sessions.order(:day_of_week).each do |session| %>
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
         <div class="flex items-center justify-between">
           <div>
-            <div class="text-amber-400 text-xs uppercase tracking-wide">
+            <div class="text-sm text-slate-400 uppercase tracking-wide">
               <%= days[session.day_of_week] || "Day #{session.day_of_week}" %> · <%= session.session_type.humanize %> · <%= session.intensity.humanize %>
             </div>
             <div class="text-lg font-semibold mt-1"><%= session.title %></div>
@@ -97,7 +97,7 @@
         <% end %>
         <% if session.exercises.present? && session.exercises.any? %>
           <div class="mt-4 border-t border-slate-800 pt-3">
-            <div class="text-xs text-slate-400 uppercase tracking-wide mb-2">Exercises</div>
+            <div class="text-sm text-slate-400 uppercase tracking-wide mb-2">Exercises</div>
             <div class="space-y-2">
               <% session.exercises.each do |ex| %>
                 <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-3 text-sm">
@@ -123,8 +123,8 @@
   </div>
 
   <!-- Raw AI Output -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-    <h2 class="text-lg font-semibold text-amber-400">Raw AI Output</h2>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
+    <h2 class="text-lg font-semibold">Raw AI Output</h2>
     <pre class="mt-3 text-xs text-slate-400 overflow-x-auto whitespace-pre-wrap bg-slate-800/60 rounded-lg p-4"><%= JSON.pretty_generate(@weekly_plan.ai_generated_plan) rescue @weekly_plan.ai_generated_plan.to_s %></pre>
   </div>
 </div>

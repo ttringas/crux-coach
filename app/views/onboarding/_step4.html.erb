@@ -4,26 +4,26 @@
 <%= form_with model: profile, url: onboarding_path(4), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
   <div data-controller="injury-fields">
     <div class="space-y-4" data-injury-fields-target="list">
-      <% injuries = profile.injuries.presence || [{}] %>
+      <% injuries = profile.injuries.presence || [] %>
       <% injuries.each do |injury| %>
         <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4">
           <div class="grid md:grid-cols-2 gap-3">
             <div>
               <label class="text-xs text-slate-400">Area</label>
-              <input type="text" name="climber_profile[injuries][][area]" value="<%= injury["area"] %>" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+              <input type="text" name="climber_profile[injuries][][area]" value="<%= injury["area"] %>" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
             </div>
             <div>
               <label class="text-xs text-slate-400">Severity</label>
-              <input type="text" name="climber_profile[injuries][][severity]" value="<%= injury["severity"] %>" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+              <input type="text" name="climber_profile[injuries][][severity]" value="<%= injury["severity"] %>" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
             </div>
           </div>
           <div class="mt-3">
             <label class="text-xs text-slate-400">Notes</label>
-            <input type="text" name="climber_profile[injuries][][notes]" value="<%= injury["notes"] %>" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+            <input type="text" name="climber_profile[injuries][][notes]" value="<%= injury["notes"] %>" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
           </div>
           <div class="mt-3 flex items-center gap-4 text-xs text-slate-400">
             <label class="flex items-center gap-2">
-              <input type="checkbox" name="climber_profile[injuries][][still_active]" value="true" <%= injury["still_active"] ? "checked" : "" %> class="rounded bg-slate-900 border-slate-700" />
+              <input type="checkbox" name="climber_profile[injuries][][still_active]" value="true" <%= injury["still_active"] ? "checked" : "" %> />
               Still active
             </label>
             <button type="button" class="text-red-300" data-action="injury-fields#remove">Remove</button>
@@ -37,20 +37,20 @@
         <div class="grid md:grid-cols-2 gap-3">
           <div>
             <label class="text-xs text-slate-400">Area</label>
-            <input type="text" name="climber_profile[injuries][][area]" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+            <input type="text" name="climber_profile[injuries][][area]" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
           </div>
           <div>
             <label class="text-xs text-slate-400">Severity</label>
-            <input type="text" name="climber_profile[injuries][][severity]" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+            <input type="text" name="climber_profile[injuries][][severity]" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
           </div>
         </div>
         <div class="mt-3">
           <label class="text-xs text-slate-400">Notes</label>
-          <input type="text" name="climber_profile[injuries][][notes]" class="mt-1 w-full rounded-md bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
+          <input type="text" name="climber_profile[injuries][][notes]" class="mt-1 w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm" />
         </div>
         <div class="mt-3 flex items-center gap-4 text-xs text-slate-400">
           <label class="flex items-center gap-2">
-            <input type="checkbox" name="climber_profile[injuries][][still_active]" value="true" class="rounded bg-slate-900 border-slate-700" />
+            <input type="checkbox" name="climber_profile[injuries][][still_active]" value="true" />
             Still active
           </label>
           <button type="button" class="text-red-300" data-action="injury-fields#remove">Remove</button>
@@ -58,11 +58,14 @@
       </div>
     </template>
 
-    <button type="button" class="mt-4 text-sm text-amber-400" data-action="injury-fields#add">Add another injury</button>
+    <% if injuries.empty? %>
+      <div class="mt-4 text-sm text-slate-400">No injuries added. Add one if we should adapt your plan.</div>
+    <% end %>
+    <button type="button" class="mt-4 text-sm text-amber-400" data-action="injury-fields#add">Add an injury</button>
   </div>
 
   <div class="flex items-center justify-between">
     <%= link_to "Back", onboarding_path(3), class: "text-slate-400" %>
-    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
   </div>
 <% end %>

@@ -4,24 +4,24 @@
 <%= form_with model: profile, url: onboarding_path(2), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-4" do |f| %>
   <div>
     <%= f.label :goals_short_term, "Short-term goals", class: "text-sm text-slate-300" %>
-    <%= f.text_area :goals_short_term, rows: 3, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    <%= f.text_area :goals_short_term, rows: 3, placeholder: "Break into V7 bouldering by summer...", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
   </div>
   <div>
     <%= f.label :goals_long_term, "Long-term goals", class: "text-sm text-slate-300" %>
-    <%= f.text_area :goals_long_term, rows: 3, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    <%= f.text_area :goals_long_term, rows: 3, placeholder: "Climb 5.13a outside with confidence.", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
   </div>
   <div class="grid md:grid-cols-2 gap-4">
     <div>
       <%= f.label :comfortable_boulder_grade, "Target boulder grade", class: "text-sm text-slate-300" %>
-      <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
       <%= f.label :comfortable_sport_grade, "Target sport grade", class: "text-sm text-slate-300" %>
-      <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
   </div>
   <div class="flex items-center justify-between">
     <%= link_to "Back", onboarding_path(1), class: "text-slate-400" %>
-    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
   </div>
 <% end %>

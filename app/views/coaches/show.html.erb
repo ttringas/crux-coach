@@ -7,32 +7,40 @@
     <%= link_to "Back", coaches_path, class: "text-amber-400" %>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 transition hover:border-slate-700">
     <div>
-      <div class="text-amber-400 text-xs uppercase">Bio</div>
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Bio</div>
       <p class="text-slate-300 mt-2"><%= @coach.bio.presence || "No bio yet." %></p>
     </div>
     <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-300">
       <div>
-        <div class="text-slate-400">Years coaching</div>
+        <div class="text-slate-400 uppercase tracking-wide text-sm">Years coaching</div>
         <div class="text-slate-100"><%= @coach.years_coaching || "-" %></div>
       </div>
       <div>
-        <div class="text-slate-400">Max boulder</div>
+        <div class="text-slate-400 uppercase tracking-wide text-sm">Max boulder</div>
         <div class="text-slate-100"><%= @coach.max_grade_boulder || "-" %></div>
       </div>
       <div>
-        <div class="text-slate-400">Max sport</div>
+        <div class="text-slate-400 uppercase tracking-wide text-sm">Max sport</div>
         <div class="text-slate-100"><%= @coach.max_grade_sport || "-" %></div>
       </div>
     </div>
     <div>
-      <div class="text-slate-400 text-sm">Specialties</div>
-      <div class="mt-2 text-slate-100"><%= @coach.specialties.join(", ").presence || "General" %></div>
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Specialties</div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <% if @coach.specialties.any? %>
+          <% @coach.specialties.each do |specialty| %>
+            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= specialty.humanize %></span>
+          <% end %>
+        <% else %>
+          <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">General</span>
+        <% end %>
+      </div>
     </div>
 
     <div>
-      <button class="bg-amber-500 text-slate-950 px-6 py-2 rounded-md font-semibold">Request Coaching</button>
+      <button class="bg-amber-500 text-slate-950 px-6 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition">Request Coaching</button>
     </div>
   </div>
 </div>

@@ -4,29 +4,55 @@
 <%= form_with model: profile, url: onboarding_path(1), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-4" do |f| %>
   <div>
     <label class="text-sm text-slate-300">Name</label>
-    <%= text_field_tag "user[name]", current_user.name, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+    <%= text_field_tag "user[name]", current_user.name, placeholder: "Alex Johnson", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
   </div>
   <div class="grid md:grid-cols-2 gap-4">
     <div>
       <%= f.label :years_climbing, class: "text-sm text-slate-300" %>
-      <%= f.number_field :years_climbing, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.number_field :years_climbing, placeholder: "4", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
-      <%= f.label :training_age_months, "Training age (months)", class: "text-sm text-slate-300" %>
-      <%= f.number_field :training_age_months, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.label :training_age_months, class: "text-sm text-slate-300" do %>
+        Training age (months)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :training_age_months, placeholder: "18", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div>
+      <%= f.label :height_inches, class: "text-sm text-slate-300" do %>
+        Height (in)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :height_inches, placeholder: "70", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :wingspan_inches, class: "text-sm text-slate-300" do %>
+        Wingspan (in)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :wingspan_inches, placeholder: "71", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :weight_lbs, class: "text-sm text-slate-300" do %>
+        Weight (lbs)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :weight_lbs, placeholder: "155", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
   </div>
   <div class="grid md:grid-cols-2 gap-4">
     <div>
       <%= f.label :current_max_boulder_grade, class: "text-sm text-slate-300" %>
-      <%= f.text_field :current_max_boulder_grade, placeholder: "V6", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.text_field :current_max_boulder_grade, placeholder: "V5", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
       <%= f.label :current_max_sport_grade, class: "text-sm text-slate-300" %>
-      <%= f.text_field :current_max_sport_grade, placeholder: "5.12a", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.text_field :current_max_sport_grade, placeholder: "5.11c", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
   </div>
   <div class="flex justify-end">
-    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
   </div>
 <% end %>

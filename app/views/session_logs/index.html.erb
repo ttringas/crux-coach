@@ -3,25 +3,25 @@
     <h1 class="text-2xl font-semibold">Session History</h1>
     <p class="text-slate-400 text-sm">Review and filter past sessions.</p>
   </div>
-  <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" %>
+  <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
 </div>
 
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 transition hover:border-slate-700">
   <%= form_with url: session_logs_path, method: :get, class: "grid md:grid-cols-4 gap-4" do %>
     <div>
       <label class="text-sm text-slate-300">Session type</label>
-      <%= select_tag :session_type, options_for_select(SessionLog.session_types.keys.map { |k| [k.humanize, k] }, params[:session_type]), include_blank: "All", class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= select_tag :session_type, options_for_select(SessionLog.session_types.keys.map { |k| [k.humanize, k] }, params[:session_type]), include_blank: "All", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
       <label class="text-sm text-slate-300">From</label>
-      <%= date_field_tag :date_from, params[:date_from], class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= date_field_tag :date_from, params[:date_from], class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
       <label class="text-sm text-slate-300">To</label>
-      <%= date_field_tag :date_to, params[:date_to], class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= date_field_tag :date_to, params[:date_to], class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div class="flex items-end">
-      <%= submit_tag "Filter", class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold w-full" %>
+      <%= submit_tag "Filter", class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold w-full hover:bg-amber-400 active:bg-amber-600 transition" %>
     </div>
   <% end %>
 </div>
@@ -29,7 +29,7 @@
 <div class="space-y-4">
   <% if @session_logs.any? %>
     <% @session_logs.each do |log| %>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between transition hover:border-slate-700">
         <div>
           <div class="text-slate-100 font-semibold"><%= log.session_type.humanize %></div>
           <div class="text-xs text-slate-400"><%= log.date.strftime("%b %d, %Y") %> · <%= log.duration_minutes || "-" %> min</div>
@@ -38,6 +38,15 @@
       </div>
     <% end %>
   <% else %>
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-slate-300">No sessions yet.</div>
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-300 transition hover:border-slate-700">
+      <div class="mx-auto mb-4 h-12 w-12 rounded-full bg-slate-800 flex items-center justify-center text-amber-400">
+        <span class="text-xl">⛰</span>
+      </div>
+      <div class="text-lg font-semibold text-slate-100">No sessions yet</div>
+      <p class="mt-2 text-sm text-slate-400">Log your first session to start building your training history.</p>
+      <div class="mt-5">
+        <%= link_to "Log a Session", new_session_log_path, class: "inline-flex bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+      </div>
+    </div>
   <% end %>
 </div>

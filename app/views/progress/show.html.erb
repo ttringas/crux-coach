@@ -6,7 +6,7 @@
 
   <% if @session_logs.any? %>
     <div class="grid lg:grid-cols-2 gap-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
         <h2 class="text-lg font-semibold">Sessions per Week</h2>
         <div class="mt-4 grid grid-cols-12 gap-2 items-end h-40">
           <% last_weeks = @sessions_per_week.keys.sort.last(12) %>
@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
         <h2 class="text-lg font-semibold">Grade History</h2>
         <div class="mt-4 space-y-2 text-sm text-slate-300">
           <% @grade_history.last(6).each do |entry| %>
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Volume Trends</h2>
       <div class="mt-4 grid grid-cols-12 gap-2 items-end h-32">
         <% @volume_trends.last(12).each do |entry| %>
@@ -40,8 +40,15 @@
       </div>
     </div>
   <% else %>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-300">
-      No data yet. Log a few sessions to unlock progress insights.
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-300 transition hover:border-slate-700">
+      <div class="mx-auto mb-4 h-12 w-12 rounded-full bg-slate-800 flex items-center justify-center text-amber-400">
+        <span class="text-xl">📈</span>
+      </div>
+      <div class="text-lg font-semibold text-slate-100">No progress data yet</div>
+      <p class="mt-2 text-sm text-slate-400">Log a few sessions to unlock charts and trends.</p>
+      <div class="mt-5">
+        <%= link_to "Log a Session", new_session_log_path, class: "inline-flex bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+      </div>
     </div>
   <% end %>
 </div>

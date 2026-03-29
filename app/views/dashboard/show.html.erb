@@ -1,13 +1,21 @@
 <div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-semibold"><%= @greeting %>, <%= current_user.name.presence || current_user.email %></h1>
+    <p class="text-slate-400 text-sm"><%= @today.strftime("%A, %B %d, %Y") %></p>
+  </div>
   <div class="grid lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Today</h2>
       <% if @today_session %>
-        <div class="mt-4">
-          <div class="text-amber-400 text-sm uppercase tracking-wide"><%= @today_session.session_type %></div>
-          <div class="text-xl font-semibold mt-2"><%= @today_session.title %></div>
+        <div class="mt-4 rounded-xl border border-amber-500/40 bg-amber-500/5 p-5">
+          <div class="text-sm text-slate-400 uppercase tracking-wide"><%= @today_session.session_type %></div>
+          <div class="text-2xl font-semibold mt-2"><%= @today_session.title %></div>
           <p class="text-slate-300 mt-2"><%= @today_session.description.presence || "Session details ready in the plan." %></p>
           <div class="mt-4 text-sm text-slate-400">Estimated <%= @today_session.estimated_duration_minutes || "-" %> min · <%= @today_session.intensity.humanize %></div>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <%= link_to "Start Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
+            <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
+          </div>
         </div>
       <% elsif @current_plan %>
         <div class="mt-4 text-slate-300">Rest day or no session scheduled.</div>
@@ -15,16 +23,16 @@
         <div class="mt-4 text-slate-300">No plan yet. Complete onboarding to generate your first week.</div>
       <% end %>
       <div class="mt-6 flex flex-wrap gap-3">
-        <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" %>
+        <%= link_to "Log Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
         <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
       </div>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Training Block</h2>
       <% if @training_block %>
         <div class="mt-4">
-          <div class="text-amber-400 text-sm uppercase tracking-wide"><%= @training_block.focus.humanize %></div>
+          <div class="text-sm text-slate-400 uppercase tracking-wide"><%= @training_block.focus.humanize %></div>
           <div class="text-xl font-semibold mt-2"><%= @training_block.name %></div>
           <div class="text-sm text-slate-400 mt-2">Week <%= @training_block.week_number || "-" %> of <%= @training_block.weeks_planned || "-" %></div>
           <p class="text-slate-300 mt-4"><%= @training_block.ai_reasoning.presence || "Plan tuned to your current focus." %></p>
@@ -35,20 +43,39 @@
     </div>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
     <h2 class="text-lg font-semibold">This Week</h2>
     <div class="mt-4 grid grid-cols-7 gap-2 text-xs text-slate-300">
       <% @week_dates.each do |date| %>
-        <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-2 text-center">
+        <% sessions = @planned_sessions_by_day[date.wday] || [] %>
+        <% is_today = date == @today %>
+        <div class="bg-slate-800/60 border <%= is_today ? "border-amber-500/60 ring-1 ring-amber-500/40" : "border-slate-700" %> rounded-lg p-2 text-center">
           <div class="text-slate-400"><%= date.strftime("%a") %></div>
           <div class="text-slate-100 mt-1"><%= date.strftime("%d") %></div>
+          <div class="mt-2 flex items-center justify-center gap-1 flex-wrap">
+            <% if sessions.any? %>
+              <% sessions.each do |session| %>
+                <% dot_color = case session.session_type
+                  when "climbing" then "bg-amber-500"
+                  when "strength" then "bg-sky-400"
+                  when "mobility" then "bg-emerald-400"
+                  else "bg-slate-400"
+                end %>
+                <span class="inline-flex items-center gap-1 text-[10px] text-slate-300">
+                  <span class="h-2 w-2 rounded-full <%= dot_color %>"></span>
+                </span>
+              <% end %>
+            <% else %>
+              <span class="text-[10px] text-slate-500 uppercase tracking-wide">Rest</span>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>
   </div>
 
   <div class="grid lg:grid-cols-2 gap-6">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Recent Sessions</h2>
       <div class="mt-4 space-y-4">
         <% if @recent_sessions.any? %>
@@ -67,10 +94,10 @@
       </div>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
       <h2 class="text-lg font-semibold">Quick Actions</h2>
       <div class="mt-4 grid gap-3">
-        <%= link_to "Log a Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" %>
+        <%= link_to "Log a Session", new_session_log_path, class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
         <%= link_to "Edit Profile", edit_profile_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
         <%= link_to "Browse Coaches", coaches_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
       </div>

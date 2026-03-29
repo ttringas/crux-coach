@@ -7,22 +7,22 @@
     <%= link_to "Back", coach_athlete_path(@athlete), class: "text-amber-400" %>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
     <% if @current_plan %>
       <%= form_with model: @current_plan, url: coach_athlete_path(@athlete), method: :patch, class: "space-y-4" do |f| %>
         <div>
           <%= f.label :summary, class: "text-sm text-slate-300" %>
-          <%= f.text_area :summary, rows: 3, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          <%= f.text_area :summary, rows: 3, class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
         </div>
         <div>
           <%= f.label :coach_notes, class: "text-sm text-slate-300" %>
-          <%= f.text_area :coach_notes, rows: 4, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          <%= f.text_area :coach_notes, rows: 4, class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
         </div>
         <div>
           <%= f.label :status, class: "text-sm text-slate-300" %>
-          <%= f.select :status, WeeklyPlan.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "mt-2 w-full rounded-md bg-slate-800 border border-slate-700 px-3 py-2" %>
+          <%= f.select :status, WeeklyPlan.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
         </div>
-        <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
+        <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
       <% end %>
     <% else %>
       <div class="text-slate-300">No current plan to edit.</div>

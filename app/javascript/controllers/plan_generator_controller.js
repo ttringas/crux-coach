@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["button"]
+  static targets = ["button", "status"]
 
   submit(event) {
     this.setLoading()
@@ -18,5 +18,9 @@ export default class extends Controller {
     this.buttonTarget.disabled = true
     this.buttonTarget.textContent = "Generating..."
     this.buttonTarget.classList.add("opacity-70")
+
+    if (this.hasStatusTarget) {
+      this.statusTarget.classList.remove("hidden")
+    }
   }
 }

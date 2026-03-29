@@ -47,6 +47,9 @@ class OnboardingController < ApplicationController
 
   def profile_params
     permitted = params.fetch(:climber_profile, {}).permit(
+      :height_inches,
+      :wingspan_inches,
+      :weight_lbs,
       :years_climbing,
       :training_age_months,
       :current_max_boulder_grade,

@@ -2,21 +2,21 @@
   <h1 class="text-2xl font-semibold mb-4">AI Usage (Today)</h1>
 
   <div class="grid md:grid-cols-3 gap-4 mb-8">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-      <div class="text-sm text-slate-400">Total spend</div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Total spend</div>
       <div class="text-2xl font-semibold text-slate-100">$<%= ((@total_spend_cents || 0) / 100.0).round(2) %></div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-      <div class="text-sm text-slate-400">Total calls</div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Total calls</div>
       <div class="text-2xl font-semibold text-slate-100"><%= @total_calls %></div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-      <div class="text-sm text-slate-400">Daily budget</div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
+      <div class="text-sm text-slate-400 uppercase tracking-wide">Daily budget</div>
       <div class="text-2xl font-semibold text-slate-100">$<%= (Rails.configuration.x.ai.daily_budget_cents / 100.0).round(2) %></div>
     </div>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
     <h2 class="text-lg font-semibold mb-4">Top Users</h2>
     <% if @top_users.any? %>
       <div class="divide-y divide-slate-800">

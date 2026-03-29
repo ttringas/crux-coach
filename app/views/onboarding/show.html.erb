@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 transition hover:border-slate-700">
     <%= turbo_frame_tag "onboarding_step" do %>
       <%= render "onboarding/step#{@step}", profile: @profile %>
     <% end %>
