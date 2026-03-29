@@ -12,9 +12,15 @@ class WeeklyPlansController < ApplicationController
     @week_dates = week_dates_for(@weekly_plan)
     @planned_sessions = sessions_by_day(@weekly_plan)
 
-    if turbo_frame_request? && params[:session_id].present?
-      session = @weekly_plan.planned_sessions.find(params[:session_id])
-      render partial: "weekly_plans/session_details", locals: { session: session }
+    if params[:session_id].present?
+      @expanded_session = @weekly_plan.planned_sessions.find(params[:session_id])
+      if turbo_frame_request?
+        render inline: <<~ERB, locals: { session: @expanded_session }
+          <%= turbo_frame_tag dom_id(session, :details) do %>
+            <%= render "weekly_plans/session_details", session: session %>
+          <% end %>
+        ERB
+      end
     end
   end
 
