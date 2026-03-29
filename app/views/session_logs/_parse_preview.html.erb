@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "session_parse_preview" do %>
+  <% if local_assigns[:error].present? %>
+    <div class="mt-4 bg-red-900/40 border border-red-800 rounded-lg p-4 text-sm text-red-200">
+      <%= error %>
+    </div>
+  <% else %>
+    <%= hidden_field_tag "session_log[structured_data]", parsed.to_json %>
+    <div class="mt-4 bg-slate-800/60 border border-slate-700 rounded-lg p-4 text-sm text-slate-300">
+      <div class="text-amber-400 font-semibold mb-2">Parsed Session Summary</div>
+      <div>Type: <span class="text-slate-100"><%= parsed["session_type"].presence || "-" %></span></div>
+      <div>Duration: <span class="text-slate-100"><%= parsed["duration_minutes"].presence || "-" %> min</span></div>
+      <div>RPE: <span class="text-slate-100"><%= parsed["perceived_exertion"].presence || "-" %></span></div>
+      <div>Climbs logged: <span class="text-slate-100"><%= Array(parsed["climbs_logged"]).size %></span></div>
+      <div>Exercises logged: <span class="text-slate-100"><%= Array(parsed["exercises_logged"]).size %></span></div>
+      <div class="mt-2 text-slate-400">Review and click Save to store this session.</div>
+    </div>
+  <% end %>
+<% end %>

@@ -10,8 +10,15 @@ class OnboardingController < ApplicationController
 
     if @profile.update(profile_params)
       if @step == 6
-        @profile.update(onboarding_completed: true)
-        redirect_to dashboard_path, notice: "Onboarding complete."
+        begin
+          ensure_training_block!
+          Ai::PlanGenerator.call(climber_profile: @profile)
+          @profile.update(onboarding_completed: true)
+          redirect_to dashboard_path, notice: "Plan generated. Welcome to Crux Coach."
+        rescue Ai::Client::Error => e
+          flash.now[:alert] = e.message
+          render :show, status: :unprocessable_entity
+        end
       else
         redirect_to onboarding_path(@step + 1)
       end
@@ -68,5 +75,17 @@ class OnboardingController < ApplicationController
     end
 
     permitted
+  end
+
+  def ensure_training_block!
+    return if @profile.training_blocks.exists?
+
+    @profile.training_blocks.create!(
+      name: "Base Building",
+      focus: :base,
+      weeks_planned: 4,
+      status: :active,
+      started_at: Date.current
+    )
   end
 end

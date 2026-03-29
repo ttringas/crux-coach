@@ -3,9 +3,11 @@
     <h1 class="text-2xl font-semibold">Weekly Plan</h1>
     <p class="text-slate-400 text-sm">Current week overview and session detail.</p>
   </div>
-  <button class="bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold" data-controller="plan-generator" data-action="click->plan-generator#submit" data-plan-generator-target="button">
-    Generate Next Week
-  </button>
+  <%= form_with url: weekly_plans_path, method: :post, data: { controller: "plan-generator" } do %>
+    <%= button_tag "Generate Next Week", type: "submit",
+      class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold",
+      data: { action: "click->plan-generator#submit", plan_generator_target: "button" } %>
+  <% end %>
 </div>
 
 <% if @weekly_plan %>

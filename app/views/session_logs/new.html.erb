@@ -20,9 +20,12 @@
         <%= f.hidden_field :session_type, value: "climbing" %>
         <%= f.hidden_field :date, value: Date.current %>
         <div class="flex items-center gap-3">
-          <button type="button" class="border border-slate-700 px-4 py-2 rounded-md text-slate-200" data-action="click->session-parser#parse" data-session-parser-target="button">
-            Parse Session
-          </button>
+          <%= button_tag "Parse Session",
+            type: "submit",
+            formaction: parse_session_logs_path,
+            formmethod: :post,
+            class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200",
+            data: { action: "click->session-parser#parse", session_parser_target: "button", turbo_frame: "session_parse_preview" } %>
           <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md" %>
         </div>
 

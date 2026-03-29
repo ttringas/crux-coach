@@ -15,7 +15,7 @@ module Ai
       end
     end
 
-    def self.generate(prompt:, system: nil, model: nil, provider: nil, user: nil, interaction_type: nil)
+    def self.generate(prompt:, system: nil, model: nil, provider: nil, user: nil, interaction_type: nil, max_tokens: nil)
       raise ArgumentError, "user is required for AiInteraction logging" if user.nil?
       raise ArgumentError, "interaction_type is required for AiInteraction logging" if interaction_type.nil?
 
@@ -27,14 +27,27 @@ module Ai
 
       response_text = nil
       tokens_used = nil
+      input_tokens = nil
+      output_tokens = nil
+      cost_cents = nil
       resolved_provider = provider
       resolved_model = model
       begin
-        result = provider_client(provider).generate(prompt: prompt, system: system, model: model)
+        Ai::UsageGuard.check!(user: user, interaction_type: interaction_type, provider: provider)
+
+        result = provider_client(provider).generate(prompt: prompt, system: system, model: model, max_tokens: max_tokens)
         response_text = result.fetch(:content)
         tokens_used = result[:tokens_used]
+        input_tokens = result[:input_tokens]
+        output_tokens = result[:output_tokens]
         resolved_provider = result[:provider] || provider
         resolved_model = result[:model] || model
+        cost_cents = estimate_cost_cents(
+          provider: resolved_provider,
+          model: resolved_model,
+          input_tokens: input_tokens,
+          output_tokens: output_tokens
+        )
 
         OpenStruct.new(
           content: response_text,
@@ -59,7 +72,8 @@ module Ai
           prompt: prompt_text,
           response: response_text,
           tokens_used: tokens_used,
-          duration_ms: duration_ms
+          duration_ms: duration_ms,
+          cost_cents: cost_cents
         )
       end
     end
@@ -100,7 +114,7 @@ module Ai
     end
     private_class_method :elapsed_ms
 
-    def self.log_interaction(user:, interaction_type:, provider:, model:, prompt:, response:, tokens_used:, duration_ms:)
+    def self.log_interaction(user:, interaction_type:, provider:, model:, prompt:, response:, tokens_used:, duration_ms:, cost_cents:)
       AiInteraction.create!(
         user: user,
         interaction_type: interaction_type,
@@ -109,11 +123,29 @@ module Ai
         prompt: prompt,
         response: response.to_s,
         tokens_used: tokens_used,
-        duration_ms: duration_ms
+        duration_ms: duration_ms,
+        cost_cents: cost_cents
       )
     rescue StandardError => e
       Rails.logger.error("Failed to log AiInteraction: #{e.class} #{e.message}")
     end
     private_class_method :log_interaction
+
+    def self.estimate_cost_cents(provider:, model:, input_tokens:, output_tokens:)
+      return nil if input_tokens.nil? && output_tokens.nil?
+
+      pricing = Rails.configuration.x.ai.pricing || {}
+      provider_pricing = pricing[provider.to_s] || pricing[provider.to_sym] || {}
+
+      input_rate = provider_pricing[:input_cents_per_million] || provider_pricing["input_cents_per_million"]
+      output_rate = provider_pricing[:output_cents_per_million] || provider_pricing["output_cents_per_million"]
+      return nil if input_rate.nil? || output_rate.nil?
+
+      input_tokens = input_tokens.to_i
+      output_tokens = output_tokens.to_i
+      total_cents = (input_tokens * input_rate + output_tokens * output_rate) / 1_000_000.0
+      total_cents.round
+    end
+    private_class_method :estimate_cost_cents
   end
 end

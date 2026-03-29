@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["button"]
 
   submit(event) {
-    event.preventDefault()
     this.setLoading()
   }
 

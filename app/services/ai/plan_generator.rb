@@ -11,7 +11,8 @@ module Ai
         prompt: prompts[:user],
         system: prompts[:system],
         user: climber_profile.user,
-        interaction_type: :plan_generation
+        interaction_type: :plan_generation,
+        max_tokens: 4000
       )
 
       parsed = parse_json_response(response.content)

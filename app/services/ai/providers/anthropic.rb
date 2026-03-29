@@ -9,9 +9,10 @@ module Ai
       ENDPOINT = URI("https://api.anthropic.com/v1/messages")
       DEFAULT_MODEL = "claude-sonnet-4-20250514"
 
-      def self.generate(prompt:, system: nil, model: nil)
+      def self.generate(prompt:, system: nil, model: nil, max_tokens: nil)
         api_key = ENV.fetch("ANTHROPIC_API_KEY")
         model ||= DEFAULT_MODEL
+        max_tokens ||= self.max_tokens
 
         request_body = {
           model: model,
@@ -43,11 +44,15 @@ module Ai
         end
 
         content = parsed.dig("content", 0, "text").to_s
-        tokens_used = parsed.dig("usage", "input_tokens").to_i + parsed.dig("usage", "output_tokens").to_i
+        input_tokens = parsed.dig("usage", "input_tokens").to_i
+        output_tokens = parsed.dig("usage", "output_tokens").to_i
+        tokens_used = input_tokens + output_tokens
 
         {
           content: content,
           tokens_used: tokens_used,
+          input_tokens: input_tokens,
+          output_tokens: output_tokens,
           model: parsed["model"] || model,
           provider: "anthropic"
         }

@@ -11,7 +11,8 @@ module Ai
         prompt: prompts[:user],
         system: prompts[:system],
         user: climber_profile.user,
-        interaction_type: :session_parsing
+        interaction_type: :session_parsing,
+        max_tokens: 1000
       )
 
       parse_json_response(response.content)

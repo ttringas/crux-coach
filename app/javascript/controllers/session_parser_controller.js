@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["button", "preview"]
 
   parse(event) {
-    event.preventDefault()
     this.buttonTarget.disabled = true
     this.buttonTarget.textContent = "Parsing..."
     this.buttonTarget.classList.add("opacity-70")
