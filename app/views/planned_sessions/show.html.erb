@@ -10,7 +10,9 @@
 >
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-      <%= link_to "<-", weekly_plan_path(@weekly_plan), class: "text-2xl text-slate-300 hover:text-slate-100" %>
+      <%= link_to weekly_plan_path(@weekly_plan), class: "flex items-center justify-center h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+      <% end %>
       <div>
         <div class="text-xs uppercase tracking-wide text-slate-400"><%= @planned_session.session_type %></div>
         <h1 class="text-2xl font-semibold"><%= @planned_session.title %></h1>
@@ -38,7 +40,7 @@
   <div class="flex flex-wrap gap-3 mb-8">
     <%= button_tag "Start Session",
       type: "button",
-      class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition #{@planned_session.pending? ? "" : "hidden"}",
+      class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition #{@planned_session.todo? ? "" : "hidden"}",
       data: { action: "session-completion#start", session_completion_target: "startButton" } %>
     <%= button_tag "Complete Session",
       type: "button",

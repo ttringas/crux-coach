@@ -47,7 +47,7 @@ export default class extends Controller {
     }
 
     if (this.hasStartButtonTarget) {
-      this.startButtonTarget.classList.toggle("hidden", status !== "pending")
+      this.startButtonTarget.classList.toggle("hidden", status !== "todo")
     }
     if (this.hasCompleteButtonTarget) {
       this.completeButtonTarget.classList.toggle("hidden", status !== "in_progress")

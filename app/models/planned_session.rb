@@ -14,7 +14,7 @@ class PlannedSession < ApplicationRecord
   }
 
   enum :intensity, { low: 0, moderate: 1, high: 2, max_effort: 3 }
-  enum :status, { pending: 0, in_progress: 1, completed: 2, skipped: 3 }
+  enum :status, { todo: 0, in_progress: 1, completed: 2, skipped: 3 }
 
   validates :day_of_week, inclusion: { in: 0..6 }
   validates :title, presence: true
