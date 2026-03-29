@@ -1,7 +1,7 @@
 <h2 class="text-2xl font-semibold">Equipment & Schedule</h2>
 <p class="text-slate-400 mt-2">Let us know what you have access to and how often you train.</p>
 
-<%= form_with model: profile, url: onboarding_path(3), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
+<%= form_with model: profile, url: onboarding_path(3), method: :patch, class: "mt-6 space-y-6" do |f| %>
   <div>
     <p class="text-sm text-slate-300 mb-3">Available equipment</p>
     <% equipment = %w[hangboard campus_board kilter moonboard tension weights pull_up_bar rings] %>

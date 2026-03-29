@@ -1,7 +1,7 @@
 <h2 class="text-2xl font-semibold">Injuries & Limitations</h2>
 <p class="text-slate-400 mt-2">We will automatically adjust training load around these.</p>
 
-<%= form_with model: profile, url: onboarding_path(4), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
+<%= form_with model: profile, url: onboarding_path(4), method: :patch, class: "mt-6 space-y-6" do |f| %>
   <div data-controller="injury-fields">
     <div class="space-y-4" data-injury-fields-target="list">
       <% injuries = profile.injuries.presence || [] %>

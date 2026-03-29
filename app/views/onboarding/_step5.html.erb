@@ -1,7 +1,7 @@
 <h2 class="text-2xl font-semibold">Style & Context</h2>
 <p class="text-slate-400 mt-2">Highlight what comes easy and what needs work.</p>
 
-<%= form_with model: profile, url: onboarding_path(5), method: :patch, data: { turbo_frame: "onboarding_step" }, class: "mt-6 space-y-6" do |f| %>
+<%= form_with model: profile, url: onboarding_path(5), method: :patch, class: "mt-6 space-y-6" do |f| %>
   <% styles = %w[power endurance technique flexibility compression slab steep coordination] %>
   <div>
     <p class="text-sm text-slate-300 mb-3">Strengths</p>
