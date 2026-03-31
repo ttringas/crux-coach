@@ -2,10 +2,18 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["saveStatus", "sessionNotes", "perceivedExertion", "energyLevel", "fingerSoreness", "generalSoreness"]
+  static outlets = ["speech-input"]
   static values = { url: String, debounce: { type: Number, default: 800 } }
 
   connect() {
     this.saveTimeout = null
+    this.boundSpeechHandler = this.handleSpeechResult.bind(this)
+    this.element.addEventListener("speech-input:result", this.boundSpeechHandler)
+  }
+
+  disconnect() {
+    if (this.saveTimeout) clearTimeout(this.saveTimeout)
+    this.element.removeEventListener("speech-input:result", this.boundSpeechHandler)
   }
 
   queueSave(event) {
@@ -23,6 +31,13 @@ export default class extends Controller {
     if (!card) return
     const details = card.querySelector("[data-exercise-details]")
     if (details) details.classList.toggle("hidden")
+  }
+
+  handleSpeechResult(event) {
+    const input = event.target?.querySelector("[data-speech-input-target='input']")
+    if (!input) return
+
+    this.queueSave({ target: input })
   }
 
   updateCardState(target) {

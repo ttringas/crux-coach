@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_29_101902) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,7 +127,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_29_101902) do
     t.integer "energy_level"
     t.integer "finger_soreness"
     t.integer "general_soreness"
+    t.integer "position", default: 0, null: false
     t.index ["session_type"], name: "index_planned_sessions_on_session_type"
+    t.index ["weekly_plan_id", "day_of_week", "position"], name: "index_planned_sessions_on_plan_day_position"
     t.index ["weekly_plan_id", "day_of_week"], name: "index_planned_sessions_on_weekly_plan_id_and_day_of_week"
     t.index ["weekly_plan_id"], name: "index_planned_sessions_on_weekly_plan_id"
   end

@@ -2,7 +2,7 @@
 
 <div
   class="min-h-screen bg-slate-950 text-slate-100 px-4 py-6"
-  data-controller="session-timer exercise-log session-completion"
+  data-controller="session-timer exercise-log session-completion demo-modal"
   data-session-timer-started-at-value="<%= @planned_session.started_at&.iso8601 %>"
   data-exercise-log-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
   data-session-completion-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
@@ -10,7 +10,7 @@
 >
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-      <%= link_to weekly_plan_path(@weekly_plan), class: "flex items-center justify-center h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
+      <%= link_to weekly_plans_path(week_of: @weekly_plan.week_of), class: "flex items-center justify-center h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
       <% end %>
       <div>
@@ -58,19 +58,23 @@
   </div>
 
   <div class="space-y-4">
+    <% parse_duration = lambda do |value|
+      raw = value.to_s.strip
+      if raw =~ /(\d+)\s*(sec|second)/i
+        Regexp.last_match(1).to_i
+      elsif raw =~ /(\d+)\s*(min|minute)/i
+        Regexp.last_match(1).to_i * 60
+      elsif raw =~ /^\d+$/
+        raw.to_i
+      else
+        nil
+      end
+    end %>
     <% @planned_session.exercises.each_with_index do |exercise, index| %>
       <% log = logs_by_index[index] || {} %>
       <% completed = log["completed"] %>
-      <% rest_value = exercise["rest"].to_s %>
-      <% rest_seconds = if rest_value =~ /(\d+)\s*(sec|second)/i
-        Regexp.last_match(1).to_i
-      elsif rest_value =~ /(\d+)\s*(min|minute)/i
-        Regexp.last_match(1).to_i * 60
-      elsif rest_value =~ /^\d+$/
-        rest_value.to_i
-      else
-        60
-      end %>
+      <% work_seconds = parse_duration.call(exercise["duration"]) %>
+      <% rest_seconds = parse_duration.call(exercise["rest"]) %>
       <% prescribed_bits = [] %>
       <% if exercise["sets"].present? && exercise["reps"].present? %>
         <% prescribed_bits << "#{exercise["sets"]} x #{exercise["reps"]}" %>
@@ -94,15 +98,20 @@
         data-exercise-index="<%= index %>"
       >
         <!-- Exercise header -->
-        <div class="flex items-center justify-between mb-1 gap-3" data-action="click->exercise-log#toggle">
+        <div class="flex items-center justify-between mb-1 gap-3">
           <div class="font-semibold text-base"><%= exercise_name %></div>
           <div class="flex items-center gap-2">
             <% if library_match %>
-              <%= link_to "Watch demo", exercise_library_entry_path(library_match), class: "text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition", data: { turbo_frame: "_top" } %>
+              <%= link_to "Watch demo", exercise_library_entry_path(library_match),
+                class: "text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition",
+                data: { action: "click->demo-modal#open", demo_modal_url: exercise_library_entry_path(library_match), demo_title: exercise_name, turbo: false } %>
             <% end %>
             <% if duration_hint %>
               <div class="flex-shrink-0 text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded"><%= duration_hint %></div>
             <% end %>
+            <button type="button" class="text-xs text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition" data-action="click->exercise-log#toggle">
+              Details
+            </button>
           </div>
         </div>
         <% if exercise["notes"].present? %>
@@ -140,21 +149,50 @@
                   <span class="text-slate-300 <%= set_done ? 'line-through text-slate-500' : '' %>"><%= prescribed_bits.any? ? prescribed_bits.join(" · ") : "Complete" %></span>
                 <% end %>
               </div>
-              <!-- Inline rest timer -->
-              <% if rest_value.present? %>
-                <div class="flex items-center gap-2" data-controller="rest-timer" data-rest-timer-duration-value="<%= rest_seconds %>">
-                  <button type="button" class="text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-0.5 hover:bg-amber-500/10 transition" data-action="rest-timer#toggle" data-rest-timer-target="toggleButton">
-                    Rest
-                  </button>
-                  <div class="text-xs font-mono text-amber-400 hidden" data-rest-timer-target="display">0:00</div>
-                  <div class="h-5 w-5 rounded-full border-2 border-amber-500/40 hidden" data-rest-timer-target="ring"></div>
-                </div>
-              <% end %>
             </div>
           <% end %>
         </div>
 
-        <!-- Expandable details (tap exercise header to show) -->
+        <% if work_seconds.present? || rest_seconds.present? %>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            <% if work_seconds.present? %>
+              <% work_minutes = work_seconds / 60 %>
+              <% work_remaining = work_seconds % 60 %>
+              <div class="rounded-lg border border-slate-800 bg-slate-800/40 p-3" data-controller="countdown-timer">
+                <div class="text-xs uppercase tracking-wide text-slate-400">Work Timer</div>
+                <div class="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                  <input type="number" min="0" inputmode="numeric" class="w-16 rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-slate-100" value="<%= work_minutes %>" data-countdown-timer-target="minutes" />
+                  <span>min</span>
+                  <input type="number" min="0" max="59" inputmode="numeric" class="w-16 rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-slate-100" value="<%= work_remaining %>" data-countdown-timer-target="seconds" />
+                  <span>sec</span>
+                </div>
+                <div class="mt-2 text-sm font-mono text-amber-400" data-countdown-timer-target="display">0:00</div>
+                <button type="button" class="mt-2 inline-flex items-center justify-center rounded-md border border-amber-500/40 px-3 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-500/10 transition" data-action="countdown-timer#start">
+                  Start
+                </button>
+              </div>
+            <% end %>
+            <% if rest_seconds.present? %>
+              <% rest_minutes = rest_seconds / 60 %>
+              <% rest_remaining = rest_seconds % 60 %>
+              <div class="rounded-lg border border-slate-800 bg-slate-800/40 p-3" data-controller="countdown-timer">
+                <div class="text-xs uppercase tracking-wide text-slate-400">Rest Timer</div>
+                <div class="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                  <input type="number" min="0" inputmode="numeric" class="w-16 rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-slate-100" value="<%= rest_minutes %>" data-countdown-timer-target="minutes" />
+                  <span>min</span>
+                  <input type="number" min="0" max="59" inputmode="numeric" class="w-16 rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-sm text-slate-100" value="<%= rest_remaining %>" data-countdown-timer-target="seconds" />
+                  <span>sec</span>
+                </div>
+                <div class="mt-2 text-sm font-mono text-amber-400" data-countdown-timer-target="display">0:00</div>
+                <button type="button" class="mt-2 inline-flex items-center justify-center rounded-md border border-amber-500/40 px-3 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-500/10 transition" data-action="countdown-timer#start">
+                  Start
+                </button>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Expandable details -->
         <div class="mt-3 grid gap-3 hidden pl-2" data-exercise-details>
           <div class="grid grid-cols-2 gap-3">
             <label class="text-xs text-slate-400">Actual sets
@@ -170,68 +208,116 @@
               <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" value="<%= log["actual_duration"] %>" data-action="blur->exercise-log#queueSave" data-exercise-log-field="actual_duration" />
             </label>
           </div>
-          <label class="text-xs text-slate-400">Notes
-            <textarea rows="2" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-action="blur->exercise-log#queueSave" data-exercise-log-field="notes"><%= log["notes"] %></textarea>
-          </label>
+          <div class="text-xs text-slate-400" data-controller="speech-input">
+            <div class="flex items-center justify-between">
+              <label for="exercise-notes-<%= index %>">Notes</label>
+              <button type="button" class="text-[11px] uppercase tracking-wide text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition" data-action="speech-input#toggle" data-speech-input-target="button">
+                Voice
+              </button>
+            </div>
+            <textarea id="exercise-notes-<%= index %>" rows="2" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-action="blur->exercise-log#queueSave" data-exercise-log-field="notes" data-speech-input-target="input"><%= log["notes"] %></textarea>
+          </div>
         </div>
       </div>
     <% end %>
   </div>
 
   <div class="mt-10 bg-slate-900 border border-slate-800 rounded-2xl p-4">
-    <h3 class="text-sm font-semibold text-slate-200">Session Notes</h3>
-    <textarea
-      rows="4"
-      class="mt-3 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
-      data-exercise-log-target="sessionNotes"
-      data-action="blur->exercise-log#queueSave"
-    ><%= @planned_session.session_notes %></textarea>
+    <div data-controller="speech-input">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-slate-200">Session Notes</h3>
+        <button type="button" class="text-[11px] uppercase tracking-wide text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition" data-action="speech-input#toggle" data-speech-input-target="button">
+          Voice
+        </button>
+      </div>
+      <textarea
+        rows="4"
+        class="mt-3 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+        data-exercise-log-target="sessionNotes"
+        data-speech-input-target="input"
+        data-action="blur->exercise-log#queueSave"
+      ><%= @planned_session.session_notes %></textarea>
+    </div>
 
     <div class="mt-6 grid gap-4">
-      <label class="text-xs text-slate-400">RPE (1-10)
+      <label class="text-xs text-slate-400" data-controller="range-value">
+        <div class="flex items-center justify-between">
+          <span>RPE (1-10)</span>
+          <span class="text-slate-200" data-range-value-target="output"></span>
+        </div>
         <input
           type="range"
           min="1"
           max="10"
           value="<%= @planned_session.perceived_exertion || 6 %>"
           class="mt-2 w-full"
+          data-range-value-target="input"
           data-exercise-log-target="perceivedExertion"
-          data-action="change->exercise-log#queueSave"
+          data-action="input->range-value#update change->exercise-log#queueSave"
         />
       </label>
-      <label class="text-xs text-slate-400">Energy level (1-5)
+      <label class="text-xs text-slate-400" data-controller="range-value">
+        <div class="flex items-center justify-between">
+          <span>Energy level (1-5)</span>
+          <span class="text-slate-200" data-range-value-target="output"></span>
+        </div>
         <input
           type="range"
           min="1"
           max="5"
           value="<%= @planned_session.energy_level || 3 %>"
           class="mt-2 w-full"
+          data-range-value-target="input"
           data-exercise-log-target="energyLevel"
-          data-action="change->exercise-log#queueSave"
+          data-action="input->range-value#update change->exercise-log#queueSave"
         />
       </label>
-      <label class="text-xs text-slate-400">Finger soreness (1-5)
+      <label class="text-xs text-slate-400" data-controller="range-value">
+        <div class="flex items-center justify-between">
+          <span>Finger soreness (1-5)</span>
+          <span class="text-slate-200" data-range-value-target="output"></span>
+        </div>
         <input
           type="range"
           min="1"
           max="5"
           value="<%= @planned_session.finger_soreness || 2 %>"
           class="mt-2 w-full"
+          data-range-value-target="input"
           data-exercise-log-target="fingerSoreness"
-          data-action="change->exercise-log#queueSave"
+          data-action="input->range-value#update change->exercise-log#queueSave"
         />
       </label>
-      <label class="text-xs text-slate-400">General soreness (1-5)
+      <label class="text-xs text-slate-400" data-controller="range-value">
+        <div class="flex items-center justify-between">
+          <span>General soreness (1-5)</span>
+          <span class="text-slate-200" data-range-value-target="output"></span>
+        </div>
         <input
           type="range"
           min="1"
           max="5"
           value="<%= @planned_session.general_soreness || 2 %>"
           class="mt-2 w-full"
+          data-range-value-target="input"
           data-exercise-log-target="generalSoreness"
-          data-action="change->exercise-log#queueSave"
+          data-action="input->range-value#update change->exercise-log#queueSave"
         />
       </label>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur" data-demo-modal-target="modal" data-action="click->demo-modal#closeOnBackdrop keydown@window->demo-modal#handleKeydown">
+    <div class="mx-auto flex h-full w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+        <div class="text-sm font-semibold text-slate-200" data-demo-modal-target="title">Exercise Demo</div>
+        <button type="button" class="text-xs uppercase tracking-wide text-slate-300 hover:text-slate-100" data-action="demo-modal#close">
+          Close
+        </button>
+      </div>
+      <div class="flex-1 bg-slate-950">
+        <iframe class="h-full w-full" title="Exercise demo" data-demo-modal-target="frame"></iframe>
+      </div>
     </div>
   </div>
 </div>

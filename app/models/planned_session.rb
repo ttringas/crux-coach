@@ -17,6 +17,7 @@ class PlannedSession < ApplicationRecord
   enum :status, { todo: 0, in_progress: 1, completed: 2, skipped: 3 }
 
   validates :day_of_week, inclusion: { in: 0..6 }
+  validates :position, numericality: { greater_than_or_equal_to: 0 }
   validates :title, presence: true
   validates :estimated_duration_minutes, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   validates :session_type, :intensity, presence: true

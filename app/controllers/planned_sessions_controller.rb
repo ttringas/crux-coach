@@ -25,6 +25,8 @@ class PlannedSessionsController < ApplicationController
         format.json do
           render json: {
             status: @planned_session.status,
+            day_of_week: @planned_session.day_of_week,
+            position: @planned_session.position,
             started_at: @planned_session.started_at&.iso8601,
             completed_at: @planned_session.completed_at&.iso8601
           }
@@ -58,6 +60,8 @@ class PlannedSessionsController < ApplicationController
   def planned_session_params
     params.fetch(:planned_session, {}).permit(
       :status,
+      :day_of_week,
+      :position,
       :session_notes,
       :perceived_exertion,
       :energy_level,
