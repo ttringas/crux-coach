@@ -1,0 +1,44 @@
+<% prev_week = @selected_week_of - 7 %>
+<% next_week = @selected_week_of + 7 %>
+
+<div class="flex items-center gap-3 mb-4">
+  <%= link_to "←", calendar_path(view: "weekly", week_of: prev_week), class: "flex h-9 w-9 items-center justify-center rounded-md border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100 transition" %>
+  <h2 class="text-lg font-semibold">Week of <%= @selected_week_of.strftime("%b %d, %Y") %></h2>
+  <%= link_to "→", calendar_path(view: "weekly", week_of: next_week), class: "flex h-9 w-9 items-center justify-center rounded-md border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100 transition" %>
+</div>
+
+<% if @weekly_plan %>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6" data-controller="plan-drag" data-plan-drag-group-value="weekly-plan-sessions">
+    <div class="grid gap-4">
+      <% @week_dates.each_with_index do |date, index| %>
+        <% sessions = @planned_sessions[index] || [] %>
+        <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-4 transition hover:border-slate-600"
+             data-day-index="<%= index %>">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-slate-400"><%= date.strftime("%A") %></div>
+              <div class="text-lg font-semibold"><%= date.strftime("%b %d") %></div>
+            </div>
+            <div class="text-xs px-2 py-1 rounded-full border border-slate-700 text-slate-300">
+              <%= sessions.any? ? "#{sessions.size} session#{'s' if sessions.size > 1}" : "Rest" %>
+            </div>
+          </div>
+
+          <div class="mt-4 min-h-16 space-y-3 rounded-lg border border-dashed border-slate-700/80 p-2"
+               data-plan-drag-target="sessionList">
+            <% sessions.each do |session| %>
+              <%= render "calendar/session_card", session: session, weekly_plan: @weekly_plan %>
+            <% end %>
+            <div class="text-sm text-slate-400 <%= sessions.any? ? 'hidden' : '' %> py-4 text-center"
+                 data-plan-drag-target="emptyState">Drop a session here or leave as rest day.</div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center text-slate-300">
+    <div class="text-lg font-semibold text-slate-100">No plan for this week.</div>
+    <div class="mt-2 text-sm text-slate-400">Generate a training block from the <%= link_to "Plans", training_blocks_path, class: "text-amber-400 hover:text-amber-300 underline" %> page first.</div>
+  </div>
+<% end %>

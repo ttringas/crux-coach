@@ -10,7 +10,7 @@
 >
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
-      <%= link_to weekly_plans_path(week_of: @weekly_plan.week_of), class: "flex items-center justify-center h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
+      <%= link_to calendar_path(view: "weekly", week_of: @weekly_plan.week_of), class: "flex items-center justify-center h-10 w-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
       <% end %>
       <div>
@@ -35,6 +35,11 @@
       <div><span class="text-slate-500">Intensity:</span> <%= @planned_session.intensity.humanize %></div>
       <div><span class="text-slate-500">Est. Duration:</span> <%= @planned_session.estimated_duration_minutes || "-" %> min</div>
     </div>
+    <% if @planned_session.description.present? %>
+      <div class="mt-3 pt-3 border-t border-slate-800 text-sm text-slate-300">
+        <%= @planned_session.description %>
+      </div>
+    <% end %>
   </div>
 
   <div class="flex flex-wrap gap-3 mb-8">
@@ -102,15 +107,19 @@
           <div class="font-semibold text-base"><%= exercise_name %></div>
           <div class="flex items-center gap-2">
             <% if library_match %>
-              <%= link_to "Watch demo", exercise_library_entry_path(library_match),
-                class: "text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition",
-                data: { action: "click->demo-modal#open", demo_modal_url: exercise_library_entry_path(library_match), demo_title: exercise_name, turbo: false } %>
+              <button type="button"
+                class="text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition"
+                data-action="click->demo-modal#open"
+                data-demo-modal-url="<%= library_match.youtube_embed_url %>"
+                data-demo-title="<%= h exercise_name %>">
+                Watch demo
+              </button>
             <% end %>
             <% if duration_hint %>
               <div class="flex-shrink-0 text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded"><%= duration_hint %></div>
             <% end %>
             <button type="button" class="text-xs text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition" data-action="click->exercise-log#toggle">
-              Details
+              Notes
             </button>
           </div>
         </div>
@@ -192,22 +201,8 @@
           </div>
         <% end %>
 
-        <!-- Expandable details -->
-        <div class="mt-3 grid gap-3 hidden pl-2" data-exercise-details>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="text-xs text-slate-400">Actual sets
-              <input type="number" inputmode="numeric" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" value="<%= log["actual_sets"] %>" data-action="blur->exercise-log#queueSave" data-exercise-log-field="actual_sets" />
-            </label>
-            <label class="text-xs text-slate-400">Actual reps
-              <input type="number" inputmode="numeric" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" value="<%= log["actual_reps"] %>" data-action="blur->exercise-log#queueSave" data-exercise-log-field="actual_reps" />
-            </label>
-            <label class="text-xs text-slate-400">Actual weight
-              <input type="number" step="0.5" inputmode="decimal" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" value="<%= log["actual_weight"] %>" data-action="blur->exercise-log#queueSave" data-exercise-log-field="actual_weight" />
-            </label>
-            <label class="text-xs text-slate-400">Actual duration
-              <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" value="<%= log["actual_duration"] %>" data-action="blur->exercise-log#queueSave" data-exercise-log-field="actual_duration" />
-            </label>
-          </div>
+        <!-- Expandable notes -->
+        <div class="mt-3 hidden pl-2" data-exercise-details>
           <div class="text-xs text-slate-400" data-controller="speech-input">
             <div class="flex items-center justify-between">
               <label for="exercise-notes-<%= index %>">Notes</label>
@@ -307,16 +302,16 @@
     </div>
   </div>
 
-  <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur" data-demo-modal-target="modal" data-action="click->demo-modal#closeOnBackdrop keydown@window->demo-modal#handleKeydown">
-    <div class="mx-auto flex h-full w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
-      <div class="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+  <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur flex items-center justify-center" data-demo-modal-target="modal" data-action="click->demo-modal#closeOnBackdrop keydown@window->demo-modal#handleKeydown">
+    <div class="w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 shadow-xl overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
         <div class="text-sm font-semibold text-slate-200" data-demo-modal-target="title">Exercise Demo</div>
-        <button type="button" class="text-xs uppercase tracking-wide text-slate-300 hover:text-slate-100" data-action="demo-modal#close">
-          Close
+        <button type="button" class="text-slate-400 hover:text-slate-100 transition" data-action="demo-modal#close" aria-label="Close">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="flex-1 bg-slate-950">
-        <iframe class="h-full w-full" title="Exercise demo" data-demo-modal-target="frame"></iframe>
+      <div class="relative w-full" style="padding-top: 56.25%">
+        <iframe class="absolute inset-0 w-full h-full" title="Exercise demo" allow="autoplay; encrypted-media" allowfullscreen data-demo-modal-target="frame"></iframe>
       </div>
     </div>
   </div>

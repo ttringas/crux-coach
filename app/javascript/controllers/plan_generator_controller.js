@@ -14,13 +14,15 @@ export default class extends Controller {
   }
 
   setLoading() {
-    if (!this.hasButtonTarget) return
-    this.buttonTarget.disabled = true
-    this.buttonTarget.textContent = "Generating..."
-    this.buttonTarget.classList.add("opacity-70")
-
     if (this.hasStatusTarget) {
       this.statusTarget.classList.remove("hidden")
     }
+    // Defer disabling so the native form submit fires first
+    setTimeout(() => {
+      if (!this.hasButtonTarget) return
+      this.buttonTarget.disabled = true
+      this.buttonTarget.textContent = "Generating..."
+      this.buttonTarget.classList.add("opacity-70")
+    }, 50)
   }
 }

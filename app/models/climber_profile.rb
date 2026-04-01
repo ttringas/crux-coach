@@ -5,6 +5,7 @@ class ClimberProfile < ApplicationRecord
   has_many :weekly_plans, dependent: :destroy
   has_many :planned_sessions, through: :weekly_plans
   has_many :session_logs, dependent: :destroy
+  has_many :climbing_benchmarks, dependent: :destroy
   has_many :coach_assignments, dependent: :destroy
   has_many :coaches, through: :coach_assignments
 

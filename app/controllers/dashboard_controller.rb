@@ -1,7 +1,9 @@
 class DashboardController < ApplicationController
   def show
     profile = current_climber_profile
-    @current_plan = profile.weekly_plans.order(week_of: :desc).first
+    # Find the plan for the current week, falling back to most recent
+    @current_plan = profile.weekly_plans.find_by(week_of: Date.current.beginning_of_week(:monday)) ||
+                    profile.weekly_plans.order(week_of: :desc).first
     @training_block = profile.training_blocks.order(created_at: :desc).first
     @recent_sessions = profile.session_logs.recent.limit(5)
 

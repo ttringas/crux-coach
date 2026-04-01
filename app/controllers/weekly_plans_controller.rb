@@ -23,7 +23,11 @@ class WeeklyPlansController < ApplicationController
   end
 
   def create
-    weekly_plan = Ai::PlanGenerator.call(climber_profile: @profile)
+    weekly_plan = Ai::PlanGenerator.call(
+      climber_profile: @profile,
+      training_days: params[:training_days],
+      activities: params[:activities]
+    )
     redirect_to weekly_plans_path(week_of: weekly_plan.week_of), notice: "Next week plan generated."
   rescue Ai::Client::Error => e
     redirect_to weekly_plans_path, alert: e.message

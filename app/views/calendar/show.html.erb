@@ -1,0 +1,32 @@
+<div class="flex flex-col gap-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-semibold">Calendar</h1>
+    <div class="flex items-center gap-2">
+      <%= link_to "Weekly",
+        calendar_path(view: "weekly", week_of: @view == "weekly" ? @selected_week_of : Date.current.beginning_of_week(:monday)),
+        class: "px-3 py-1.5 rounded-md text-sm font-medium transition #{@view == 'weekly' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}" %>
+      <%= link_to "Monthly",
+        calendar_path(view: "monthly", month: @view == "monthly" ? @month_start&.strftime("%Y-%m") : Date.current.strftime("%Y-%m")),
+        class: "px-3 py-1.5 rounded-md text-sm font-medium transition #{@view == 'monthly' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}" %>
+    </div>
+  </div>
+
+  <% if @view == "monthly" %>
+    <%= render "calendar/monthly_view" %>
+  <% else %>
+    <%= render "calendar/weekly_view" %>
+  <% end %>
+</div>
+
+<!-- Session Detail Modal (for monthly view) -->
+<div class="fixed inset-0 z-50 hidden" data-controller="session-modal" data-session-modal-target="overlay" id="session-detail-modal">
+  <div class="absolute inset-0 bg-slate-950/80" data-action="click->session-modal#close"></div>
+  <div class="absolute inset-0 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-lg relative" data-session-modal-target="content">
+      <button class="absolute top-4 right-4 text-slate-400 hover:text-slate-200" data-action="click->session-modal#close">✕</button>
+      <div data-session-modal-target="body">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+</div>

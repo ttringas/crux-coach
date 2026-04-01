@@ -16,13 +16,13 @@
           <div class="mt-4 text-sm text-slate-400">Estimated <%= @today_session.estimated_duration_minutes || "-" %> min</div>
           <div class="mt-5 flex flex-wrap gap-3">
             <%= link_to(@today_session.completed? ? "Review Session" : "Start Session", weekly_plan_planned_session_path(@current_plan, @today_session), class: "bg-amber-500 text-slate-950 px-5 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition") %>
-            <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
+            <%= link_to "View Plan", calendar_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
           </div>
         </div>
       <% elsif @current_plan %>
         <div class="mt-4 text-slate-300">Rest day — no session scheduled.</div>
         <div class="mt-4">
-          <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
+          <%= link_to "View Plan", calendar_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
         </div>
       <% else %>
         <div class="mt-4 text-slate-300">No plan yet. Complete onboarding to generate your first week.</div>
@@ -50,7 +50,7 @@
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold">This Week</h2>
       <% if @current_plan %>
-        <%= link_to "Full Plan →", weekly_plans_path, class: "text-amber-400 text-sm" %>
+        <%= link_to "Full Calendar →", calendar_path, class: "text-amber-400 text-sm" %>
       <% end %>
     </div>
     <div class="grid grid-cols-7 gap-2">
@@ -111,7 +111,7 @@
         <% if @today_session && !@today_session.completed? %>
           <%= link_to "Start Today's Session", weekly_plan_planned_session_path(@current_plan, @today_session), class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition" %>
         <% end %>
-        <%= link_to "View Plan", weekly_plans_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
+        <%= link_to "View Plan", calendar_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
         <%= link_to "Edit Profile", edit_profile_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
         <%= link_to "Browse Coaches", coaches_path, class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200" %>
       </div>

@@ -12,6 +12,44 @@
       </div>
     </div>
     <%= form_with url: weekly_plans_path, method: :post, data: { controller: "plan-generator" }, class: "flex flex-col items-end gap-3" do %>
+      <div class="w-full rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <div class="text-sm font-medium text-slate-300">Training Days</div>
+        <div class="mt-3 flex flex-wrap gap-3">
+          <% [
+            ["Mon", 0],
+            ["Tue", 1],
+            ["Wed", 2],
+            ["Thu", 3],
+            ["Fri", 4],
+            ["Sat", 5],
+            ["Sun", 6]
+          ].each do |label, value| %>
+            <label class="flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100">
+              <%= check_box_tag "training_days[]", value, true, class: "h-4 w-4 rounded border-slate-700 bg-slate-900 text-amber-500 accent-amber-500 focus:ring-amber-500" %>
+              <span><%= label %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
+      <div class="mt-4 w-full rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <div class="text-sm font-medium text-slate-300">Activities</div>
+        <div class="mt-3 flex flex-wrap gap-3">
+          <% [
+            ["Bouldering", "bouldering"],
+            ["Rope Climbing", "rope_climbing"],
+            ["Board Climbing", "board_climbing"],
+            ["Hangboarding", "hangboarding"],
+            ["Strength Training", "strength_training"],
+            ["Cardio", "cardio"],
+            ["Mobility", "mobility"]
+          ].each do |label, value| %>
+            <label class="flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100">
+              <%= check_box_tag "activities[]", value, true, class: "h-4 w-4 rounded border-slate-700 bg-slate-900 text-amber-500 accent-amber-500 focus:ring-amber-500" %>
+              <span><%= label %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
       <%= button_tag "Generate Next Week", type: "submit",
         class: "bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition",
         data: { action: "click->plan-generator#submit", plan_generator_target: "button" } %>
@@ -53,6 +91,44 @@
       <div class="mt-2 text-sm text-slate-400">Generate a plan to fill this week.</div>
       <div class="mt-6 flex justify-center">
         <%= form_with url: weekly_plans_path, method: :post, data: { controller: "plan-generator" } do %>
+          <div class="w-full rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div class="text-sm font-medium text-slate-300">Training Days</div>
+            <div class="mt-3 flex flex-wrap gap-3">
+              <% [
+                ["Mon", 0],
+                ["Tue", 1],
+                ["Wed", 2],
+                ["Thu", 3],
+                ["Fri", 4],
+                ["Sat", 5],
+                ["Sun", 6]
+              ].each do |label, value| %>
+                <label class="flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100">
+                  <%= check_box_tag "training_days[]", value, true, class: "h-4 w-4 rounded border-slate-700 bg-slate-900 text-amber-500 accent-amber-500 focus:ring-amber-500" %>
+                  <span><%= label %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          <div class="mt-4 w-full rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div class="text-sm font-medium text-slate-300">Activities</div>
+            <div class="mt-3 flex flex-wrap gap-3">
+              <% [
+                ["Bouldering", "bouldering"],
+                ["Rope Climbing", "rope_climbing"],
+                ["Board Climbing", "board_climbing"],
+                ["Hangboarding", "hangboarding"],
+                ["Strength Training", "strength_training"],
+                ["Cardio", "cardio"],
+                ["Mobility", "mobility"]
+              ].each do |label, value| %>
+                <label class="flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100">
+                  <%= check_box_tag "activities[]", value, true, class: "h-4 w-4 rounded border-slate-700 bg-slate-900 text-amber-500 accent-amber-500 focus:ring-amber-500" %>
+                  <span><%= label %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
           <%= button_tag "Generate Plan", type: "submit",
             class: "bg-amber-500 text-slate-950 px-6 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition",
             data: { action: "click->plan-generator#submit", plan_generator_target: "button" } %>

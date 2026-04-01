@@ -1,0 +1,55 @@
+<div id="benchmark_<%= benchmark.benchmark_key %>"
+     class="flex items-center justify-between px-5 py-3 border-b border-slate-800/60 last:border-b-0 hover:bg-slate-800/30 transition"
+     data-controller="benchmark-autosave"
+     data-benchmark-autosave-url-value="<%= benchmark_path(benchmark.benchmark_key) %>"
+     data-benchmark-autosave-key-value="<%= benchmark.benchmark_key %>">
+
+  <div class="flex-1 min-w-0">
+    <div class="text-sm font-medium text-slate-200"><%= definition[:label] %></div>
+    <% if definition[:description].present? %>
+      <div class="text-xs text-slate-500 mt-0.5"><%= definition[:description] %></div>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3 ml-4">
+    <% placeholder = case benchmark.benchmark_key
+      when /indoor_boulder/ then "V4"
+      when /outdoor_boulder/ then "V6"
+      when /indoor_sport/, /outdoor_sport/ then "5.11a"
+      when /four_by_four/ then "V3"
+      when /weighted_hang/ then "45"
+      when /hang_duration/ then "30"
+      when /critical_force/ then "80"
+      when /pullups/ then "12"
+      when /weighted_pullup/ then "25"
+      when /lockoff/ then "15"
+      when /deadlift/ then "225"
+      when /bench/ then "135"
+      when /overhead/ then "95"
+      when /squat/ then "185"
+      when /campus_max_span/ then "1-5"
+      when /campus_max_laps/ then "3"
+      when /box_jump/ then "24"
+      when /arc_duration/ then "20"
+      when /lead_laps/ then "5"
+      when /bodyweight/ then "165"
+      when /body_fat/ then "15"
+      else definition[:unit]
+    end %>
+
+    <input type="text"
+      value="<%= benchmark.value %>"
+      placeholder="<%= placeholder %>"
+      class="w-24 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-right"
+      data-benchmark-autosave-target="input"
+      data-action="change->benchmark-autosave#save blur->benchmark-autosave#save">
+
+    <span class="text-xs text-slate-500 w-12"><%= definition[:unit] %></span>
+
+    <div data-benchmark-autosave-target="status" class="w-16 text-xs text-right">
+      <% if benchmark.tested_at.present? %>
+        <span class="text-slate-600"><%= benchmark.tested_at.strftime("%-m/%-d/%y") %></span>
+      <% end %>
+    </div>
+  </div>
+</div>

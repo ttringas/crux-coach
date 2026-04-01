@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_01_180001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,29 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
     t.index ["interaction_type"], name: "index_ai_interactions_on_interaction_type"
     t.index ["user_id", "interaction_type"], name: "index_ai_interactions_on_user_id_and_interaction_type"
     t.index ["user_id"], name: "index_ai_interactions_on_user_id"
+  end
+
+  create_table "benchmark_histories", force: :cascade do |t|
+    t.bigint "benchmark_id", null: false
+    t.string "value"
+    t.date "tested_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["benchmark_id"], name: "index_benchmark_histories_on_benchmark_id"
+  end
+
+  create_table "benchmarks", force: :cascade do |t|
+    t.bigint "climber_profile_id", null: false
+    t.string "benchmark_key", null: false
+    t.string "value"
+    t.string "unit"
+    t.date "tested_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["climber_profile_id", "benchmark_key"], name: "index_benchmarks_on_climber_profile_id_and_benchmark_key", unique: true
+    t.index ["climber_profile_id"], name: "index_benchmarks_on_climber_profile_id"
   end
 
   create_table "climber_profiles", force: :cascade do |t|
@@ -172,6 +195,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
     t.text "ai_reasoning"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "overall_focus"
     t.index ["climber_profile_id", "status"], name: "index_training_blocks_on_climber_profile_id_and_status"
     t.index ["climber_profile_id"], name: "index_training_blocks_on_climber_profile_id"
     t.index ["focus"], name: "index_training_blocks_on_focus"
@@ -206,7 +230,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
     t.text "summary"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["climber_profile_id", "week_of"], name: "index_weekly_plans_on_climber_profile_id_and_week_of", unique: true
+    t.string "week_focus"
+    t.index ["climber_profile_id", "week_of"], name: "index_weekly_plans_on_climber_profile_id_and_week_of"
     t.index ["climber_profile_id"], name: "index_weekly_plans_on_climber_profile_id"
     t.index ["status"], name: "index_weekly_plans_on_status"
     t.index ["training_block_id"], name: "index_weekly_plans_on_training_block_id"
@@ -214,6 +239,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_31_134500) do
   end
 
   add_foreign_key "ai_interactions", "users"
+  add_foreign_key "benchmark_histories", "benchmarks"
+  add_foreign_key "benchmarks", "climber_profiles"
   add_foreign_key "climber_profiles", "users"
   add_foreign_key "coach_assignments", "climber_profiles"
   add_foreign_key "coach_assignments", "coaches"
