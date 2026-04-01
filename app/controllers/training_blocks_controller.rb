@@ -31,8 +31,8 @@ class TrainingBlocksController < ApplicationController
     weeks_planned = ((end_date - start_date).to_i / 7.0).ceil
     weeks_planned = [ weeks_planned, 1 ].max
 
-    GenerateTrainingBlockJob.perform_later(
-      climber_profile_id: @profile.id,
+    Ai::TrainingBlockGenerator.call(
+      climber_profile: @profile,
       start_date: start_date,
       end_date: end_date,
       weeks_planned: weeks_planned,
@@ -41,16 +41,7 @@ class TrainingBlocksController < ApplicationController
       activities: activities
     )
 
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
-          ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
-          partial: "training_blocks/generation_loading",
-          locals: { profile: @profile }
-        )
-      end
-      format.html { redirect_to training_blocks_path, notice: "Training block generation started." }
-    end
+    redirect_to training_blocks_path, notice: "Training block generated successfully!"
   rescue ArgumentError => e
     respond_to do |format|
       format.turbo_stream do
