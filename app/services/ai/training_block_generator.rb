@@ -63,7 +63,7 @@ module Ai
 
     def self.build_prompts(climber_profile, start_date, end_date, weeks_planned, comments, training_days: [], activities: [])
       profile_data = Ai::Prompts::PlanGenerator.climber_profile_payload(climber_profile)
-      session_logs = recent_session_logs(climber_profile)
+      session_logs = all_session_logs(climber_profile)
 
       {
         system: system_prompt,
@@ -73,8 +73,14 @@ module Ai
           CLIMBER PROFILE:
           #{JSON.pretty_generate(profile_data)}
 
-          RECENT SESSION LOGS:
-          #{JSON.pretty_generate(session_logs.map { |l| l.attributes.slice("date", "session_type", "duration_minutes", "perceived_exertion", "notes") })}
+          PREVIOUS TRAINING BLOCKS:
+          #{JSON.pretty_generate(previous_blocks_payload(climber_profile))}
+
+          BENCHMARKS & PROGRESSION:
+          #{JSON.pretty_generate(benchmarks_payload(climber_profile))}
+
+          ALL SESSION LOGS:
+          #{JSON.pretty_generate(session_logs.map { |l| session_log_payload(l) })}
 
           TRAINING BLOCK DETAILS:
           - Start date: #{start_date}
@@ -148,7 +154,16 @@ module Ai
           - Original end date: #{training_block.ends_at}
           - Overall focus: #{training_block.overall_focus}
 
-          COMPLETED SESSIONS SO FAR:
+          PREVIOUS TRAINING BLOCKS:
+          #{JSON.pretty_generate(previous_blocks_payload(climber_profile))}
+
+          BENCHMARKS & PROGRESSION:
+          #{JSON.pretty_generate(benchmarks_payload(climber_profile))}
+
+          ALL SESSION LOGS:
+          #{JSON.pretty_generate(all_session_logs(climber_profile).map { |l| session_log_payload(l) })}
+
+          COMPLETED SESSIONS IN CURRENT BLOCK:
           #{JSON.pretty_generate(completed_sessions)}
 
           USER FEEDBACK/COMMENTS:
@@ -313,12 +328,58 @@ module Ai
     end
     private_class_method :create_remaining_weeks!
 
-    def self.recent_session_logs(climber_profile)
-      climber_profile.session_logs
-        .where(date: 4.weeks.ago.to_date..Date.current)
-        .order(date: :asc)
+    def self.all_session_logs(climber_profile)
+      climber_profile.session_logs.order(date: :asc)
     end
-    private_class_method :recent_session_logs
+    private_class_method :all_session_logs
+
+    def self.session_log_payload(log)
+      log.attributes.slice(
+        "date", "session_type", "duration_minutes", "perceived_exertion",
+        "energy_level", "skin_condition", "finger_soreness", "general_soreness",
+        "mood", "notes", "climbs_logged", "exercises_logged"
+      )
+    end
+    private_class_method :session_log_payload
+
+    def self.previous_blocks_payload(climber_profile)
+      climber_profile.training_blocks.where(status: [:completed, :abandoned]).order(started_at: :asc).map do |block|
+        {
+          name: block.name,
+          focus: block.focus,
+          weeks_planned: block.weeks_planned,
+          started_at: block.started_at,
+          ends_at: block.ends_at,
+          status: block.status,
+          ai_reasoning: block.ai_reasoning,
+          overall_focus: block.overall_focus,
+          weekly_summaries: block.weekly_plans.order(:week_number).map { |wp|
+            {
+              week_number: wp.week_number,
+              week_focus: wp.week_focus,
+              summary: wp.summary
+            }
+          }
+        }
+      end
+    end
+    private_class_method :previous_blocks_payload
+
+    def self.benchmarks_payload(climber_profile)
+      climber_profile.climbing_benchmarks.includes(:climbing_benchmark_histories).map do |bm|
+        {
+          key: bm.benchmark_key,
+          label: bm.label,
+          current_value: bm.value,
+          unit: bm.definition&.dig(:unit),
+          category: bm.definition&.dig(:category),
+          history: bm.climbing_benchmark_histories.order(:recorded_at).map { |h|
+            { value: h.value, recorded_at: h.recorded_at }
+          }
+        }
+      end
+    end
+    private_class_method :benchmarks_payload
 
     def self.parse_json_response(text)
       JSON.parse(text)

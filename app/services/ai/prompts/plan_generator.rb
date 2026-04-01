@@ -5,13 +5,13 @@ require "json"
 module Ai
   module Prompts
     class PlanGenerator
-      def self.build(climber_profile:, training_block: nil, session_logs: nil)
+      def self.build(climber_profile:, training_block: nil, session_logs: nil, training_days: nil, activities: nil)
         training_block ||= climber_profile.training_blocks.current.first
         session_logs ||= recent_session_logs(climber_profile)
 
         {
           system: system_prompt,
-          user: user_prompt(climber_profile, training_block, session_logs)
+          user: user_prompt(climber_profile, training_block, session_logs, training_days, activities)
         }
       end
 
@@ -24,16 +24,41 @@ module Ai
           - Session types: climbing (gym/outdoor), board, hangboard, strength, cardio, mobility; match to goals.
           - Risk control: honor injuries and avoid aggravating patterns. Replace risky work with safe alternatives.
           - Specificity: prescribe concrete session structure, exercises, sets/reps/rest, and intensity guidance.
+          - CRITICAL CONSTRAINTS: You MUST strictly respect the scheduling_constraints provided. Only schedule sessions on days listed in training_days. Only include activities listed in activities. If an activity is not in the list, do NOT include it under any circumstances. Violating these constraints is a critical error.
 
           Output must be valid JSON only. No markdown. Follow the exact schema provided by the user prompt.
         TEXT
       end
 
-      def self.user_prompt(climber_profile, training_block, session_logs)
+      def self.user_prompt(climber_profile, training_block, session_logs, training_days, activities)
+        resolved_training_days = Array(training_days).presence || (0..6).to_a
+        resolved_activities = Array(activities).presence || %w[
+          bouldering
+          rope_climbing
+          board_climbing
+          hangboarding
+          strength_training
+          cardio
+          mobility
+        ]
+
         payload = {
           climber_profile: climber_profile_payload(climber_profile),
           training_block: training_block_payload(training_block),
-          recent_session_logs: session_logs_payload(session_logs),
+          previous_training_blocks: previous_blocks_payload(climber_profile),
+          benchmarks: benchmarks_payload(climber_profile),
+          all_session_logs: session_logs_payload(session_logs),
+          scheduling_constraints: {
+            training_days: resolved_training_days,
+            allowed_activities: resolved_activities,
+            allowed_session_types: map_activities_to_session_types(resolved_activities),
+            rules: [
+              "ONLY schedule sessions on the specified training_days (0=Monday). All other days MUST have zero sessions.",
+              "ONLY use session_type values from the allowed_session_types list. NEVER use a session_type not in that list.",
+              "The allowed_session_types list is EXHAUSTIVE. If 'board' is not listed, you CANNOT create any board sessions. If 'hangboard' is not listed, you CANNOT create any hangboard sessions. This is a HARD constraint with zero exceptions.",
+              "Activity to session_type mapping: bouldering→climbing, rope_climbing→climbing, board_climbing→board, hangboarding→hangboard, strength_training→strength, cardio→cardio, mobility→mobility"
+            ]
+          },
           instructions: {
             output_schema: {
               summary: "string",
@@ -91,7 +116,7 @@ module Ai
           "additional_context"
         )
       end
-      private_class_method :climber_profile_payload
+      # Public: used by TrainingBlockGenerator too
 
       def self.training_block_payload(training_block)
         return nil if training_block.nil?
@@ -132,11 +157,58 @@ module Ai
       private_class_method :session_logs_payload
 
       def self.recent_session_logs(climber_profile)
-        climber_profile.session_logs
-          .where(date: 4.weeks.ago.to_date..Date.current)
-          .order(date: :asc)
+        climber_profile.session_logs.order(date: :asc)
       end
       private_class_method :recent_session_logs
+
+      def self.previous_blocks_payload(climber_profile)
+        climber_profile.training_blocks.where(status: [:completed, :abandoned]).order(started_at: :asc).map do |block|
+          {
+            name: block.name,
+            focus: block.focus,
+            weeks_planned: block.weeks_planned,
+            started_at: block.started_at,
+            ends_at: block.ends_at,
+            status: block.status,
+            overall_focus: block.overall_focus,
+            weekly_summaries: block.weekly_plans.order(:week_number).map { |wp|
+              { week_number: wp.week_number, week_focus: wp.week_focus, summary: wp.summary }
+            }
+          }
+        end
+      end
+      private_class_method :previous_blocks_payload
+
+      def self.benchmarks_payload(climber_profile)
+        climber_profile.climbing_benchmarks.includes(:climbing_benchmark_histories).map do |bm|
+          {
+            key: bm.benchmark_key,
+            label: bm.label,
+            current_value: bm.value,
+            unit: bm.definition&.dig(:unit),
+            category: bm.definition&.dig(:category),
+            history: bm.climbing_benchmark_histories.order(:recorded_at).map { |h|
+              { value: h.value, recorded_at: h.recorded_at }
+            }
+          }
+        end
+      end
+      private_class_method :benchmarks_payload
+
+      ACTIVITY_TO_SESSION_TYPE = {
+        "bouldering" => "climbing",
+        "rope_climbing" => "climbing",
+        "board_climbing" => "board",
+        "hangboarding" => "hangboard",
+        "strength_training" => "strength",
+        "cardio" => "cardio",
+        "mobility" => "mobility"
+      }.freeze
+
+      def self.map_activities_to_session_types(activities)
+        activities.map { |a| ACTIVITY_TO_SESSION_TYPE[a] }.compact.uniq
+      end
+      private_class_method :map_activities_to_session_types
     end
   end
 end
