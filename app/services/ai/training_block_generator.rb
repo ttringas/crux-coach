@@ -42,7 +42,7 @@ module Ai
       remaining_start = (today + 1).beginning_of_week(:monday)
       remaining_start = today.beginning_of_week(:monday) + 7 if remaining_start <= today
       remaining_weeks = ((training_block.ends_at - remaining_start).to_i / 7.0).ceil
-      remaining_weeks = [remaining_weeks, 1].max
+      remaining_weeks = [ remaining_weeks, 1 ].max
 
       prompts = build_regeneration_prompts(climber_profile, training_block, remaining_start, remaining_weeks, comments)
 
@@ -203,7 +203,7 @@ module Ai
 
     def self.activities_prompt(activities)
       return "" if activities.blank?
-      all_activities = ["Bouldering", "Rope climbing", "Board climbing", "Hangboarding", "Strength training", "Cardio", "Mobility"]
+      all_activities = [ "Bouldering", "Rope climbing", "Board climbing", "Hangboarding", "Strength training", "Cardio", "Mobility" ]
       excluded = all_activities - activities
       result = "- Selected activities: #{activities.join(', ')}"
       result += "\n          - EXCLUDED activities (DO NOT include): #{excluded.join(', ')}" if excluded.any?
@@ -343,7 +343,7 @@ module Ai
     private_class_method :session_log_payload
 
     def self.previous_blocks_payload(climber_profile)
-      climber_profile.training_blocks.where(status: [:completed, :abandoned]).order(started_at: :asc).map do |block|
+      climber_profile.training_blocks.where(status: [ :completed, :abandoned ]).order(started_at: :asc).map do |block|
         {
           name: block.name,
           focus: block.focus,

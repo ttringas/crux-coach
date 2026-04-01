@@ -19,7 +19,7 @@ coach_user = upsert_user(
 coach = Coach.find_or_initialize_by(user: coach_user)
 coach.assign_attributes(
   bio: "Former comp climber focused on sustainable performance.",
-  specialties: ["power", "endurance", "technique"],
+  specialties: [ "power", "endurance", "technique" ],
   years_coaching: 8,
   max_grade_boulder: "V12",
   max_grade_sport: "5.14b",
@@ -53,15 +53,15 @@ climber_one_profile.assign_attributes(
   current_max_sport_grade: "5.12a",
   comfortable_boulder_grade: "V5",
   comfortable_sport_grade: "5.11b",
-  preferred_disciplines: ["bouldering", "board"],
-  available_equipment: ["hangboard", "kilter", "weights"],
+  preferred_disciplines: [ "bouldering", "board" ],
+  available_equipment: [ "hangboard", "kilter", "weights" ],
   weekly_training_days: 4,
   session_duration_minutes: 90,
   goals_short_term: "Send a V8 on the board and improve finger strength.",
   goals_long_term: "Build power endurance for long boulders.",
   injuries: [],
-  style_strengths: ["power", "compression"],
-  style_weaknesses: ["endurance", "slab"],
+  style_strengths: [ "power", "compression" ],
+  style_weaknesses: [ "endurance", "slab" ],
   additional_context: "Works a 9-5 and trains evenings.",
   onboarding_completed: true
 )
@@ -78,15 +78,15 @@ climber_two_profile.assign_attributes(
   current_max_sport_grade: "5.11a",
   comfortable_boulder_grade: "V4",
   comfortable_sport_grade: "5.10d",
-  preferred_disciplines: ["sport", "outdoor"],
-  available_equipment: ["hangboard", "pull_up_bar"],
+  preferred_disciplines: [ "sport", "outdoor" ],
+  available_equipment: [ "hangboard", "pull_up_bar" ],
   weekly_training_days: 3,
   session_duration_minutes: 75,
   goals_short_term: "Increase aerobic endurance for longer routes.",
   goals_long_term: "Redpoint 5.12a outdoors.",
   injuries: [],
-  style_strengths: ["technique", "endurance"],
-  style_weaknesses: ["power"],
+  style_strengths: [ "technique", "endurance" ],
+  style_weaknesses: [ "power" ],
   additional_context: "Prefers weekend outdoor sessions.",
   onboarding_completed: true
 )
@@ -129,7 +129,7 @@ PlannedSession.find_or_initialize_by(weekly_plan: plan_one, day_of_week: 1, titl
   session.description = "Limit boulders on board, then max hangs."
   session.estimated_duration_minutes = 90
   session.intensity = :high
-  session.exercises = [{ name: "Max hangs", sets: 5, duration_seconds: 10, rest_seconds: 180 }]
+  session.exercises = [ { name: "Max hangs", sets: 5, duration_seconds: 10, rest_seconds: 180 } ]
 end
 
 PlannedSession.find_or_initialize_by(weekly_plan: plan_one, day_of_week: 3, title: "Strength + Mobility") do |session|
@@ -137,7 +137,7 @@ PlannedSession.find_or_initialize_by(weekly_plan: plan_one, day_of_week: 3, titl
   session.description = "Pull + core with mobility cooldown."
   session.estimated_duration_minutes = 75
   session.intensity = :moderate
-  session.exercises = [{ name: "Weighted pull-ups", sets: 4, reps: 5 }]
+  session.exercises = [ { name: "Weighted pull-ups", sets: 4, reps: 5 } ]
 end
 
 block_two = TrainingBlock.find_or_initialize_by(climber_profile: climber_two_profile, name: "Base Endurance")

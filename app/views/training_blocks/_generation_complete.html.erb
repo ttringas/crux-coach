@@ -1,0 +1,18 @@
+<div id="<%= dom_id(training_block.climber_profile, :training_block_generation) %>">
+  <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+    <div class="text-xs uppercase tracking-wide text-emerald-300">Plan ready</div>
+    <div class="text-lg font-semibold text-slate-100 mt-1"><%= training_block.name %></div>
+    <div class="text-sm text-slate-300 mt-1">
+      <%= training_block.focus.humanize %> · <%= training_block.weeks_planned %> weeks
+    </div>
+    <% if training_block.started_at && training_block.ends_at %>
+      <div class="text-xs text-slate-400 mt-1">
+        <%= training_block.started_at.strftime("%b %d, %Y") %> – <%= training_block.ends_at.strftime("%b %d, %Y") %>
+      </div>
+    <% end %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%= link_to "Go to Dashboard", dashboard_path, class: "bg-emerald-400 text-slate-950 px-4 py-2 rounded-md text-sm font-semibold hover:bg-emerald-300 transition" %>
+      <%= link_to "View Training Plans", training_blocks_path, class: "border border-slate-700 px-4 py-2 rounded-md text-sm text-slate-200 hover:border-slate-600 transition" %>
+    </div>
+  </div>
+</div>

@@ -10,9 +10,9 @@ class DashboardController < ApplicationController
     @today = Date.current
     now = Time.zone.now
     @greeting = case now.hour
-      when 5..11 then "Good morning"
-      when 12..17 then "Good afternoon"
-      else "Good evening"
+    when 5..11 then "Good morning"
+    when 12..17 then "Good afternoon"
+    else "Good evening"
     end
 
     # Map Ruby wday (0=Sun) to plan day_of_week (0=Mon)
@@ -28,6 +28,13 @@ class DashboardController < ApplicationController
       @current_plan.planned_sessions.index_by(&:day_of_week)
     else
       {}
+    end
+
+    @current_week = if @training_block&.started_at
+      weeks_elapsed = ((Date.current - @training_block.started_at.to_date) / 7.0).ceil
+      [ [ weeks_elapsed, 1 ].max, @training_block.weeks_planned || 1 ].min
+    else
+      1
     end
   end
 end

@@ -1,4 +1,5 @@
 <style>details[open] > summary svg.details-chevron { transform: rotate(90deg); }</style>
+<%= turbo_stream_from @profile %>
 <div class="flex flex-col gap-6" data-controller="block-generator regenerate-modal session-modal">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-semibold">Training Plans</h1>
@@ -18,7 +19,7 @@
         <% if @training_block&.active? %>
           <p class="text-sm text-slate-400 mb-4">You have an active block. Creating a new one will run alongside it.</p>
         <% end %>
-        <%= form_with url: training_blocks_path, method: :post, data: { controller: "block-generator", turbo: false }, class: "space-y-4" do %>
+        <%= form_with url: training_blocks_path, method: :post, data: { controller: "block-generator" }, class: "space-y-4" do %>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-1">Start Date</label>
@@ -80,6 +81,7 @@
             </div>
           </div>
         <% end %>
+        <div id="<%= dom_id(@profile, :training_block_generation) %>" class="mt-4"></div>
       </div>
     </details>
   </div>

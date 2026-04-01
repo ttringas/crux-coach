@@ -23,6 +23,6 @@ class CreateSessionLogs < ActiveRecord::Migration[8.0]
 
     add_index :session_logs, :date
     add_index :session_logs, :session_type
-    add_index :session_logs, [:climber_profile_id, :date]
+    add_index :session_logs, [ :climber_profile_id, :date ]
   end
 end

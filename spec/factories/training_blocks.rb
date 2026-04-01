@@ -1,13 +1,13 @@
 FactoryBot.define do
   factory :training_block do
-    climber_profile { nil }
-    name { "MyString" }
-    focus { 1 }
-    weeks_planned { 1 }
+    association :climber_profile
+    name { "Base Building" }
+    focus { :base }
+    weeks_planned { 4 }
     week_number { 1 }
-    started_at { "2026-03-28" }
-    ends_at { "2026-03-28" }
-    status { 1 }
-    ai_reasoning { "MyText" }
+    started_at { Date.current.beginning_of_week(:monday) }
+    ends_at { started_at + 4.weeks }
+    status { :active }
+    ai_reasoning { "Plan tuned to base phase." }
   end
 end

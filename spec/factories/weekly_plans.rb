@@ -1,13 +1,13 @@
 FactoryBot.define do
   factory :weekly_plan do
-    training_block { nil }
-    climber_profile { nil }
+    association :training_block
+    climber_profile { training_block.climber_profile }
     week_number { 1 }
-    week_of { "2026-03-28" }
-    status { 1 }
-    ai_generated_plan { "" }
+    week_of { Date.current.beginning_of_week(:monday) }
+    status { :active }
+    ai_generated_plan { {} }
     coach_modified { false }
-    coach_notes { "MyText" }
-    summary { "MyText" }
+    coach_notes { "Keep it easy." }
+    summary { "Base week." }
   end
 end

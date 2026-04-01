@@ -16,6 +16,6 @@ class CreateTrainingBlocks < ActiveRecord::Migration[8.0]
 
     add_index :training_blocks, :status
     add_index :training_blocks, :focus
-    add_index :training_blocks, [:climber_profile_id, :status]
+    add_index :training_blocks, [ :climber_profile_id, :status ]
   end
 end

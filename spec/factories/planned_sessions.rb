@@ -1,12 +1,12 @@
 FactoryBot.define do
   factory :planned_session do
-    weekly_plan { nil }
+    association :weekly_plan
     day_of_week { 1 }
-    session_type { 1 }
-    title { "MyString" }
-    description { "MyText" }
-    estimated_duration_minutes { 1 }
-    intensity { 1 }
-    exercises { "" }
+    session_type { :climbing }
+    title { "Hangboard Session" }
+    description { "Some details" }
+    estimated_duration_minutes { 60 }
+    intensity { :moderate }
+    exercises { [ { "name" => "Repeaters", "sets" => 3, "reps" => 6 } ] }
   end
 end

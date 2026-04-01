@@ -29,10 +29,10 @@ class TrainingBlocksController < ApplicationController
     activities = Array(params[:activities]).select(&:present?)
 
     weeks_planned = ((end_date - start_date).to_i / 7.0).ceil
-    weeks_planned = [weeks_planned, 1].max
+    weeks_planned = [ weeks_planned, 1 ].max
 
-    training_block = Ai::TrainingBlockGenerator.call(
-      climber_profile: @profile,
+    GenerateTrainingBlockJob.perform_later(
+      climber_profile_id: @profile.id,
       start_date: start_date,
       end_date: end_date,
       weeks_planned: weeks_planned,
@@ -41,11 +41,27 @@ class TrainingBlocksController < ApplicationController
       activities: activities
     )
 
-    redirect_to training_blocks_path, notice: "Training block generated successfully!"
-  rescue Ai::Client::Error => e
-    redirect_to training_blocks_path, alert: "Generation failed: #{e.message}"
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
+          partial: "training_blocks/generation_loading",
+          locals: { profile: @profile }
+        )
+      end
+      format.html { redirect_to training_blocks_path, notice: "Training block generation started." }
+    end
   rescue ArgumentError => e
-    redirect_to training_blocks_path, alert: e.message
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
+          partial: "training_blocks/generation_error",
+          locals: { profile: @profile, message: e.message }
+        ), status: :unprocessable_entity
+      end
+      format.html { redirect_to training_blocks_path, alert: e.message }
+    end
   end
 
   def regenerate

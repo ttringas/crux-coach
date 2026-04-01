@@ -8,7 +8,7 @@ class BenchmarksController < ApplicationController
       benchmarks = definitions.map do |defn|
         existing[defn[:key]] || profile.climbing_benchmarks.build(benchmark_key: defn[:key], unit: defn[:unit])
       end
-      [category, benchmarks]
+      [ category, benchmarks ]
     end
   end
 

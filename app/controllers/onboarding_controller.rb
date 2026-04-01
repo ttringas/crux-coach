@@ -11,10 +11,30 @@ class OnboardingController < ApplicationController
     if @profile.update(profile_params)
       if @step == 6
         begin
-          ensure_training_block!
-          Ai::PlanGenerator.call(climber_profile: @profile)
-          @profile.update(onboarding_completed: true)
-          redirect_to dashboard_path, notice: "Plan generated. Welcome to Crux Coach."
+          start_date = Date.current.beginning_of_week(:monday)
+          weeks_planned = 4
+          end_date = start_date + weeks_planned.weeks
+
+          GenerateTrainingBlockJob.perform_later(
+            climber_profile_id: @profile.id,
+            start_date: start_date,
+            end_date: end_date,
+            weeks_planned: weeks_planned,
+            comments: @profile.additional_context.to_s,
+            training_days: [],
+            activities: []
+          )
+
+          respond_to do |format|
+            format.turbo_stream do
+              render turbo_stream: turbo_stream.replace(
+                ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
+                partial: "training_blocks/generation_loading",
+                locals: { profile: @profile }
+              )
+            end
+            format.html { redirect_to dashboard_path, notice: "Plan generation started. We'll notify you when it's ready." }
+          end
         rescue Ai::Client::Error => e
           flash.now[:alert] = e.message
           render :show, status: :unprocessable_entity
@@ -78,17 +98,5 @@ class OnboardingController < ApplicationController
     end
 
     permitted
-  end
-
-  def ensure_training_block!
-    return if @profile.training_blocks.exists?
-
-    @profile.training_blocks.create!(
-      name: "Base Building",
-      focus: :base,
-      weeks_planned: 4,
-      status: :active,
-      started_at: Date.current
-    )
   end
 end

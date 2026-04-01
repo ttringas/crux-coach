@@ -15,6 +15,6 @@ class CreateAiInteractions < ActiveRecord::Migration[8.0]
     end
 
     add_index :ai_interactions, :interaction_type
-    add_index :ai_interactions, [:user_id, :interaction_type]
+    add_index :ai_interactions, [ :user_id, :interaction_type ]
   end
 end

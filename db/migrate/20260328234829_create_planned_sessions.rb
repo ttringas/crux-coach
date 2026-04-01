@@ -14,6 +14,6 @@ class CreatePlannedSessions < ActiveRecord::Migration[8.0]
     end
 
     add_index :planned_sessions, :session_type
-    add_index :planned_sessions, [:weekly_plan_id, :day_of_week]
+    add_index :planned_sessions, [ :weekly_plan_id, :day_of_week ]
   end
 end

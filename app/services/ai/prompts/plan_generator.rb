@@ -162,7 +162,7 @@ module Ai
       private_class_method :recent_session_logs
 
       def self.previous_blocks_payload(climber_profile)
-        climber_profile.training_blocks.where(status: [:completed, :abandoned]).order(started_at: :asc).map do |block|
+        climber_profile.training_blocks.where(status: [ :completed, :abandoned ]).order(started_at: :asc).map do |block|
           {
             name: block.name,
             focus: block.focus,

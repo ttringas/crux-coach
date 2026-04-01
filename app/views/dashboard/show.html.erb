@@ -36,7 +36,7 @@
         <div class="mt-4">
           <div class="text-sm text-slate-400 uppercase tracking-wide"><%= @training_block.focus.humanize %></div>
           <div class="text-xl font-semibold mt-2"><%= @training_block.name %></div>
-          <div class="text-sm text-slate-400 mt-2">Week <%= @training_block.week_number || "-" %> of <%= @training_block.weeks_planned || "-" %></div>
+          <div class="text-sm text-slate-400 mt-2">Week <%= @current_week %> of <%= @training_block.weeks_planned || "-" %></div>
           <p class="text-slate-300 mt-4"><%= @training_block.ai_reasoning.presence || "Plan tuned to your current focus." %></p>
         </div>
       <% else %>

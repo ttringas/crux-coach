@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   resources :session_logs, path: "log" do
     post :parse, on: :collection
   end
-  resources :benchmarks, only: [:index, :update]
+  resources :benchmarks, only: [ :index, :update ]
   get "progress", to: "progress#show"
   resources :coaches, only: %i[index show]
 

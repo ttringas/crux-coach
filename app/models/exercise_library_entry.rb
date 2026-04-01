@@ -41,7 +41,7 @@ class ExerciseLibraryEntry < ApplicationRecord
   end
 
   def build_searchable_text
-    pieces = [name, video_title, channel_name, description, category]
+    pieces = [ name, video_title, channel_name, description, category ]
     pieces.concat(display_tags)
     self.searchable_text = pieces.compact.join(" ").downcase
   end

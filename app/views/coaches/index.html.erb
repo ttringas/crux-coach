@@ -5,28 +5,35 @@
   </div>
 </div>
 
-<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <% @coaches.each do |coach| %>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
-      <div class="text-sm text-slate-400 uppercase tracking-wide">Coach</div>
-      <h2 class="text-lg font-semibold mt-2"><%= coach.user.name.presence || coach.user.email %></h2>
-      <p class="text-sm text-slate-300 mt-2"><%= coach.bio.presence || "Focused on sustainable progress." %></p>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <% if coach.specialties.any? %>
-          <% coach.specialties.each do |specialty| %>
-            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= specialty.humanize %></span>
+<% if @coaches.any? %>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @coaches.each do |coach| %>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Coach</div>
+        <h2 class="text-lg font-semibold mt-2"><%= coach.user.name.presence || coach.user.email %></h2>
+        <p class="text-sm text-slate-300 mt-2"><%= coach.bio.presence || "Focused on sustainable progress." %></p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <% if coach.specialties.any? %>
+            <% coach.specialties.each do |specialty| %>
+              <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= specialty.humanize %></span>
+            <% end %>
+          <% else %>
+            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">General</span>
           <% end %>
-        <% else %>
-          <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700">General</span>
-        <% end %>
+        </div>
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-400">
+          <span>Max boulder: <span class="text-slate-200"><%= coach.max_grade_boulder || "-" %></span></span>
+          <span>Max sport: <span class="text-slate-200"><%= coach.max_grade_sport || "-" %></span></span>
+        </div>
+        <div class="mt-6">
+          <%= link_to "View Profile", coach_path(coach), class: "text-amber-400 text-sm" %>
+        </div>
       </div>
-      <div class="mt-4 flex items-center justify-between text-xs text-slate-400">
-        <span>Max boulder: <span class="text-slate-200"><%= coach.max_grade_boulder || "-" %></span></span>
-        <span>Max sport: <span class="text-slate-200"><%= coach.max_grade_sport || "-" %></span></span>
-      </div>
-      <div class="mt-6">
-        <%= link_to "View Profile", coach_path(coach), class: "text-amber-400 text-sm" %>
-      </div>
-    </div>
-  <% end %>
-</div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
+    <div class="text-lg font-semibold text-slate-100">Coach matching is coming soon!</div>
+    <p class="mt-2 text-sm text-slate-400">For now, your AI-generated plans have you covered.</p>
+  </div>
+<% end %>

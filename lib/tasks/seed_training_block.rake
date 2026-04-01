@@ -183,7 +183,7 @@ namespace :training do
           exercises: [],
           position: pos,
           status: session_status,
-          started_at: session_status.in?([:completed, :in_progress]) ? (week_of + session_data[:day]).to_time : nil,
+          started_at: session_status.in?([ :completed, :in_progress ]) ? (week_of + session_data[:day]).to_time : nil,
           completed_at: session_status == :completed ? (week_of + session_data[:day]).to_time + session_data[:duration].to_i.minutes : nil,
           perceived_exertion: session_status == :completed ? rand(5..8) : nil,
           energy_level: session_status == :completed ? rand(3..5) : nil,

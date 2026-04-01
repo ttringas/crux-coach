@@ -23,7 +23,7 @@
           <% if sessions.any? %>
             <% sessions.each do |session| %>
               <% total_exercises = session.exercises.size %>
-              <% completed_exercises = session.exercise_logs.count { |log| log["completed"] } %>
+              <% completed_exercises = completed_exercises_count(session) %>
               <% status = session.status || "todo" %>
               <% status_classes = case status
                 when "completed" then "border-green-500/30 bg-green-500/5"

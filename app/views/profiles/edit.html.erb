@@ -143,7 +143,7 @@
       <div data-controller="injury-fields">
         <p class="text-sm text-slate-300 mb-3">Injuries</p>
         <div class="space-y-4" data-injury-fields-target="list">
-          <% injuries = @profile.injuries.presence || [{}] %>
+          <% injuries = @profile.injuries.presence || [] %>
           <% injuries.each do |injury| %>
             <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4">
               <div class="grid md:grid-cols-2 gap-3">

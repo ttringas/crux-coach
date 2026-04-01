@@ -11,6 +11,6 @@ class CreateBenchmarks < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :benchmarks, [:climber_profile_id, :benchmark_key], unique: true
+    add_index :benchmarks, [ :climber_profile_id, :benchmark_key ], unique: true
   end
 end

@@ -1,6 +1,6 @@
 class ExerciseLibraryEntriesController < ApplicationController
   def index
-    @categories = ["all"] + ExerciseLibraryEntry::CATEGORIES
+    @categories = [ "all" ] + ExerciseLibraryEntry::CATEGORIES
     @category = params[:category].presence || "all"
     @query = params[:q].to_s.strip
 

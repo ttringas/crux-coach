@@ -8,7 +8,7 @@ module ExerciseLibrary
     def initialize(entries: ExerciseLibraryEntry.all)
       @entries = entries.map do |entry|
         normalized_name = normalize(entry.name)
-        normalized_full = normalize([entry.searchable_text, entry.name].compact.join(" "))
+        normalized_full = normalize([ entry.searchable_text, entry.name ].compact.join(" "))
         tokens = tokenize(normalized_full)
         EntryIndex.new(entry: entry, normalized_name: normalized_name, tokens: tokens, normalized_full: normalized_full)
       end
@@ -60,7 +60,7 @@ module ExerciseLibrary
         base += 0.15
       end
 
-      [base, 1.0].min
+      [ base, 1.0 ].min
     end
 
     def normalize(text)

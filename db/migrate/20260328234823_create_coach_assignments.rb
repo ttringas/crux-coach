@@ -12,7 +12,7 @@ class CreateCoachAssignments < ActiveRecord::Migration[8.0]
     end
 
     add_index :coach_assignments, :status
-    add_index :coach_assignments, [:coach_id, :status]
-    add_index :coach_assignments, [:climber_profile_id, :status]
+    add_index :coach_assignments, [ :coach_id, :status ]
+    add_index :coach_assignments, [ :climber_profile_id, :status ]
   end
 end
