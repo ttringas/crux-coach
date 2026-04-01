@@ -123,8 +123,9 @@
             </button>
           </div>
         </div>
-        <% if exercise["notes"].present? %>
-          <div class="text-xs text-slate-400 italic mb-3"><%= exercise["notes"] %></div>
+        <% exercise_guidance = exercise["description"].presence || exercise["notes"].presence %>
+        <% if exercise_guidance.present? %>
+          <div class="text-sm text-slate-400 mb-3"><%= exercise_guidance %></div>
         <% end %>
 
         <!-- Set rows -->
