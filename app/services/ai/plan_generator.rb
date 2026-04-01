@@ -4,18 +4,23 @@ require "json"
 
 module Ai
   class PlanGenerator
-    def self.call(climber_profile:)
-      prompts = Ai::Prompts::PlanGenerator.build(climber_profile: climber_profile)
+    def self.call(climber_profile:, training_days: nil, activities: nil)
+      prompts = Ai::Prompts::PlanGenerator.build(
+        climber_profile: climber_profile,
+        training_days: training_days,
+        activities: activities
+      )
 
       response = Ai::Client.generate(
         prompt: prompts[:user],
         system: prompts[:system],
         user: climber_profile.user,
         interaction_type: :plan_generation,
-        max_tokens: 4000
+        max_tokens: 16384
       )
 
       parsed = parse_json_response(response.content)
+      parsed = enforce_constraints!(parsed, training_days, activities)
       create_weekly_plan!(climber_profile, parsed)
     end
 
@@ -91,6 +96,29 @@ module Ai
       "climbing"
     end
     private_class_method :normalize_session_type
+
+    def self.enforce_constraints!(parsed, training_days, activities)
+      allowed_days = Array(training_days).presence&.map(&:to_i)
+      allowed_types = if Array(activities).present?
+        Ai::Prompts::PlanGenerator::ACTIVITY_TO_SESSION_TYPE
+          .values_at(*Array(activities))
+          .compact.uniq
+      end
+
+      return parsed unless allowed_days || allowed_types
+
+      parsed["sessions"] = Array(parsed["sessions"]).select do |session|
+        day = normalize_day_of_week(session["day_of_week"])
+        stype = normalize_session_type(session["session_type"])
+
+        day_ok = allowed_days.nil? || allowed_days.include?(day)
+        type_ok = allowed_types.nil? || allowed_types.include?(stype) || stype == "rest"
+        day_ok && type_ok
+      end
+
+      parsed
+    end
+    private_class_method :enforce_constraints!
 
     def self.normalize_intensity(value)
       normalized = value.to_s.downcase

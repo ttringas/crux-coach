@@ -17,7 +17,7 @@ class TrainingBlock < ApplicationRecord
 
   validates :name, presence: true
   validates :focus, :status, presence: true
-  validates :weeks_planned, numericality: { greater_than: 0, allow_nil: true }
+  validates :weeks_planned, numericality: { greater_than: 0, less_than_or_equal_to: 12, allow_nil: true }
   validates :week_number, numericality: { greater_than: 0, allow_nil: true }
 
   scope :current, -> { where(status: :active) }

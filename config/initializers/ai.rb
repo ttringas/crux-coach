@@ -7,8 +7,8 @@ Rails.application.configure do
     "anthropic" => ENV.fetch("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
     "openai" => ENV.fetch("OPENAI_MODEL", "gpt-4o")
   }
-  config.x.ai.request_timeout = ENV.fetch("AI_REQUEST_TIMEOUT", "120").to_i
-  config.x.ai.max_tokens = ENV.fetch("AI_MAX_TOKENS", "2000").to_i
+  config.x.ai.request_timeout = ENV.fetch("AI_REQUEST_TIMEOUT", "300").to_i
+  config.x.ai.max_tokens = ENV.fetch("AI_MAX_TOKENS", "64000").to_i
   config.x.ai.daily_budget_cents = ENV.fetch("AI_DAILY_BUDGET_CENTS", "1000").to_i
   config.x.ai.pricing = {
     "anthropic" => {
