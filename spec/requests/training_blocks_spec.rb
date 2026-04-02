@@ -22,6 +22,7 @@ RSpec.describe "TrainingBlocks", type: :request do
     expect(GenerateTrainingBlockJob).to have_received(:perform_later).with(hash_including(climber_profile_id: profile.id))
     expect(response).to have_http_status(:ok)
     expect(response.media_type).to eq("text/vnd.turbo-stream.html")
-    expect(response.body).to include("Generating your training plan")
+    expect(response.body).to include("Building your training plan")
+    expect(response.body).to include("1–3 minutes")
   end
 end
