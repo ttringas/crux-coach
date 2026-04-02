@@ -9,7 +9,7 @@ RSpec.describe "Onboarding", type: :request do
   it "redirects to plans after the final step" do
     allow(GenerateTrainingBlockJob).to receive(:perform_later)
 
-    patch onboarding_path(6), params: { climber_profile: {} }
+    patch onboarding_path(7), params: { climber_profile: {} }
 
     expect(GenerateTrainingBlockJob).to have_received(:perform_later)
     expect(response).to redirect_to(training_blocks_path)

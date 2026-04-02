@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_02_105654) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_175100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,7 +60,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_02_105654) do
     t.integer "wingspan_inches"
     t.decimal "weight_lbs", precision: 6, scale: 2
     t.integer "years_climbing"
-    t.integer "training_age_months"
     t.string "current_max_boulder_grade"
     t.string "current_max_sport_grade"
     t.string "comfortable_boulder_grade"
@@ -81,6 +80,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_02_105654) do
     t.string "training_block_generation_status"
     t.text "training_block_generation_error"
     t.bigint "training_block_generation_training_block_id"
+    t.decimal "training_age_years", precision: 4, scale: 2
     t.index ["user_id"], name: "index_climber_profiles_on_user_id", unique: true
   end
 

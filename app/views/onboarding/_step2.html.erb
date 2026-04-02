@@ -1,23 +1,51 @@
-<h2 class="text-2xl font-semibold">Goals</h2>
-<p class="text-slate-400 mt-2">Capture what you want in the next few months and long term.</p>
+<h2 class="text-2xl font-semibold">Basics</h2>
+<p class="text-slate-400 mt-2">Set your starting point so we can build the right training load.</p>
 
 <%= form_with model: profile, url: onboarding_path(2), method: :patch, class: "mt-6 space-y-4" do |f| %>
-  <div>
-    <%= f.label :goals_short_term, "Short-term goals", class: "text-sm text-slate-300" %>
-    <%= f.text_area :goals_short_term, rows: 3, placeholder: "Break into V7 bouldering by summer...", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :years_climbing, class: "text-sm text-slate-300" %>
+      <%= f.number_field :years_climbing, placeholder: "4", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :training_age_years, class: "text-sm text-slate-300" do %>
+        Age
+        <span class="text-slate-500 text-xs">(optional, years)</span>
+      <% end %>
+      <%= f.number_field :training_age_years, step: 1, placeholder: "35", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
   </div>
-  <div>
-    <%= f.label :goals_long_term, "Long-term goals", class: "text-sm text-slate-300" %>
-    <%= f.text_area :goals_long_term, rows: 3, placeholder: "Climb 5.13a outside with confidence.", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div>
+      <%= f.label :height_inches, class: "text-sm text-slate-300" do %>
+        Height (in)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :height_inches, placeholder: "70", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :wingspan_inches, class: "text-sm text-slate-300" do %>
+        Wingspan (in)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :wingspan_inches, placeholder: "71", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :weight_lbs, class: "text-sm text-slate-300" do %>
+        Weight (lbs)
+        <span class="text-slate-500 text-xs">(optional)</span>
+      <% end %>
+      <%= f.number_field :weight_lbs, placeholder: "155", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+    </div>
   </div>
   <div class="grid md:grid-cols-2 gap-4">
     <div>
-      <%= f.label :comfortable_boulder_grade, "Target boulder grade", class: "text-sm text-slate-300" %>
-      <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.label :current_max_boulder_grade, class: "text-sm text-slate-300" %>
+      <%= f.text_field :current_max_boulder_grade, placeholder: "V5", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
-      <%= f.label :comfortable_sport_grade, "Target sport grade", class: "text-sm text-slate-300" %>
-      <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.label :current_max_sport_grade, class: "text-sm text-slate-300" %>
+      <%= f.text_field :current_max_sport_grade, placeholder: "5.11c", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
   </div>
   <div class="flex items-center justify-between">

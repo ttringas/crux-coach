@@ -35,7 +35,7 @@ class ProfilesController < ApplicationController
       :wingspan_inches,
       :weight_lbs,
       :years_climbing,
-      :training_age_months,
+      :training_age_years,
       :current_max_boulder_grade,
       :current_max_sport_grade,
       :comfortable_boulder_grade,

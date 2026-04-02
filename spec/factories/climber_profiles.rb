@@ -5,7 +5,7 @@ FactoryBot.define do
     wingspan_inches { 70 }
     weight_lbs { "150.00" }
     years_climbing { 3 }
-    training_age_months { 12 }
+    training_age_years { 1.0 }
     current_max_boulder_grade { "V5" }
     current_max_sport_grade { "5.11a" }
     comfortable_boulder_grade { "V3" }

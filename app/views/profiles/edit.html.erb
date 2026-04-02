@@ -21,11 +21,11 @@
             <%= f.number_field :years_climbing, placeholder: "4", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
           </div>
           <div>
-            <%= f.label :training_age_months, class: "text-sm text-slate-300" do %>
-              Training age (months)
-              <span class="text-slate-500 text-xs">(optional)</span>
+            <%= f.label :training_age_years, class: "text-sm text-slate-300" do %>
+              Age
+              <span class="text-slate-500 text-xs">(optional, years)</span>
             <% end %>
-            <%= f.number_field :training_age_months, placeholder: "18", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+            <%= f.number_field :training_age_years, step: 1, placeholder: "35", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
           </div>
         </div>
         <div class="grid md:grid-cols-3 gap-4 mt-4">

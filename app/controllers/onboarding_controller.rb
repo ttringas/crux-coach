@@ -9,7 +9,7 @@ class OnboardingController < ApplicationController
     update_user_name
 
     if @profile.update(profile_params)
-      if @step == 6
+      if @step == 7
         begin
           start_date = Date.current.beginning_of_week(:monday)
           weeks_planned = 4
@@ -32,18 +32,27 @@ class OnboardingController < ApplicationController
           )
 
           respond_to do |format|
-            format.turbo_stream { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready." }
+            format.turbo_stream { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready.", status: :see_other }
             format.html { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready." }
           end
         rescue Ai::Client::Error => e
           flash.now[:alert] = e.message
-          render :show, status: :unprocessable_entity
+          respond_to do |format|
+            format.turbo_stream { render :show, status: :unprocessable_entity, formats: [ :html ] }
+            format.html { render :show, status: :unprocessable_entity }
+          end
         end
       else
-        redirect_to onboarding_path(@step + 1)
+        respond_to do |format|
+          format.turbo_stream { redirect_to onboarding_path(@step + 1), status: :see_other }
+          format.html { redirect_to onboarding_path(@step + 1) }
+        end
       end
     else
-      render :show, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { render :show, status: :unprocessable_entity, formats: [ :html ] }
+        format.html { render :show, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -56,7 +65,7 @@ class OnboardingController < ApplicationController
   def set_step
     @step = params[:id].to_i
     @step = 1 if @step < 1
-    @step = 6 if @step > 6
+    @step = 7 if @step > 7
   end
 
   def update_user_name
@@ -71,7 +80,7 @@ class OnboardingController < ApplicationController
       :wingspan_inches,
       :weight_lbs,
       :years_climbing,
-      :training_age_months,
+      :training_age_years,
       :current_max_boulder_grade,
       :current_max_sport_grade,
       :comfortable_boulder_grade,

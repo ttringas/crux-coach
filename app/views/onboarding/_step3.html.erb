@@ -4,12 +4,12 @@
 <%= form_with model: profile, url: onboarding_path(3), method: :patch, class: "mt-6 space-y-6" do |f| %>
   <div>
     <p class="text-sm text-slate-300 mb-3">Available equipment</p>
-    <% equipment = %w[hangboard campus_board kilter moonboard tension weights pull_up_bar rings] %>
+    <% equipment = ClimberProfile::EQUIPMENT_OPTIONS %>
     <div class="grid md:grid-cols-2 gap-2">
-      <% equipment.each do |item| %>
+      <% equipment.each do |item, label| %>
         <label class="flex items-center gap-2 text-sm text-slate-300">
           <%= check_box_tag "climber_profile[available_equipment][]", item, profile.available_equipment.include?(item), class: "bg-slate-800 border-slate-600" %>
-          <span><%= item.humanize %></span>
+          <span><%= label %></span>
         </label>
       <% end %>
     </div>

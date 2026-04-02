@@ -1,0 +1,44 @@
+<h2 class="text-2xl font-semibold">Review & Generate</h2>
+<p class="text-slate-400 mt-2">Confirm your profile before generating your first plan.</p>
+
+<% if defined?(ActionCable) %>
+  <%= turbo_stream_from profile %>
+<% end %>
+
+<div class="mt-6 grid md:grid-cols-2 gap-6 text-sm text-slate-300">
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Basics</div>
+    <div class="mt-2">Name: <span class="text-slate-100"><%= current_user.name.presence || "Not set" %></span></div>
+    <div>Years climbing: <span class="text-slate-100"><%= profile.years_climbing || "-" %></span></div>
+    <div>Max boulder: <span class="text-slate-100"><%= profile.current_max_boulder_grade || "-" %></span></div>
+    <div>Max sport: <span class="text-slate-100"><%= profile.current_max_sport_grade || "-" %></span></div>
+  </div>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Schedule</div>
+    <div class="mt-2">Training days: <span class="text-slate-100"><%= profile.weekly_training_days || "-" %></span></div>
+    <div>Session duration: <span class="text-slate-100"><%= profile.session_duration_minutes || "-" %> min</span></div>
+    <div>Equipment: <span class="text-slate-100"><%= profile.available_equipment_labels.join(", ").presence || "-" %></span></div>
+  </div>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Goals</div>
+    <div class="mt-2"><%= profile.goals_short_term.presence || "No short-term goals yet." %></div>
+  </div>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Style</div>
+    <div class="mt-2">Strengths: <span class="text-slate-100"><%= profile.style_strengths.join(", ").presence || "-" %></span></div>
+    <div>Weaknesses: <span class="text-slate-100"><%= profile.style_weaknesses.join(", ").presence || "-" %></span></div>
+  </div>
+</div>
+
+<%= form_with model: profile, url: onboarding_path(7), method: :patch, data: { controller: "plan-generator" }, class: "mt-8 flex items-center justify-between" do |f| %>
+  <%= link_to "Back", onboarding_path(6), class: "text-slate-400" %>
+  <div class="flex flex-col items-end gap-3">
+    <%= f.submit "Generate My First Plan", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition", data: { plan_generator_target: "button" } %>
+    <div class="hidden flex items-center gap-2 text-sm text-slate-300" data-plan-generator-target="status">
+      <span class="h-4 w-4 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></span>
+      <span>Generating your plan... This usually takes 30-60 seconds.</span>
+    </div>
+  </div>
+<% end %>
+
+<div id="<%= dom_id(profile, :training_block_generation) %>" class="mt-6"></div>
