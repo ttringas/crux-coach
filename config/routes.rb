@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   authenticated :user do
-    root "dashboard#show", as: :authenticated_root
+    root to: "pages#authenticated_root", as: :authenticated_root
   end
 
   root "pages#home"
@@ -21,7 +21,11 @@ Rails.application.routes.draw do
   end
   get "calendar", to: "calendar#show"
   resources :weekly_plans, path: "plan" do
-    resources :planned_sessions, path: "session", only: %i[show update]
+    resources :planned_sessions, path: "session", only: %i[show update] do
+      member do
+        patch :update_exercises
+      end
+    end
   end
   resources :exercise_library_entries, path: "library", only: %i[index show]
   resources :session_logs, path: "log" do

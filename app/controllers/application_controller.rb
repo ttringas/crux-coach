@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource)
     if resource.climber_profile&.onboarding_completed?
-      dashboard_path
+      calendar_path
     else
       onboarding_path(1)
     end
@@ -17,6 +17,17 @@ class ApplicationController < ActionController::Base
 
   def after_sign_up_path_for(_resource)
     onboarding_path(1)
+  end
+
+  def after_sign_out_path_for(_resource_or_scope)
+    root_path
+  end
+
+  def authenticated_root_path_for(profile = current_climber_profile)
+    return training_blocks_path unless profile&.onboarding_completed?
+
+    has_active_plan = profile.weekly_plans.current.exists? || profile.training_blocks.current.exists?
+    has_active_plan ? calendar_path : training_blocks_path
   end
 
   def ensure_onboarded!

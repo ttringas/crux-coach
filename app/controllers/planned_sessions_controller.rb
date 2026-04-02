@@ -6,6 +6,7 @@ class PlannedSessionsController < ApplicationController
   def show
     @immersive_layout = true
     @exercise_library_matches = ExerciseLibrary::Matcher.new.match_exercises(@planned_session.exercises)
+    @exercise_library_entries = ExerciseLibraryEntry.order(:name).select(:id, :name, :category, :description)
   end
 
   def update
@@ -31,6 +32,25 @@ class PlannedSessionsController < ApplicationController
             completed_at: @planned_session.completed_at&.iso8601
           }
         end
+        format.turbo_stream { head :ok }
+        format.html { redirect_to weekly_plan_planned_session_path(@weekly_plan, @planned_session) }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: { errors: @planned_session.errors.full_messages }, status: :unprocessable_entity }
+        format.turbo_stream { render status: :unprocessable_entity }
+        format.html { redirect_to weekly_plan_planned_session_path(@weekly_plan, @planned_session), alert: @planned_session.errors.full_messages.to_sentence }
+      end
+    end
+  end
+
+  def update_exercises
+    exercises = normalize_exercises(params[:exercises])
+    @planned_session.exercises = exercises
+
+    if @planned_session.save
+      respond_to do |format|
+        format.json { render json: { exercises: @planned_session.exercises } }
         format.turbo_stream { head :ok }
         format.html { redirect_to weekly_plan_planned_session_path(@weekly_plan, @planned_session) }
       end
@@ -89,6 +109,31 @@ class PlannedSessionsController < ApplicationController
       @planned_session.completed_at ||= Time.zone.now
     when "skipped"
       @planned_session.completed_at ||= Time.zone.now
+    end
+  end
+
+  def normalize_exercises(raw)
+    Array(raw).filter_map do |exercise|
+      next unless exercise.is_a?(Hash) || exercise.is_a?(ActionController::Parameters)
+
+      data = exercise.is_a?(ActionController::Parameters) ? exercise.to_unsafe_h : exercise
+      data = data.deep_stringify_keys
+      name = data["name"].presence || data["title"].presence
+      next unless name.present?
+
+      {
+        "id" => data["id"].presence || SecureRandom.uuid,
+        "source" => data["source"].presence,
+        "library_entry_id" => data["library_entry_id"].presence,
+        "category" => data["category"].presence,
+        "name" => name,
+        "sets" => data["sets"].presence,
+        "reps" => data["reps"].presence,
+        "duration" => data["duration"].presence,
+        "rest" => data["rest"].presence,
+        "description" => data["description"].presence,
+        "notes" => data["notes"].presence
+      }.compact
     end
   end
 end

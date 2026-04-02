@@ -32,14 +32,8 @@ class OnboardingController < ApplicationController
           )
 
           respond_to do |format|
-            format.turbo_stream do
-              render turbo_stream: turbo_stream.replace(
-                ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
-                partial: "training_blocks/generation_loading",
-                locals: { profile: @profile }
-              )
-            end
-            format.html { redirect_to dashboard_path, notice: "Plan generation started. We'll notify you when it's ready." }
+            format.turbo_stream { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready." }
+            format.html { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready." }
           end
         rescue Ai::Client::Error => e
           flash.now[:alert] = e.message

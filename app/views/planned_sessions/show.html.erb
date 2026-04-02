@@ -2,10 +2,13 @@
 
 <div
   class="min-h-screen bg-slate-950 text-slate-100 px-4 py-6"
-  data-controller="session-timer exercise-log session-completion demo-modal"
+  data-controller="session-timer exercise-log session-completion demo-modal session-exercises"
   data-session-timer-started-at-value="<%= @planned_session.started_at&.iso8601 %>"
   data-exercise-log-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
   data-session-completion-url-value="<%= weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
+  data-session-exercises-url-value="<%= update_exercises_weekly_plan_planned_session_path(@weekly_plan, @planned_session) %>"
+  data-session-exercises-exercises-value="<%= json_escape(@planned_session.exercises.to_json) %>"
+  data-session-exercises-library-value="<%= json_escape(@exercise_library_entries.map { |entry| { id: entry.id, name: entry.name, category: entry.category, description: entry.description } }.to_json) %>"
   data-action="session-status:updated->session-timer#statusUpdated"
 >
   <div class="flex items-center justify-between mb-6">
@@ -106,6 +109,21 @@
         <div class="flex items-center justify-between mb-1 gap-3">
           <div class="font-semibold text-base"><%= exercise_name %></div>
           <div class="flex items-center gap-2">
+            <button type="button"
+              class="text-xs text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition"
+              data-action="click->session-exercises#edit">
+              Edit
+            </button>
+            <button type="button"
+              class="text-xs text-slate-200 border border-slate-600/60 rounded-md px-2 py-1 hover:border-slate-400 transition"
+              data-action="click->session-exercises#swap">
+              Swap
+            </button>
+            <button type="button"
+              class="text-xs text-rose-200 border border-rose-500/50 rounded-md px-2 py-1 hover:border-rose-400 transition"
+              data-action="click->session-exercises#remove">
+              Remove
+            </button>
             <% if library_match %>
               <button type="button"
                 class="text-xs text-amber-300 border border-amber-400/40 rounded-md px-2 py-1 hover:bg-amber-500/10 transition"
@@ -218,6 +236,21 @@
     <% end %>
   </div>
 
+  <div class="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-200">Add Exercise</h3>
+    </div>
+    <div class="mt-3 flex flex-wrap gap-3">
+      <button
+        type="button"
+        class="rounded-md border border-slate-700 px-3 py-2 text-sm text-slate-200 hover:border-slate-500 transition"
+        data-action="session-exercises#addExercise"
+      >
+        Add
+      </button>
+    </div>
+  </div>
+
   <div class="mt-10 bg-slate-900 border border-slate-800 rounded-2xl p-4">
     <div data-controller="speech-input">
       <div class="flex items-center justify-between">
@@ -300,6 +333,89 @@
           data-action="input->range-value#update change->exercise-log#queueSave"
         />
       </label>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur flex items-center justify-center" data-session-exercises-target="modal" data-action="click->session-exercises#closeOnBackdrop keydown@window->session-exercises#handleKeydown">
+    <div class="w-full max-w-2xl max-h-[90vh] rounded-2xl border border-slate-800 bg-slate-900 shadow-xl overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+        <div class="text-sm font-semibold text-slate-200" data-session-exercises-target="modalTitle">Edit Exercise</div>
+        <button type="button" class="text-slate-400 hover:text-slate-100 transition" data-action="session-exercises#close" aria-label="Close">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="min-h-0 flex-1 overflow-y-auto p-4 space-y-4">
+        <div class="hidden rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-100" data-session-exercises-target="error"></div>
+
+        <div data-session-exercises-target="editPanel">
+          <form class="space-y-3" data-action="submit->session-exercises#saveForm">
+            <div>
+              <label class="text-xs uppercase tracking-wide text-slate-400">Name</label>
+              <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="name" data-action="input->session-exercises#handleNameInput" />
+              <div class="mt-2 rounded-lg border border-slate-800 bg-slate-950/60">
+                <div class="px-3 py-2 text-xs text-slate-500" data-session-exercises-target="nameHint">Start typing to see matches.</div>
+                <div class="divide-y divide-slate-800 max-h-40 overflow-auto" data-session-exercises-target="nameSuggestions"></div>
+              </div>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Sets</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="sets" />
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Reps</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="reps" />
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Duration</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" placeholder="e.g. 45 sec" data-session-exercises-target="duration" />
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Rest</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" placeholder="e.g. 2 min" data-session-exercises-target="rest" />
+              </div>
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wide text-slate-400">Description</label>
+              <textarea rows="2" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="description"></textarea>
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wide text-slate-400">Notes</label>
+              <textarea rows="2" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="notes"></textarea>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button type="button" class="rounded-md border border-slate-700 px-3 py-2 text-sm text-slate-200 hover:border-slate-500 transition" data-action="session-exercises#close">Cancel</button>
+              <button type="submit" class="rounded-md bg-amber-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 transition">Save</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="hidden space-y-4" data-session-exercises-target="libraryPanel">
+          <div class="space-y-2">
+            <label class="text-xs uppercase tracking-wide text-slate-400">Search library</label>
+            <input type="text" placeholder="Start typing an exercise..." autocomplete="off" class="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="librarySearch" data-action="input->session-exercises#filterLibrary" />
+            <div class="rounded-lg border border-slate-800 bg-slate-950/60">
+              <div class="px-3 py-2 text-xs text-slate-500" data-session-exercises-target="libraryHint">Start typing to see matches.</div>
+              <div class="divide-y divide-slate-800 max-h-56 overflow-auto" data-session-exercises-target="librarySuggestions"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <label class="flex items-center gap-2 text-xs text-slate-400" data-session-exercises-target="keepPrescriptionWrapper">
+              <input type="checkbox" class="h-4 w-4 rounded border-slate-700 bg-slate-950 text-amber-400" checked data-session-exercises-target="keepPrescription" />
+              Keep existing prescription (sets/reps/duration/rest)
+            </label>
+            <button type="button" class="text-xs text-slate-400 hover:text-slate-200 transition" data-session-exercises-target="libraryBrowseToggle" data-action="session-exercises#toggleBrowse">
+              Browse all
+            </button>
+          </div>
+
+          <div class="hidden space-y-2" data-session-exercises-target="libraryBrowse">
+            <div class="text-xs uppercase tracking-wide text-slate-500">Browse library</div>
+            <div class="max-h-56 space-y-2 overflow-auto pr-1" data-session-exercises-target="libraryList"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

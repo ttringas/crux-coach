@@ -1,4 +1,5 @@
-<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+<div data-controller="demo-modal">
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
   <div>
     <h1 class="text-2xl font-semibold">Exercise Library</h1>
     <p class="text-sm text-slate-400">Browse demo videos and coaching notes for key exercises.</p>
@@ -18,61 +19,71 @@
       <button type="submit" class="text-xs text-amber-300 hover:text-amber-200">Search</button>
     </div>
   </form>
-</div>
+  </div>
 
-<div class="flex flex-wrap gap-2 mb-6">
-  <% @categories.each do |category| %>
-    <% active = (@category == category) %>
-    <%= link_to exercise_library_entries_path(category: (category == "all" ? nil : category), q: @query.presence),
-      class: "px-3 py-1 rounded-full text-xs border transition #{active ? 'bg-amber-500/20 text-amber-200 border-amber-400/40' : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-600'}" do %>
-      <%= category.humanize %>
-    <% end %>
-  <% end %>
-</div>
-
-<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-  <% @entries.each do |entry| %>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-xs uppercase tracking-wide text-slate-500"><%= entry.category.humanize %></div>
-          <h2 class="text-lg font-semibold mt-1"><%= entry.name %></h2>
-          <p class="text-sm text-slate-400 mt-1"><%= entry.video_title %></p>
-          <div class="text-xs text-slate-500 mt-1"><%= entry.channel_name %></div>
-        </div>
-        <%= link_to "Open", exercise_library_entry_path(entry), class: "text-xs text-amber-300 hover:text-amber-200" %>
-      </div>
-
-      <% if entry.description.present? %>
-        <p class="text-sm text-slate-300"><%= entry.description %></p>
+  <div class="flex flex-wrap gap-2 mb-6">
+    <% @categories.each do |category| %>
+      <% active = (@category == category) %>
+      <%= link_to exercise_library_entries_path(category: (category == "all" ? nil : category), q: @query.presence),
+        class: "px-3 py-1 rounded-full text-xs border transition #{active ? 'bg-amber-500/20 text-amber-200 border-amber-400/40' : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-600'}" do %>
+        <%= category.humanize %>
       <% end %>
+    <% end %>
+  </div>
 
-      <div class="flex flex-wrap gap-2">
-        <% entry.display_tags.each do |tag| %>
-          <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= tag %></span>
-        <% end %>
-        <% if entry.duration_estimate.present? %>
-          <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= entry.duration_estimate %></span>
-        <% end %>
-      </div>
-
-      <details class="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-        <summary class="cursor-pointer text-xs text-amber-300">Preview video</summary>
-        <div class="mt-3 aspect-video overflow-hidden rounded-lg border border-slate-800">
-          <iframe
-            src="<%= entry.youtube_embed_url %>"
-            title="<%= entry.video_title %>"
-            class="w-full h-full"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <% @entries.each do |entry| %>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs uppercase tracking-wide text-slate-500"><%= entry.category.humanize %></div>
+            <h2 class="text-lg font-semibold mt-1"><%= entry.name %></h2>
+            <p class="text-sm text-slate-400 mt-1"><%= entry.video_title %></p>
+            <div class="text-xs text-slate-500 mt-1"><%= entry.channel_name %></div>
+          </div>
         </div>
-      </details>
-    </div>
-  <% end %>
-</div>
 
-<% if @entries.empty? %>
-  <div class="mt-10 text-sm text-slate-400">No exercises found. Try a different search.</div>
-<% end %>
+        <% if entry.description.present? %>
+          <p class="text-sm text-slate-300"><%= entry.description %></p>
+        <% end %>
+
+        <div class="flex flex-wrap gap-2">
+          <% entry.display_tags.each do |tag| %>
+            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= tag %></span>
+          <% end %>
+          <% if entry.duration_estimate.present? %>
+            <span class="px-2 py-1 rounded-full bg-slate-800 text-xs text-slate-200 border border-slate-700"><%= entry.duration_estimate %></span>
+          <% end %>
+        </div>
+
+        <button
+          type="button"
+          class="mt-auto inline-flex items-center justify-center rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 transition"
+          data-action="click->demo-modal#open"
+          data-demo-modal-url="<%= entry.youtube_embed_url %>"
+          data-demo-title="<%= entry.name %>"
+        >
+          Watch
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @entries.empty? %>
+    <div class="mt-10 text-sm text-slate-400">No exercises found. Try a different search.</div>
+  <% end %>
+
+  <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur flex items-center justify-center" data-demo-modal-target="modal" data-action="click->demo-modal#closeOnBackdrop keydown@window->demo-modal#handleKeydown">
+    <div class="w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-900 shadow-xl overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+        <div class="text-sm font-semibold text-slate-200" data-demo-modal-target="title">Exercise Demo</div>
+        <button type="button" class="text-slate-400 hover:text-slate-100 transition" data-action="demo-modal#close" aria-label="Close">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="relative w-full" style="padding-top: 56.25%">
+        <iframe class="absolute inset-0 w-full h-full" title="Exercise demo" allow="autoplay; encrypted-media" allowfullscreen data-demo-modal-target="frame"></iframe>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@ module Admin
     def require_admin
       return if current_user&.admin?
 
-      redirect_to dashboard_path, alert: "You do not have access to that page."
+      redirect_to calendar_path, alert: "You do not have access to that page."
     end
   end
 end

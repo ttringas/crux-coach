@@ -12,7 +12,7 @@ module CoachPortal
     def require_coach
       return if current_user&.coach?
 
-      redirect_to dashboard_path, alert: "Access denied."
+      redirect_to calendar_path, alert: "Access denied."
     end
   end
 end

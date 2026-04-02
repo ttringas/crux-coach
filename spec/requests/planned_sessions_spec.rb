@@ -20,4 +20,20 @@ RSpec.describe "PlannedSessions", type: :request do
     expect(response.body).to include("change->exercise-log#queueSave")
     expect(response.body).not_to include("change->exercise-log#saveSet")
   end
+
+  it "updates exercises via update_exercises" do
+    patch update_exercises_weekly_plan_planned_session_path(weekly_plan, planned_session),
+      params: {
+        exercises: [
+          { name: "Push-ups", sets: "4", reps: "8" },
+          { name: "Rest" }
+        ]
+      },
+      as: :json
+
+    expect(response).to have_http_status(:ok)
+    planned_session.reload
+    expect(planned_session.exercises.map { |ex| ex["name"] }).to eq([ "Push-ups", "Rest" ])
+    expect(planned_session.exercises.first["id"]).to be_present
+  end
 end
