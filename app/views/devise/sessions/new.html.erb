@@ -37,8 +37,8 @@
         </div>
       </div>
     <% else %>
-      <h1 class="text-2xl font-semibold">Sign in</h1>
-      <p class="text-sm text-slate-400 mt-2">Enter your email to get a magic link and login code.</p>
+      <h1 class="text-2xl font-semibold">Sign in or sign up</h1>
+      <p class="text-sm text-slate-400 mt-2">Enter your email and we'll send you a magic link to get started.</p>
 
       <%= form_with url: user_session_path, method: :post, class: "mt-6" do |f| %>
         <div class="space-y-4">

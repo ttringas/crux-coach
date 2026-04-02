@@ -22,6 +22,14 @@
   <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
     <div class="text-sm text-slate-400 uppercase tracking-wide">Goals</div>
     <div class="mt-2"><%= profile.goals_short_term.presence || "No short-term goals yet." %></div>
+    <% if profile.goals_long_term.present? %>
+      <div class="mt-1"><%= profile.goals_long_term %></div>
+    <% end %>
+    <% if profile.comfortable_boulder_grade.present? || profile.comfortable_sport_grade.present? %>
+      <div class="mt-2 text-slate-400 text-xs">
+        Target: <%= [profile.comfortable_boulder_grade, profile.comfortable_sport_grade].compact.join(" / ") %>
+      </div>
+    <% end %>
   </div>
   <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
     <div class="text-sm text-slate-400 uppercase tracking-wide">Style</div>
