@@ -1,31 +1,55 @@
 <div class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-4 md:px-6 py-16">
   <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl transition hover:border-slate-700">
-    <h1 class="text-2xl font-semibold">Sign in</h1>
-    <p class="text-sm text-slate-400 mt-2">Welcome back. Keep the plan moving.</p>
-
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-      <div class="mt-6 space-y-4">
-        <div>
-          <%= f.label :email, class: "text-sm text-slate-300" %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "you@example.com", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100" %>
-        </div>
-        <div>
-          <%= f.label :password, class: "text-sm text-slate-300" %>
-          <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100" %>
-        </div>
+    <% if notice.present? %>
+      <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <%= notice %>
       </div>
-
-      <%= f.submit "Sign in", class: "mt-6 w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
     <% end %>
+    <% if alert.present? %>
+      <div class="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <%= alert %>
+      </div>
+    <% end %>
+    <% if params[:sent].to_s == "1" %>
+      <h1 class="text-2xl font-semibold">Check your email</h1>
+      <p class="text-sm text-slate-400 mt-2">We sent a sign-in link and code to <span class="text-slate-200"><%= params[:email] %></span>.</p>
 
-    <div class="mt-6 text-sm text-slate-400 space-y-2">
-      <div>
-        <%= link_to "Forgot your password?", new_user_password_path, class: "text-amber-400" %>
+      <%= form_with url: verify_magic_link_code_path, method: :post, class: "mt-6" do |f| %>
+        <%= hidden_field_tag :email, params[:email] %>
+        <div class="space-y-4">
+          <div>
+            <%= label_tag :code, "6-digit code", class: "text-sm text-slate-300" %>
+            <%= text_field_tag :code, nil, inputmode: "numeric", autocomplete: "one-time-code", placeholder: "123456", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100 tracking-[0.3em] text-center" %>
+          </div>
+        </div>
+        <%= f.submit "Verify code", class: "mt-6 w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
+      <% end %>
+
+      <div class="mt-6 text-sm text-slate-400 space-y-3">
+        <div>
+          <%= form_with url: user_session_path, method: :post do %>
+            <%= hidden_field_tag :email, params[:email] %>
+            <%= button_tag "Resend magic link", class: "text-amber-400 hover:text-amber-300" %>
+          <% end %>
+        </div>
+        <div>
+          <%= link_to "Use a different email", new_user_session_path, class: "text-slate-300 hover:text-amber-300" %>
+        </div>
       </div>
-      <div>
-        New here?
-        <%= link_to "Create an account", new_user_registration_path, class: "text-amber-400" %>
-      </div>
-    </div>
+    <% else %>
+      <h1 class="text-2xl font-semibold">Sign in</h1>
+      <p class="text-sm text-slate-400 mt-2">Enter your email to get a magic link and login code.</p>
+
+      <%= form_with url: user_session_path, method: :post, class: "mt-6" do |f| %>
+        <div class="space-y-4">
+          <div>
+            <%= label_tag :email, "Email", class: "text-sm text-slate-300" %>
+            <%= email_field_tag :email, params[:email], autofocus: true, autocomplete: "email", placeholder: "you@example.com", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 text-slate-100" %>
+          </div>
+        </div>
+
+        <%= f.submit "Send magic link", class: "mt-6 w-full bg-amber-500 text-slate-950 font-semibold py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
+      <% end %>
+    <% end %>
   </div>
 </div>

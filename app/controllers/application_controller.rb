@@ -48,6 +48,8 @@ class ApplicationController < ActionController::Base
   end
 
   def public_page?
+    return true if controller_name == "magic_sessions"
+
     controller_name == "pages" && action_name == "home"
   end
 

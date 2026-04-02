@@ -1,5 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, skip: [ :registrations, :passwords, :sessions ]
+
+  devise_scope :user do
+    get "users/sign_in", to: "magic_sessions#new", as: :new_user_session
+    post "users/sign_in", to: "magic_sessions#create", as: :user_session
+    delete "users/sign_out", to: "magic_sessions#destroy", as: :destroy_user_session
+  end
+
+  post "users/sign_in/verify_code", to: "magic_sessions#verify_code", as: :verify_magic_link_code
+  get "auth/:token", to: "magic_sessions#magic_link", as: :magic_link
 
   authenticated :user do
     root to: "pages#authenticated_root", as: :authenticated_root
