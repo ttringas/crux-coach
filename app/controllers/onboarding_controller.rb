@@ -26,6 +26,7 @@ class OnboardingController < ApplicationController
           )
 
           @profile.update!(
+            onboarding_completed: true,
             training_block_generation_status: "pending",
             training_block_generation_error: nil,
             training_block_generation_training_block_id: nil
