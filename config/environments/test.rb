@@ -42,6 +42,10 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Run jobs through Solid Queue when explicitly requested by specs.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
