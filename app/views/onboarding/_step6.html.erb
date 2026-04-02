@@ -1,7 +1,9 @@
 <h2 class="text-2xl font-semibold">Review & Generate</h2>
 <p class="text-slate-400 mt-2">Confirm your profile before generating your first plan.</p>
 
-<%= turbo_stream_from profile %>
+<% if defined?(ActionCable) %>
+  <%= turbo_stream_from profile %>
+<% end %>
 
 <div class="mt-6 grid md:grid-cols-2 gap-6 text-sm text-slate-300">
   <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">

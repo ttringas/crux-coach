@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_01_180001) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_105654) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,6 +78,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_01_180001) do
     t.boolean "onboarding_completed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "training_block_generation_status"
+    t.text "training_block_generation_error"
+    t.bigint "training_block_generation_training_block_id"
     t.index ["user_id"], name: "index_climber_profiles_on_user_id", unique: true
   end
 

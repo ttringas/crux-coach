@@ -19,6 +19,8 @@ class TrainingBlocksController < ApplicationController
 
     # Legacy support: set @training_block for the generate form's "complete current" messaging
     @training_block = @active_blocks.first
+    @generation_status = @profile.training_block_generation_status
+    @generation_error = @profile.training_block_generation_error
   end
 
   def create
@@ -30,6 +32,12 @@ class TrainingBlocksController < ApplicationController
 
     weeks_planned = ((end_date - start_date).to_i / 7.0).ceil
     weeks_planned = [ weeks_planned, 1 ].max
+
+    @profile.update!(
+      training_block_generation_status: "pending",
+      training_block_generation_error: nil,
+      training_block_generation_training_block_id: nil
+    )
 
     GenerateTrainingBlockJob.perform_later(
       climber_profile_id: @profile.id,
@@ -52,6 +60,11 @@ class TrainingBlocksController < ApplicationController
       format.html { redirect_to training_blocks_path, notice: "Training block is being generated..." }
     end
   rescue StandardError => e
+    @profile.update(
+      training_block_generation_status: "failed",
+      training_block_generation_error: e.message
+    )
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
@@ -61,6 +74,41 @@ class TrainingBlocksController < ApplicationController
         ), status: :unprocessable_entity
       end
       format.html { redirect_to training_blocks_path, alert: e.message }
+    end
+  end
+
+  def status
+    case @profile.training_block_generation_status
+    when "pending"
+      render json: { status: "pending" }
+    when "completed"
+      training_block = @profile.training_blocks.find_by(id: @profile.training_block_generation_training_block_id) ||
+        @profile.training_blocks.order(created_at: :desc).first
+
+      if training_block
+        render json: {
+          status: "completed",
+          training_block_id: training_block.id,
+          html: render_to_string(
+            partial: "training_blocks/generation_complete",
+            formats: [ :html ],
+            locals: { training_block: training_block }
+          )
+        }
+      else
+        render json: { status: "idle" }
+      end
+    when "failed"
+      render json: {
+        status: "failed",
+        html: render_to_string(
+          partial: "training_blocks/generation_error",
+          formats: [ :html ],
+          locals: { profile: @profile, message: @profile.training_block_generation_error }
+        )
+      }
+    else
+      render json: { status: "idle" }
     end
   end
 

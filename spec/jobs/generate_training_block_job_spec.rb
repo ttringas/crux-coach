@@ -38,6 +38,9 @@ RSpec.describe GenerateTrainingBlockJob, type: :job do
     )
 
     described_class.perform_now(**job_args)
+
+    expect(profile.reload.training_block_generation_status).to eq("completed")
+    expect(profile.training_block_generation_training_block_id).to eq(training_block.id)
   end
 
   it "broadcasts an error when generation fails" do
@@ -51,5 +54,8 @@ RSpec.describe GenerateTrainingBlockJob, type: :job do
     )
 
     described_class.perform_now(**job_args)
+
+    expect(profile.reload.training_block_generation_status).to eq("failed")
+    expect(profile.training_block_generation_error).to eq("boom")
   end
 end

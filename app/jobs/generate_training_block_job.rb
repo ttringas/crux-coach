@@ -20,11 +20,26 @@ class GenerateTrainingBlockJob < ApplicationJob
     )
 
     profile.update(onboarding_completed: true) unless profile.onboarding_completed?
+    profile.update(
+      training_block_generation_status: "completed",
+      training_block_generation_error: nil,
+      training_block_generation_training_block_id: training_block.id
+    )
 
     broadcast_complete(profile, training_block)
   rescue Ai::Client::Error, ArgumentError => e
+    profile&.update(
+      training_block_generation_status: "failed",
+      training_block_generation_error: e.message,
+      training_block_generation_training_block_id: nil
+    )
     broadcast_error(profile, e.message)
   rescue StandardError => e
+    profile&.update(
+      training_block_generation_status: "failed",
+      training_block_generation_error: "Something went wrong while generating your plan. Please try again.",
+      training_block_generation_training_block_id: nil
+    )
     broadcast_error(profile, "Something went wrong while generating your plan. Please try again.")
     Rails.logger.error("GenerateTrainingBlockJob failed: #{e.class} #{e.message}")
   end
@@ -38,6 +53,8 @@ class GenerateTrainingBlockJob < ApplicationJob
   end
 
   def broadcast_complete(profile, training_block)
+    return unless turbo_broadcast_available?
+
     Turbo::StreamsChannel.broadcast_replace_to(
       profile,
       target: generation_target(profile),
@@ -48,6 +65,7 @@ class GenerateTrainingBlockJob < ApplicationJob
 
   def broadcast_error(profile, message)
     return unless profile
+    return unless turbo_broadcast_available?
 
     Turbo::StreamsChannel.broadcast_replace_to(
       profile,
@@ -55,6 +73,9 @@ class GenerateTrainingBlockJob < ApplicationJob
       partial: "training_blocks/generation_error",
       locals: { profile: profile, message: message }
     )
+  end
+  def turbo_broadcast_available?
+    defined?(ActionCable)
   end
 
   def generation_target(profile)

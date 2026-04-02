@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   resources :onboarding, only: %i[show update]
   resource :profile, only: %i[show edit update]
   resources :training_blocks, path: "plans", only: %i[index create] do
+    collection do
+      get :status
+    end
     member do
       post :regenerate
       post :complete

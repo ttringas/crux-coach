@@ -25,6 +25,12 @@ class OnboardingController < ApplicationController
             activities: []
           )
 
+          @profile.update!(
+            training_block_generation_status: "pending",
+            training_block_generation_error: nil,
+            training_block_generation_training_block_id: nil
+          )
+
           respond_to do |format|
             format.turbo_stream do
               render turbo_stream: turbo_stream.replace(

@@ -1,6 +1,12 @@
 <style>details[open] > summary svg.details-chevron { transform: rotate(90deg); }</style>
-<%= turbo_stream_from @profile %>
-<div class="flex flex-col gap-6" data-controller="block-generator regenerate-modal session-modal">
+<% if defined?(ActionCable) %>
+  <%= turbo_stream_from @profile %>
+<% end %>
+<div
+  class="flex flex-col gap-6"
+  data-controller="block-generator regenerate-modal session-modal"
+  data-block-generator-status-url-value="<%= status_training_blocks_path %>"
+  data-block-generator-generation-target-id-value="<%= dom_id(@profile, :training_block_generation) %>">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-semibold">Training Plans</h1>
   </div>
@@ -19,21 +25,26 @@
         <% if @training_block&.active? %>
           <p class="text-sm text-slate-400 mb-4">You have an active block. Creating a new one will run alongside it.</p>
         <% end %>
-        <%= form_with url: training_blocks_path, method: :post, data: { controller: "block-generator" }, class: "space-y-4" do %>
+        <%= form_with url: training_blocks_path, method: :post, data: { action: "submit->block-generator#submit" }, class: "space-y-4" do %>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-1">Start Date</label>
-              <input type="date" name="start_date" value="<%= Date.current.beginning_of_week(:monday).to_s %>"
+              <input type="date" name="start_date" value="<%= Date.current.to_s %>"
                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                data-block-generator-target="startDate">
+                data-block-generator-target="startDate"
+                data-action="change->block-generator#startDateChanged">
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-1">End Date</label>
-              <input type="date" name="end_date" value="<%= (Date.current.beginning_of_week(:monday) + 6.weeks).to_s %>"
+              <input type="date" name="end_date" value="<%= (Date.current + 8.weeks).to_s %>"
                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                data-block-generator-target="endDate">
+                data-block-generator-target="endDate"
+                data-action="change->block-generator#endDateChanged">
+              <p class="mt-2 text-xs text-slate-400">Maximum range: 12 weeks.</p>
+              <p class="mt-1 hidden text-xs text-red-300" data-block-generator-target="dateError"></p>
             </div>
           </div>
+          <p class="text-xs text-slate-400" data-block-generator-target="dateHelper">Selected range: about 8 weeks.</p>
           <!-- Training Days -->
           <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Training Days</label>
@@ -71,17 +82,18 @@
           </div>
           <div class="flex items-center gap-4">
             <button type="submit" class="bg-amber-500 text-slate-950 px-6 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition"
-              data-block-generator-target="button"
-              data-action="click->block-generator#submit">
+              data-block-generator-target="button">
               Generate Training Block
             </button>
-            <div class="hidden flex items-start gap-2 text-sm text-slate-300" data-block-generator-target="status">
-              <span class="mt-0.5 h-4 w-4 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></span>
-              <span>Generating your training block… this usually takes 1–3 minutes. We’ll refresh automatically if the live update takes too long.</span>
-            </div>
           </div>
         <% end %>
-        <div id="<%= dom_id(@profile, :training_block_generation) %>" class="mt-4"></div>
+        <% if @generation_status == "pending" %>
+          <%= render "training_blocks/generation_pending", profile: @profile %>
+        <% elsif @generation_status == "failed" %>
+          <%= render "training_blocks/generation_error", profile: @profile, message: @generation_error %>
+        <% else %>
+          <div id="<%= dom_id(@profile, :training_block_generation) %>" class="mt-4"></div>
+        <% end %>
       </div>
     </details>
   </div>

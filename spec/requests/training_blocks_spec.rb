@@ -22,7 +22,31 @@ RSpec.describe "TrainingBlocks", type: :request do
     expect(GenerateTrainingBlockJob).to have_received(:perform_later).with(hash_including(climber_profile_id: profile.id))
     expect(response).to have_http_status(:ok)
     expect(response.media_type).to eq("text/vnd.turbo-stream.html")
-    expect(response.body).to include("Building your training plan")
-    expect(response.body).to include("1–3 minutes")
+    expect(response.body).to include("Training block generation")
+    expect(response.body).to include("Coach is building your full block")
+  end
+
+  it "renders the date range helper defaults on the index page" do
+    get training_blocks_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Maximum range: 12 weeks.")
+    expect(response.body).to include(Date.current.to_s)
+    expect(response.body).to include((Date.current + 8.weeks).to_s)
+    expect(response.body).to include("Selected range: about 8 weeks.")
+  end
+
+  it "returns status payloads for polling" do
+    profile.update!(
+      training_block_generation_status: "completed",
+      training_block_generation_training_block_id: create(:training_block, climber_profile: profile).id
+    )
+
+    get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
+
+    expect(response).to have_http_status(:ok)
+    payload = response.parsed_body
+    expect(payload["status"]).to eq("completed")
+    expect(payload["html"]).to include("Plan ready")
   end
 end
