@@ -1,0 +1,29 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify deployment
+        env:
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+          COOLIFY_API_BASE: ${{ secrets.COOLIFY_API_BASE }}
+        run: |
+          set -euo pipefail
+
+          : "${COOLIFY_API_TOKEN:?COOLIFY_API_TOKEN is required}"
+          : "${COOLIFY_APP_UUID:?COOLIFY_APP_UUID is required}"
+          : "${COOLIFY_API_BASE:?COOLIFY_API_BASE is required}"
+
+          response=$(curl -fsS -X POST \
+            -H "Authorization: Bearer ${COOLIFY_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${COOLIFY_API_BASE}/deploy?uuid=${COOLIFY_APP_UUID}&force=true")
+
+          echo "$response"
