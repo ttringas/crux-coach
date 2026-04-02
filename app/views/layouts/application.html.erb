@@ -11,19 +11,19 @@
   </head>
 
   <body class="bg-slate-950 text-slate-100 min-h-screen">
-    <div data-controller="mobile-nav" class="min-h-screen">
+    <div data-controller="mobile-nav" data-action="keydown@window->mobile-nav#handleKeydown turbo:before-cache@window->mobile-nav#beforeCache" class="min-h-screen">
       <% if user_signed_in? && !@immersive_layout %>
         <div class="md:flex">
-          <div class="fixed inset-0 bg-slate-950/80 z-30 hidden" data-mobile-nav-target="overlay" data-action="click->mobile-nav#close"></div>
+          <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 hidden transition-opacity" data-mobile-nav-target="overlay" data-action="click->mobile-nav#close"></div>
           <aside class="fixed inset-y-0 left-0 w-60 bg-slate-900 border-r border-slate-800 z-40 transform -translate-x-full transition md:translate-x-0 md:static md:inset-auto" data-mobile-nav-target="sidebar">
             <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800">
               <span class="text-lg font-semibold tracking-wide">BKUP TRAIN</span>
-              <button class="md:hidden text-slate-300" data-action="click->mobile-nav#close">
+              <button class="md:hidden text-slate-300 h-11 w-11 flex items-center justify-center rounded-lg hover:bg-slate-800/70 transition" data-action="click->mobile-nav#close">
                 <span class="sr-only">Close</span>
                 ✕
               </button>
             </div>
-            <nav class="px-4 py-6 space-y-1 text-sm">
+            <nav class="px-4 py-6 space-y-1 text-sm" data-action="click->mobile-nav#closeOnNavigate">
               <% if current_user.admin? %>
                 <%= link_to dashboard_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70" do %>
                   <%= render "shared/nav_icon", name: "dashboard" %>
@@ -73,7 +73,7 @@
               <% end %>
             </nav>
             <div class="px-6 pb-6 text-sm border-t border-slate-800">
-              <div class="pt-4 md:hidden">
+              <div class="pt-4 md:hidden" data-action="click->mobile-nav#closeOnNavigate">
                 <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "w-full text-left text-amber-400 hover:text-amber-300" %>
               </div>
               <div class="pt-4 text-sm text-slate-400 font-medium tracking-wide leading-relaxed">

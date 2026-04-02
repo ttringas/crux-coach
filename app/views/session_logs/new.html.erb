@@ -3,15 +3,15 @@
 
   <div data-controller="tabs" class="bg-slate-900 border border-slate-800 rounded-2xl transition hover:border-slate-700">
     <div class="flex border-b border-slate-800">
-      <button class="flex-1 px-4 py-3 text-sm text-slate-300 border-b-2 border-amber-500" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="natural">
+      <button class="flex-1 px-4 py-3 min-h-11 text-sm text-slate-300 border-b-2 border-amber-500" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="natural">
         Natural Language
       </button>
-      <button class="flex-1 px-4 py-3 text-sm text-slate-400" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="manual">
+      <button class="flex-1 px-4 py-3 min-h-11 text-sm text-slate-400" data-action="click->tabs#show" data-tabs-target="tab" data-tabs-name="manual">
         Manual Entry
       </button>
     </div>
 
-    <div class="p-6" data-tabs-target="panel" data-tabs-name="natural">
+    <div class="p-4 sm:p-6" data-tabs-target="panel" data-tabs-name="natural">
       <%= form_with model: @session_log, url: session_logs_path, class: "space-y-4", data: { controller: "session-parser" } do |f| %>
         <div>
           <%= f.label :raw_input, "Describe your session", class: "text-sm text-slate-300" %>
@@ -19,14 +19,14 @@
         </div>
         <%= f.hidden_field :session_type, value: "climbing" %>
         <%= f.hidden_field :date, value: Date.current %>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
           <%= button_tag "Parse Session",
             type: "submit",
             formaction: parse_session_logs_path,
             formmethod: :post,
-            class: "border border-slate-700 px-4 py-2 rounded-md text-slate-200",
+            class: "w-full sm:w-auto min-h-11 border border-slate-700 px-4 py-2 rounded-md text-slate-200",
             data: { action: "click->session-parser#parse", session_parser_target: "button", turbo_frame: "session_parse_preview" } %>
-          <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition", data: { session_parser_target: "saveButton" }, disabled: @session_log.raw_input.blank? %>
+          <%= f.submit "Save", class: "w-full sm:w-auto min-h-11 bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition", data: { session_parser_target: "saveButton" }, disabled: @session_log.raw_input.blank? %>
         </div>
 
         <%= turbo_frame_tag "session_parse_preview", data: { session_parser_target: "preview" } do %>
@@ -37,7 +37,7 @@
       <% end %>
     </div>
 
-    <div class="p-6 hidden" data-tabs-target="panel" data-tabs-name="manual">
+    <div class="p-4 sm:p-6 hidden" data-tabs-target="panel" data-tabs-name="manual">
       <%= form_with model: @session_log, url: session_logs_path, class: "space-y-4" do |f| %>
         <div class="grid md:grid-cols-2 gap-4">
           <div>
@@ -89,7 +89,7 @@
             <%= f.label :notes, class: "text-sm text-slate-300" %>
             <%= f.text_area :notes, rows: 4, placeholder: "How did it feel? Any tweaks needed?", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
           </div>
-        <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
+        <%= f.submit "Save", class: "w-full sm:w-auto min-h-11 bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
       <% end %>
     </div>
   </div>

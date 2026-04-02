@@ -1,5 +1,5 @@
 <div id="benchmark_<%= benchmark.benchmark_key %>"
-     class="flex items-center justify-between px-5 py-3 border-b border-slate-800/60 last:border-b-0 hover:bg-slate-800/30 transition"
+     class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-slate-800/60 last:border-b-0 hover:bg-slate-800/30 transition"
      data-controller="benchmark-autosave"
      data-benchmark-autosave-url-value="<%= benchmark_path(benchmark.benchmark_key) %>"
      data-benchmark-autosave-key-value="<%= benchmark.benchmark_key %>">
@@ -11,7 +11,7 @@
     <% end %>
   </div>
 
-  <div class="flex items-center gap-3 ml-4">
+  <div class="w-full sm:w-auto">
     <% placeholder = case benchmark.benchmark_key
       when /indoor_boulder/ then "V4"
       when /outdoor_boulder/ then "V6"
@@ -37,16 +37,18 @@
       else definition[:unit]
     end %>
 
-    <input type="text"
-      value="<%= benchmark.value %>"
-      placeholder="<%= placeholder %>"
-      class="w-24 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-right"
-      data-benchmark-autosave-target="input"
-      data-action="change->benchmark-autosave#save blur->benchmark-autosave#save">
+    <div class="flex items-center gap-3">
+      <input type="text"
+        value="<%= benchmark.value %>"
+        placeholder="<%= placeholder %>"
+        class="w-full sm:w-24 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-right"
+        data-benchmark-autosave-target="input"
+        data-action="change->benchmark-autosave#save blur->benchmark-autosave#save">
 
-    <span class="text-xs text-slate-500 w-12"><%= definition[:unit] %></span>
+      <span class="text-xs text-slate-500 w-12"><%= definition[:unit] %></span>
+    </div>
 
-    <div data-benchmark-autosave-target="status" class="w-16 text-xs text-right">
+    <div data-benchmark-autosave-target="status" class="mt-2 text-xs text-slate-500 sm:mt-1 sm:text-right">
       <% if benchmark.tested_at.present? %>
         <span class="text-slate-600"><%= benchmark.tested_at.strftime("%-m/%-d/%y") %></span>
       <% end %>

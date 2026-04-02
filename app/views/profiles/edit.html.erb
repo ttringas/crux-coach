@@ -7,143 +7,156 @@
     <%= link_to "Back", profile_path, class: "text-amber-400" %>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
-    <%= form_with model: @profile, url: profile_path, method: :patch, class: "space-y-6" do |f| %>
-      <div>
-        <label class="text-sm text-slate-300">Name</label>
-        <%= text_field_tag "user[name]", current_user.name, placeholder: "Alex Johnson", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-      </div>
-      <div class="grid md:grid-cols-2 gap-4">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 transition hover:border-slate-700">
+    <%= form_with model: @profile, url: profile_path, method: :patch, class: "space-y-8" do |f| %>
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <div class="text-sm font-semibold text-slate-200 mb-4">Basics</div>
         <div>
-          <%= f.label :years_climbing, class: "text-sm text-slate-300" %>
-          <%= f.number_field :years_climbing, placeholder: "4", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          <label class="text-sm text-slate-300">Name</label>
+          <%= text_field_tag "user[name]", current_user.name, placeholder: "Alex Johnson", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
         </div>
-        <div>
-          <%= f.label :training_age_months, class: "text-sm text-slate-300" do %>
-            Training age (months)
-            <span class="text-slate-500 text-xs">(optional)</span>
-          <% end %>
-          <%= f.number_field :training_age_months, placeholder: "18", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <%= f.label :years_climbing, class: "text-sm text-slate-300" %>
+            <%= f.number_field :years_climbing, placeholder: "4", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :training_age_months, class: "text-sm text-slate-300" do %>
+              Training age (months)
+              <span class="text-slate-500 text-xs">(optional)</span>
+            <% end %>
+            <%= f.number_field :training_age_months, placeholder: "18", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
         </div>
-      </div>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div>
-          <%= f.label :height_inches, class: "text-sm text-slate-300" do %>
-            Height (in)
-            <span class="text-slate-500 text-xs">(optional)</span>
-          <% end %>
-          <%= f.number_field :height_inches, placeholder: "70", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+        <div class="grid md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <%= f.label :height_inches, class: "text-sm text-slate-300" do %>
+              Height (in)
+              <span class="text-slate-500 text-xs">(optional)</span>
+            <% end %>
+            <%= f.number_field :height_inches, placeholder: "70", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :wingspan_inches, class: "text-sm text-slate-300" do %>
+              Wingspan (in)
+              <span class="text-slate-500 text-xs">(optional)</span>
+            <% end %>
+            <%= f.number_field :wingspan_inches, placeholder: "71", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :weight_lbs, class: "text-sm text-slate-300" do %>
+              Weight (lbs)
+              <span class="text-slate-500 text-xs">(optional)</span>
+            <% end %>
+            <%= f.number_field :weight_lbs, placeholder: "155", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
         </div>
-        <div>
-          <%= f.label :wingspan_inches, class: "text-sm text-slate-300" do %>
-            Wingspan (in)
-            <span class="text-slate-500 text-xs">(optional)</span>
-          <% end %>
-          <%= f.number_field :wingspan_inches, placeholder: "71", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <%= f.label :current_max_boulder_grade, class: "text-sm text-slate-300" %>
+            <%= f.text_field :current_max_boulder_grade, placeholder: "V5", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :current_max_sport_grade, class: "text-sm text-slate-300" %>
+            <%= f.text_field :current_max_sport_grade, placeholder: "5.11c", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
         </div>
-        <div>
-          <%= f.label :weight_lbs, class: "text-sm text-slate-300" do %>
-            Weight (lbs)
-            <span class="text-slate-500 text-xs">(optional)</span>
-          <% end %>
-          <%= f.number_field :weight_lbs, placeholder: "155", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-      </div>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <%= f.label :current_max_boulder_grade, class: "text-sm text-slate-300" %>
-          <%= f.text_field :current_max_boulder_grade, placeholder: "V5", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-        <div>
-          <%= f.label :current_max_sport_grade, class: "text-sm text-slate-300" %>
-          <%= f.text_field :current_max_sport_grade, placeholder: "5.11c", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-      </div>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <%= f.label :comfortable_boulder_grade, "Target boulder grade", class: "text-sm text-slate-300" %>
-          <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-        <div>
-          <%= f.label :comfortable_sport_grade, "Target sport grade", class: "text-sm text-slate-300" %>
-          <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-      </div>
-
-      <div>
-        <p class="text-sm text-slate-300 mb-3">Available equipment</p>
-        <% equipment = %w[hangboard campus_board kilter moonboard tension weights pull_up_bar rings] %>
-        <div class="grid md:grid-cols-2 gap-2">
-          <% equipment.each do |item| %>
-            <label class="flex items-center gap-2 text-sm text-slate-300">
-              <%= check_box_tag "climber_profile[available_equipment][]", item, @profile.available_equipment.include?(item), class: "bg-slate-800 border-slate-600" %>
-              <span><%= item.humanize %></span>
-            </label>
-          <% end %>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <%= f.label :comfortable_boulder_grade, "Target boulder grade", class: "text-sm text-slate-300" %>
+            <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :comfortable_sport_grade, "Target sport grade", class: "text-sm text-slate-300" %>
+            <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <%= f.label :weekly_training_days, "Training days per week", class: "text-sm text-slate-300" %>
-          <%= f.number_field :weekly_training_days, placeholder: "3", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-        </div>
-        <div>
-          <%= f.label :session_duration_minutes, "Typical session duration (min)", class: "text-sm text-slate-300" %>
-          <%= f.number_field :session_duration_minutes, placeholder: "90", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <div class="text-sm font-semibold text-slate-200 mb-4">Schedule</div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <%= f.label :weekly_training_days, "Training days per week", class: "text-sm text-slate-300" %>
+            <%= f.number_field :weekly_training_days, placeholder: "3", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
+          <div>
+            <%= f.label :session_duration_minutes, "Typical session duration (min)", class: "text-sm text-slate-300" %>
+            <%= f.number_field :session_duration_minutes, placeholder: "90", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+          </div>
         </div>
       </div>
 
-      <div>
-        <%= f.label :goals_short_term, "Short-term goals", class: "text-sm text-slate-300" %>
-        <%= f.text_area :goals_short_term, rows: 3, placeholder: "Break into V7 bouldering by summer...", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
-      </div>
-      <div>
-        <%= f.label :goals_long_term, "Long-term goals", class: "text-sm text-slate-300" %>
-        <%= f.text_area :goals_long_term, rows: 3, placeholder: "Climb 5.13a outside with confidence.", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <div class="text-sm font-semibold text-slate-200 mb-4">Goals</div>
+        <div>
+          <%= f.label :goals_short_term, "Short-term goals", class: "text-sm text-slate-300" %>
+          <%= f.text_area :goals_short_term, rows: 3, placeholder: "Break into V7 bouldering by summer...", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+        </div>
+        <div class="mt-4">
+          <%= f.label :goals_long_term, "Long-term goals", class: "text-sm text-slate-300" %>
+          <%= f.text_area :goals_long_term, rows: 3, placeholder: "Climb 5.13a outside with confidence.", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+        </div>
       </div>
 
       <% styles = %w[power endurance technique flexibility compression slab steep coordination] %>
-      <div>
-        <p class="text-sm text-slate-300 mb-3">Strengths</p>
-        <div class="grid md:grid-cols-2 gap-2">
+      <% disciplines = %w[bouldering sport trad outdoor board] %>
+
+      <details class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5" open>
+        <summary class="cursor-pointer text-sm font-semibold text-slate-200">Equipment</summary>
+        <div class="mt-4">
+          <% equipment = %w[hangboard campus_board kilter moonboard tension weights pull_up_bar rings] %>
+          <div class="grid md:grid-cols-2 gap-2">
+            <% equipment.each do |item| %>
+              <label class="flex items-center gap-2 text-sm text-slate-300 rounded-lg border border-slate-800/70 bg-slate-900/60 px-3 py-2">
+                <%= check_box_tag "climber_profile[available_equipment][]", item, @profile.available_equipment.include?(item), class: "bg-slate-800 border-slate-600" %>
+                <span><%= item.humanize %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      </details>
+
+      <details class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-200">Strengths</summary>
+        <div class="mt-4 grid md:grid-cols-2 gap-2">
           <% styles.each do |style| %>
-            <label class="flex items-center gap-2 text-sm text-slate-300">
+            <label class="flex items-center gap-2 text-sm text-slate-300 rounded-lg border border-slate-800/70 bg-slate-900/60 px-3 py-2">
               <%= check_box_tag "climber_profile[style_strengths][]", style, @profile.style_strengths.include?(style), class: "bg-slate-800 border-slate-600" %>
               <span><%= style.humanize %></span>
             </label>
           <% end %>
         </div>
-      </div>
-      <div>
-        <p class="text-sm text-slate-300 mb-3">Weaknesses</p>
-        <div class="grid md:grid-cols-2 gap-2">
+      </details>
+
+      <details class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-200">Weaknesses</summary>
+        <div class="mt-4 grid md:grid-cols-2 gap-2">
           <% styles.each do |style| %>
-            <label class="flex items-center gap-2 text-sm text-slate-300">
+            <label class="flex items-center gap-2 text-sm text-slate-300 rounded-lg border border-slate-800/70 bg-slate-900/60 px-3 py-2">
               <%= check_box_tag "climber_profile[style_weaknesses][]", style, @profile.style_weaknesses.include?(style), class: "bg-slate-800 border-slate-600" %>
               <span><%= style.humanize %></span>
             </label>
           <% end %>
         </div>
-      </div>
+      </details>
 
-      <div>
-        <p class="text-sm text-slate-300 mb-3">Preferred disciplines</p>
-        <% disciplines = %w[bouldering sport trad outdoor board] %>
-        <div class="grid md:grid-cols-2 gap-2">
+      <details class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-200">Preferred disciplines</summary>
+        <div class="mt-4 grid md:grid-cols-2 gap-2">
           <% disciplines.each do |disc| %>
-            <label class="flex items-center gap-2 text-sm text-slate-300">
+            <label class="flex items-center gap-2 text-sm text-slate-300 rounded-lg border border-slate-800/70 bg-slate-900/60 px-3 py-2">
               <%= check_box_tag "climber_profile[preferred_disciplines][]", disc, @profile.preferred_disciplines.include?(disc), class: "bg-slate-800 border-slate-600" %>
               <span><%= disc.humanize %></span>
             </label>
           <% end %>
         </div>
-      </div>
+      </details>
 
-      <div data-controller="injury-fields">
-        <p class="text-sm text-slate-300 mb-3">Injuries</p>
-        <div class="space-y-4" data-injury-fields-target="list">
-          <% injuries = @profile.injuries.presence || [] %>
+      <% injuries = @profile.injuries.presence || [] %>
+      <details class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5" <%= injuries.any? ? "open" : "" %> data-controller="injury-fields">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-200">Injuries</summary>
+        <div class="mt-4 space-y-4" data-injury-fields-target="list">
           <% injuries.each do |injury| %>
             <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4">
               <div class="grid md:grid-cols-2 gap-3">
@@ -196,14 +209,14 @@
           </div>
         </template>
         <button type="button" class="mt-4 text-sm text-amber-400" data-action="injury-fields#add">Add another injury</button>
-      </div>
+      </details>
 
-      <div>
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-5">
         <%= f.label :additional_context, "Additional context", class: "text-sm text-slate-300" %>
         <%= f.text_area :additional_context, rows: 3, placeholder: "Anything else we should consider?", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
       </div>
 
-      <%= f.submit "Save", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
+      <%= f.submit "Save", class: "w-full sm:w-auto min-h-11 bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
     <% end %>
   </div>
 </div>
