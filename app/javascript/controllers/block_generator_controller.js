@@ -302,11 +302,13 @@ export default class extends Controller {
   messages() {
     return [
       "Analyzing your goals and recent benchmarks…",
+      "This can take several minutes — hang tight!",
       "Optimizing the schedule around your available days…",
       "Factoring in recovery, intensity, and climbing volume…",
+      "Still working — building a detailed, personalized plan takes a bit…",
       "Dialing in exercises, sets, reps, and rest windows…",
       "Pressure-testing progression and deload timing…",
-      "Polishing the plan so it reads like a real coach wrote it…"
+      "Almost there — polishing the plan so it reads like a real coach wrote it…"
     ]
   }
 }
