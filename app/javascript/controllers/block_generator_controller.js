@@ -150,9 +150,10 @@ export default class extends Controller {
 
     this.updateProgress()
     this.progressInterval = window.setInterval(() => {
-      const cap = 94
+      const cap = 95
+      // Reach ~95% over ~3.5 minutes (300 ticks at 700ms)
       const increment =
-        this.progressValue < 55 ? 2.5 : this.progressValue < 75 ? 1.2 : this.progressValue < 88 ? 0.6 : 0.25
+        this.progressValue < 30 ? 0.8 : this.progressValue < 60 ? 0.5 : this.progressValue < 80 ? 0.3 : this.progressValue < 90 ? 0.15 : 0.05
       this.progressValue = Math.min(cap, this.progressValue + increment)
       this.updateProgress()
     }, PROGRESS_TICK_MS)
