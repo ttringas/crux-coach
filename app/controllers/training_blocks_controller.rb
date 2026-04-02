@@ -21,6 +21,10 @@ class TrainingBlocksController < ApplicationController
     @training_block = @active_blocks.first
     @generation_status = @profile.training_block_generation_status
     @generation_error = @profile.training_block_generation_error
+
+    if params[:generation_notice].present?
+      flash.now[:notice] = params[:generation_notice]
+    end
   end
 
   def create
@@ -89,6 +93,7 @@ class TrainingBlocksController < ApplicationController
         render json: {
           status: "completed",
           training_block_id: training_block.id,
+          notice: "Your new training block is ready and now visible below.",
           html: render_to_string(
             partial: "training_blocks/generation_complete",
             formats: [ :html ],

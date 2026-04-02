@@ -47,6 +47,14 @@ RSpec.describe "TrainingBlocks", type: :request do
     expect(response).to have_http_status(:ok)
     payload = response.parsed_body
     expect(payload["status"]).to eq("completed")
+    expect(payload["notice"]).to eq("Your new training block is ready and now visible below.")
     expect(payload["html"]).to include("Plan ready")
+  end
+
+  it "shows a generation notice after refresh via query param" do
+    get training_blocks_path, params: { generation_notice: "Your new training block is ready and now visible below." }
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Your new training block is ready and now visible below.")
   end
 end

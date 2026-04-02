@@ -1,7 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-const SOFT_REFRESH_MS = 60_000
-const HARD_REFRESH_MS = 210_000
 const POLL_INTERVAL_MS = 4_000
 const PROGRESS_TICK_MS = 700
 const MESSAGE_TICK_MS = 5_500
@@ -26,7 +24,6 @@ export default class extends Controller {
   }
 
   connect() {
-    this.refreshTimeouts = []
     this.pollInterval = null
     this.progressInterval = null
     this.messageInterval = null
@@ -42,7 +39,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.clearRefreshTimeouts()
     this.stopPolling()
     this.stopProgress()
     this.stopMessages()
@@ -56,7 +52,6 @@ export default class extends Controller {
       return
     }
 
-    this.scheduleRefreshFallbacks()
     this.startGenerationUx()
 
     // Defer disabling the button so the native form submit fires first
@@ -128,24 +123,16 @@ export default class extends Controller {
     this.updateDateHelper(startDate, endDate)
   }
 
-  scheduleRefreshFallbacks() {
-    this.clearRefreshTimeouts()
+  refreshPage(notice = null) {
+    const url = new URL(window.location.href)
 
-    this.refreshTimeouts = [
-      window.setTimeout(() => this.refreshPage(), SOFT_REFRESH_MS),
-      window.setTimeout(() => this.refreshPage(), HARD_REFRESH_MS)
-    ]
-  }
+    if (notice) {
+      url.searchParams.set("generation_notice", notice)
+    } else {
+      url.searchParams.delete("generation_notice")
+    }
 
-  clearRefreshTimeouts() {
-    if (!this.refreshTimeouts) return
-
-    this.refreshTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId))
-    this.refreshTimeouts = []
-  }
-
-  refreshPage() {
-    window.location.reload()
+    window.location.assign(url.toString())
   }
 
   startGenerationUx() {
@@ -242,6 +229,8 @@ export default class extends Controller {
       if (payload.status === "completed") {
         this.progressValue = 100
         this.updateProgress()
+        this.refreshPage(payload.notice || "Your training block is ready.")
+        return
       }
 
       if (payload.html && this.generationTargetIdValue) {
@@ -251,7 +240,7 @@ export default class extends Controller {
         }
       }
     } catch (error) {
-      // Ignore polling errors; the refresh fallback will handle recovery.
+      // Ignore transient polling errors and keep polling.
     }
   }
 
