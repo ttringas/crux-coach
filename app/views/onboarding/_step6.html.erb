@@ -1,49 +1,40 @@
-<h2 class="text-2xl font-semibold">Style & Context</h2>
-<p class="text-slate-400 mt-2">Highlight what comes easy and what needs work.</p>
+<h2 class="text-2xl font-semibold">Review & Finish</h2>
+<p class="text-slate-400 mt-2">Confirm your profile before heading to your plans.</p>
 
-<%= form_with model: profile, url: onboarding_path(6), method: :patch, class: "mt-6 space-y-6" do |f| %>
-  <% styles = %w[power endurance technique flexibility compression slab steep coordination] %>
-  <div>
-    <p class="text-sm text-slate-300 mb-3">Strengths</p>
-    <div class="grid md:grid-cols-2 gap-2">
-      <% styles.each do |style| %>
-        <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[style_strengths][]", style, profile.style_strengths.include?(style), class: "bg-slate-800 border-slate-600" %>
-          <span><%= style.humanize %></span>
-        </label>
-      <% end %>
-    </div>
+<div class="mt-6 grid md:grid-cols-2 gap-6 text-sm text-slate-300">
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Basics</div>
+    <div class="mt-2">Name: <span class="text-slate-100"><%= current_user.name.presence || "Not set" %></span></div>
+    <div>Years climbing: <span class="text-slate-100"><%= profile.years_climbing || "-" %></span></div>
+    <div>Max boulder: <span class="text-slate-100"><%= profile.current_max_boulder_grade || "-" %></span></div>
+    <div>Max sport: <span class="text-slate-100"><%= profile.current_max_sport_grade || "-" %></span></div>
   </div>
-  <div>
-    <p class="text-sm text-slate-300 mb-3">Weaknesses</p>
-    <div class="grid md:grid-cols-2 gap-2">
-      <% styles.each do |style| %>
-        <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[style_weaknesses][]", style, profile.style_weaknesses.include?(style), class: "bg-slate-800 border-slate-600" %>
-          <span><%= style.humanize %></span>
-        </label>
-      <% end %>
-    </div>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Schedule</div>
+    <div class="mt-2">Training days: <span class="text-slate-100"><%= profile.weekly_training_days || "-" %></span></div>
+    <div>Session duration: <span class="text-slate-100"><%= profile.session_duration_minutes || "-" %> min</span></div>
+    <div>Equipment: <span class="text-slate-100"><%= profile.available_equipment_labels.join(", ").presence || "-" %></span></div>
   </div>
-  <div>
-    <p class="text-sm text-slate-300 mb-3">Preferred disciplines</p>
-    <% disciplines = %w[bouldering sport trad outdoor board] %>
-    <div class="grid md:grid-cols-2 gap-2">
-      <% disciplines.each do |disc| %>
-        <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[preferred_disciplines][]", disc, profile.preferred_disciplines.include?(disc), class: "bg-slate-800 border-slate-600" %>
-          <span><%= disc.humanize %></span>
-        </label>
-      <% end %>
-    </div>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Goals</div>
+    <div class="mt-2"><%= profile.goals_short_term.presence || "No short-term goals yet." %></div>
+    <% if profile.goals_long_term.present? %>
+      <div class="mt-1"><%= profile.goals_long_term %></div>
+    <% end %>
+    <% if profile.comfortable_boulder_grade.present? || profile.comfortable_sport_grade.present? %>
+      <div class="mt-2 text-slate-400 text-xs">
+        Target: <%= [profile.comfortable_boulder_grade, profile.comfortable_sport_grade].compact.join(" / ") %>
+      </div>
+    <% end %>
   </div>
-  <div>
-    <%= f.label :additional_context, "Additional context", class: "text-sm text-slate-300" %>
-    <%= f.text_area :additional_context, rows: 3, placeholder: "Anything else we should consider?", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+  <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4 transition hover:border-slate-600">
+    <div class="text-sm text-slate-400 uppercase tracking-wide">Style</div>
+    <div class="mt-2">Strengths: <span class="text-slate-100"><%= profile.style_strengths.join(", ").presence || "-" %></span></div>
+    <div>Weaknesses: <span class="text-slate-100"><%= profile.style_weaknesses.join(", ").presence || "-" %></span></div>
   </div>
-  <div class="flex items-center justify-between">
-    <%= link_to "Back", onboarding_path(5), class: "text-slate-400" %>
+</div>
 
-    <%= f.submit "Continue", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
-  </div>
+<%= form_with model: profile, url: onboarding_path(6), method: :patch, class: "mt-8 flex items-center justify-between" do |f| %>
+  <%= link_to "Back", onboarding_path(5), class: "text-slate-400" %>
+  <%= f.submit "Finish & View Plans", class: "bg-amber-500 text-slate-950 font-semibold px-6 py-2 rounded-md hover:bg-amber-400 active:bg-amber-600 transition" %>
 <% end %>

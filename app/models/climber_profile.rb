@@ -14,7 +14,6 @@ class ClimberProfile < ApplicationRecord
     "training_board" => "Training Board",
     "campus_board" => "Campus board",
     "spray_wall" => "Spray wall",
-    "systems_wall" => "Systems wall",
     "pull_up_bar" => "Pull up bar",
     "rings_trx" => "Rings/TRX",
     "weights" => "Weights",

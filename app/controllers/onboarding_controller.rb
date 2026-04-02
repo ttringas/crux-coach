@@ -9,39 +9,12 @@ class OnboardingController < ApplicationController
     update_user_name
 
     if @profile.update(profile_params)
-      if @step == 7
-        begin
-          start_date = Date.current.beginning_of_week(:monday)
-          weeks_planned = 4
-          end_date = start_date + weeks_planned.weeks
+      if @step == 6
+        @profile.update!(onboarding_completed: true)
 
-          GenerateTrainingBlockJob.perform_later(
-            climber_profile_id: @profile.id,
-            start_date: start_date,
-            end_date: end_date,
-            weeks_planned: weeks_planned,
-            comments: @profile.additional_context.to_s,
-            training_days: [],
-            activities: []
-          )
-
-          @profile.update!(
-            onboarding_completed: true,
-            training_block_generation_status: "pending",
-            training_block_generation_error: nil,
-            training_block_generation_training_block_id: nil
-          )
-
-          respond_to do |format|
-            format.turbo_stream { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready.", status: :see_other }
-            format.html { redirect_to training_blocks_path, notice: "Plan generation started. We'll notify you when it's ready." }
-          end
-        rescue Ai::Client::Error => e
-          flash.now[:alert] = e.message
-          respond_to do |format|
-            format.turbo_stream { render :show, status: :unprocessable_entity, formats: [ :html ] }
-            format.html { render :show, status: :unprocessable_entity }
-          end
+        respond_to do |format|
+          format.turbo_stream { redirect_to training_blocks_path, status: :see_other }
+          format.html { redirect_to training_blocks_path }
         end
       else
         respond_to do |format|
@@ -66,7 +39,7 @@ class OnboardingController < ApplicationController
   def set_step
     @step = params[:id].to_i
     @step = 1 if @step < 1
-    @step = 7 if @step > 7
+    @step = 6 if @step > 6
   end
 
   def update_user_name

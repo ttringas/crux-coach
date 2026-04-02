@@ -1,27 +1,23 @@
-<h2 class="text-2xl font-semibold">Equipment & Schedule</h2>
-<p class="text-slate-400 mt-2">Let us know what you have access to and how often you train.</p>
+<h2 class="text-2xl font-semibold">Goals</h2>
+<p class="text-slate-400 mt-2">Capture what you want in the next few months and long term.</p>
 
-<%= form_with model: profile, url: onboarding_path(3), method: :patch, class: "mt-6 space-y-6" do |f| %>
+<%= form_with model: profile, url: onboarding_path(3), method: :patch, class: "mt-6 space-y-4" do |f| %>
   <div>
-    <p class="text-sm text-slate-300 mb-3">Available equipment</p>
-    <% equipment = ClimberProfile::EQUIPMENT_OPTIONS %>
-    <div class="grid md:grid-cols-2 gap-2">
-      <% equipment.each do |item, label| %>
-        <label class="flex items-center gap-2 text-sm text-slate-300">
-          <%= check_box_tag "climber_profile[available_equipment][]", item, profile.available_equipment.include?(item), class: "bg-slate-800 border-slate-600" %>
-          <span><%= label %></span>
-        </label>
-      <% end %>
-    </div>
+    <%= f.label :goals_short_term, "Short-term goals", class: "text-sm text-slate-300" %>
+    <%= f.text_area :goals_short_term, rows: 3, placeholder: "Break into V7 bouldering by summer...", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :goals_long_term, "Long-term goals", class: "text-sm text-slate-300" %>
+    <%= f.text_area :goals_long_term, rows: 3, placeholder: "Climb 5.13a outside with confidence.", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
   </div>
   <div class="grid md:grid-cols-2 gap-4">
     <div>
-      <%= f.label :weekly_training_days, "Training days per week", class: "text-sm text-slate-300" %>
-      <%= f.number_field :weekly_training_days, placeholder: "3", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.label :comfortable_boulder_grade, "Target boulder grade", class: "text-sm text-slate-300" %>
+      <%= f.text_field :comfortable_boulder_grade, placeholder: "V7", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
     <div>
-      <%= f.label :session_duration_minutes, "Typical session duration (min)", class: "text-sm text-slate-300" %>
-      <%= f.number_field :session_duration_minutes, placeholder: "90", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
+      <%= f.label :comfortable_sport_grade, "Target sport grade", class: "text-sm text-slate-300" %>
+      <%= f.text_field :comfortable_sport_grade, placeholder: "5.12b", class: "mt-2 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" %>
     </div>
   </div>
   <div class="flex items-center justify-between">
