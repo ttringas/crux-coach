@@ -23,7 +23,14 @@
     </div>
     <div class="text-left sm:text-right">
       <div class="text-xs text-slate-400">Status</div>
-      <div class="mt-1 inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-200" data-session-completion-target="statusLabel"><%= @planned_session.status.humanize %></div>
+      <% display_status = case @planned_session.status
+        when "todo" then "Upcoming"
+        when "in_progress" then "In Progress"
+        when "completed" then "Completed"
+        when "skipped" then "Skipped"
+        else @planned_session.status.humanize
+      end %>
+      <div class="mt-1 inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-200" data-session-completion-target="statusLabel"><%= display_status %></div>
     </div>
   </div>
 
@@ -65,7 +72,7 @@
     <div class="mt-4 grid gap-4">
       <label class="text-xs text-slate-400" data-controller="range-value">
         <div class="flex items-center justify-between">
-          <span>Energy level (1-5)</span>
+          <span>Energy level</span>
           <span class="text-slate-200" data-range-value-target="output"></span>
         </div>
         <input
@@ -78,10 +85,11 @@
           data-exercise-log-target="energyLevel"
           data-action="input->range-value#update change->exercise-log#queueSave"
         />
+        <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>Low</span><span>High</span></div>
       </label>
       <label class="text-xs text-slate-400" data-controller="range-value">
         <div class="flex items-center justify-between">
-          <span>Finger soreness (1-5)</span>
+          <span>Finger soreness</span>
           <span class="text-slate-200" data-range-value-target="output"></span>
         </div>
         <input
@@ -94,10 +102,11 @@
           data-exercise-log-target="fingerSoreness"
           data-action="input->range-value#update change->exercise-log#queueSave"
         />
+        <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>None</span><span>Very sore</span></div>
       </label>
       <label class="text-xs text-slate-400" data-controller="range-value">
         <div class="flex items-center justify-between">
-          <span>General soreness (1-5)</span>
+          <span>General soreness</span>
           <span class="text-slate-200" data-range-value-target="output"></span>
         </div>
         <input
@@ -110,6 +119,7 @@
           data-exercise-log-target="generalSoreness"
           data-action="input->range-value#update change->exercise-log#queueSave"
         />
+        <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>None</span><span>Very sore</span></div>
       </label>
     </div>
   </div>
@@ -137,32 +147,40 @@
       <% completed = log["completed"] %>
       <% work_seconds = parse_duration.call(exercise["duration"]) %>
       <% rest_seconds = parse_duration.call(exercise["rest"]) %>
+      <%# --- Build display values from new schema (with backward compat) --- %>
+      <% target_reps = exercise["target_reps"].presence || exercise["reps"].presence %>
+      <% rep_unit = exercise["rep_unit"].presence || "reps" %>
+      <% target_grade = exercise["target_grade"].presence %>
+      <% target_weight = exercise["target_weight"].presence %>
+      <% rest_value = exercise["rest"].to_s.strip %>
+      <% hide_rest = rest_value == "0s" || rest_value == "0" || rest_value.blank? %>
+
       <% prescribed_bits = [] %>
-      <% if exercise["sets"].present? && exercise["reps"].present? %>
-        <% prescribed_bits << "#{exercise["sets"]} x #{exercise["reps"]}" %>
+      <% if exercise["sets"].present? && target_reps.present? %>
+        <% prescribed_bits << "#{exercise["sets"]} × #{target_reps} #{rep_unit}" %>
       <% elsif exercise["sets"].present? %>
         <% prescribed_bits << "Sets: #{exercise["sets"]}" %>
-      <% elsif exercise["reps"].present? %>
-        <% prescribed_bits << "Reps: #{exercise["reps"]}" %>
+      <% elsif target_reps.present? %>
+        <% prescribed_bits << "#{target_reps} #{rep_unit}" %>
       <% end %>
       <% prescribed_bits << "Duration: #{exercise["duration"]}" if exercise["duration"].present? %>
-      <% prescribed_bits << "Rest: #{exercise["rest"]}" if exercise["rest"].present? %>
+      <% prescribed_bits << "Rest: #{rest_value}" if !hide_rest %>
 
       <% num_sets = exercise["sets"].to_s.match?(/\A\d+\z/) ? exercise["sets"].to_i : 1 %>
       <% num_sets = 1 if num_sets <= 0 %>
       <% duration_hint = exercise["duration"].presence %>
       <% exercise_name = exercise["name"] || exercise["title"] || "Exercise" %>
-      <% reps_label = exercise["reps"].present? ? exercise["reps"].to_s : nil %>
+      <%# reps_label removed — now using target_reps + rep_unit %>
       <% category = exercise["category"].to_s.downcase %>
       <% name_downcase = exercise_name.to_s.downcase %>
-      <% has_weight_key = exercise.key?("weight") %>
+      <% has_weight_key = exercise.key?("weight") || exercise.key?("target_weight") %>
       <% weight_keywords = ["weighted", "squat", "press", "deadlift", "row", "curl", "bench", "overhead"] %>
       <% name_has_weight = weight_keywords.any? { |term| name_downcase.include?(term) } %>
-      <% show_weight = has_weight_key || category == "strength" || name_has_weight %>
-      <% if ["climbing", "hangboard", "board", "mobility", "cardio"].include?(category) && !has_weight_key && !name_has_weight %>
+      <% show_weight = has_weight_key || category == "strength" || name_has_weight || target_weight.present? %>
+      <% if ["climbing", "hangboard", "board", "mobility", "cardio"].include?(category) && !has_weight_key && !name_has_weight && target_weight.blank? %>
         <% show_weight = false %>
       <% end %>
-      <% recommended_weight = exercise["weight"].presence&.to_s %>
+      <% recommended_weight = (exercise["target_weight"] || exercise["weight"]).presence&.to_s %>
       <% library_match = @exercise_library_matches[index] %>
 
       <div
@@ -267,27 +285,36 @@
               <div class="flex-1 text-sm min-w-[180px]">
                 <% if num_sets > 1 %>
                   <span class="text-slate-300"><%= set_done ? "✓" : "" %> Set <%= set_idx + 1 %> of <%= num_sets %></span>
-                  <% if reps_label %>
-                    <span class="text-slate-500"> · <%= reps_label %> reps</span>
+                  <% if target_reps.present? %>
+                    <% display_unit = rep_unit.to_s %>
+                    <% if target_reps.to_s == "1" && display_unit.end_with?("s") && !display_unit.end_with?("ss") %>
+                      <% display_unit = display_unit.chomp("s") %>
+                    <% end %>
+                    <span class="text-slate-500"> · <%= target_reps %> <%= display_unit %></span>
                   <% end %>
                 <% else %>
                   <span class="text-slate-300 <%= set_done ? 'line-through text-slate-500' : '' %>"><%= prescribed_bits.any? ? prescribed_bits.join(" · ") : "Complete" %></span>
                 <% end %>
+                <% if target_grade.present? %>
+                  <span class="inline-flex items-center rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-xs font-medium text-amber-300 ml-2"><%= target_grade %></span>
+                <% end %>
               </div>
+              <% input_placeholder = target_reps.present? ? target_reps.to_s : "" %>
+              <% input_unit_label = rep_unit == "reps" ? "reps" : rep_unit %>
               <div class="flex items-center gap-2 text-xs text-slate-400">
                 <div class="flex items-center gap-1">
                   <input
                     type="number"
                     inputmode="numeric"
                     class="h-8 w-16 rounded-md border border-slate-700 bg-slate-950 px-2 text-sm text-slate-100"
-                    placeholder="<%= reps_label %>"
+                    placeholder="<%= input_placeholder %>"
                     value="<%= set_log["actual_reps"] %>"
                     data-action="input->exercise-log#queueSave change->exercise-log#queueSave"
                     data-set-key="<%= set_key %>"
                     data-set-field="actual_reps"
-                    data-recommended-value="<%= reps_label %>"
+                    data-recommended-value="<%= input_placeholder %>"
                   />
-                  <span>reps</span>
+                  <span><%= input_unit_label %></span>
                 </div>
                 <% if show_weight %>
                   <div class="flex items-center gap-1">
@@ -430,7 +457,7 @@
     <div class="mt-6 grid gap-4">
       <label class="text-xs text-slate-400" data-controller="range-value">
         <div class="flex items-center justify-between">
-          <span>RPE (1-10)</span>
+          <span>RPE</span>
           <span class="text-slate-200" data-range-value-target="output"></span>
         </div>
         <input
@@ -443,6 +470,7 @@
           data-exercise-log-target="perceivedExertion"
           data-action="input->range-value#update change->exercise-log#queueSave"
         />
+        <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>Easy</span><span>Max effort</span></div>
       </label>
     </div>
   </div>
@@ -474,8 +502,27 @@
                 <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="sets" />
               </div>
               <div>
-                <label class="text-xs uppercase tracking-wide text-slate-400">Reps</label>
-                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="reps" />
+                <label class="text-xs uppercase tracking-wide text-slate-400">Target Reps</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="targetReps" placeholder="e.g. 10" />
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Rep Unit</label>
+                <select class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="repUnit">
+                  <option value="reps">reps</option>
+                  <option value="seconds">seconds</option>
+                  <option value="minutes">minutes</option>
+                  <option value="problems">problems</option>
+                  <option value="routes">routes</option>
+                  <option value="attempts">attempts</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Target Grade</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="targetGrade" placeholder="e.g. V2-V3" />
+              </div>
+              <div>
+                <label class="text-xs uppercase tracking-wide text-slate-400">Target Weight</label>
+                <input type="text" class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100" data-session-exercises-target="targetWeight" placeholder="e.g. 25 lbs" />
               </div>
               <div>
                 <label class="text-xs uppercase tracking-wide text-slate-400">Duration</label>

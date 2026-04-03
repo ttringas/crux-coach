@@ -24,6 +24,11 @@ module Ai
           - Session types: climbing (gym/outdoor), board, hangboard, strength, cardio, mobility; match to goals.
           - Risk control: honor injuries and avoid aggravating patterns. Replace risky work with safe alternatives.
           - Specificity: prescribe concrete session structure, exercises, sets/reps/rest, and intensity guidance.
+          - Exercise fields: Use the new exercise schema. For each exercise, set `target_reps` (numeric value), `rep_unit` (one of: reps, seconds, minutes, problems, routes, attempts), `target_grade` (climbing grade like "V2-V3" when applicable, null otherwise), and `target_weight` (for strength exercises, null otherwise). Also keep `reps` as a backward-compatible copy of `target_reps`. Examples:
+            - Climbing: {"name": "Boulder Problems", "sets": 10, "target_reps": "4", "rep_unit": "problems", "target_grade": "V3-V4", "reps": "4", "rest": "2 min", "notes": "Focus on technique"}
+            - Hangboard: {"name": "20mm Edge Hangs", "sets": 6, "target_reps": "7", "rep_unit": "seconds", "reps": "7", "rest": "3 min", "notes": "Bodyweight only"}
+            - Strength: {"name": "Push-ups", "sets": 3, "target_reps": "12", "rep_unit": "reps", "target_weight": null, "reps": "12", "rest": "60s"}
+            - Timed: {"name": "Continuous Climbing", "sets": 3, "target_reps": "8", "rep_unit": "minutes", "reps": "8", "rest": "5 min"}
           - CRITICAL CONSTRAINTS: You MUST strictly respect the scheduling_constraints provided. Only schedule sessions on days listed in training_days. Only include activities listed in activities. If an activity is not in the list, do NOT include it under any circumstances. Violating these constraints is a critical error.
 
           Output must be valid JSON only. No markdown. Follow the exact schema provided by the user prompt.
@@ -74,8 +79,12 @@ module Ai
                     {
                       name: "string",
                       sets: "string or integer",
-                      reps: "string or integer",
-                      duration: "string",
+                      target_reps: "string or integer — the numeric target value",
+                      rep_unit: "reps|seconds|minutes|problems|routes|attempts",
+                      target_grade: "string or null — climbing grade (e.g. V3-V4) when applicable",
+                      target_weight: "string or null — weight for strength exercises",
+                      reps: "string or integer — backward compat, same as target_reps",
+                      duration: "string — overall exercise duration if relevant",
                       rest: "string",
                       notes: "string"
                     }

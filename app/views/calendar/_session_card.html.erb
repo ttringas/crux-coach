@@ -35,7 +35,14 @@ end %>
     <div class="text-xs text-slate-400 shrink-0"><%= session.estimated_duration_minutes || "-" %>m</div>
   </div>
   <div class="mt-2 flex items-center justify-between">
-    <span class="text-[10px] text-slate-500 uppercase"><%= session.intensity %> · <%= status %></span>
+    <% status_label = case status
+      when "todo" then "Upcoming"
+      when "in_progress" then "In Progress"
+      when "completed" then "Completed"
+      when "skipped" then "Skipped"
+      else status.humanize
+    end %>
+    <span class="text-[10px] text-slate-500 uppercase"><%= session.intensity %> · <%= status_label %></span>
     <%= link_to "Go →", weekly_plan_planned_session_path(weekly_plan, session), class: "text-xs font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center rounded-md px-2 py-1.5 hover:bg-amber-500/10 transition", data: { turbo: false } %>
   </div>
 </div>

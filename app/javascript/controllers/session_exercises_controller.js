@@ -11,6 +11,10 @@ export default class extends Controller {
     "nameHint",
     "sets",
     "reps",
+    "targetReps",
+    "repUnit",
+    "targetGrade",
+    "targetWeight",
     "duration",
     "rest",
     "description",
@@ -173,6 +177,10 @@ export default class extends Controller {
           ...base,
           sets: existing.sets,
           reps: existing.reps,
+          target_reps: existing.target_reps,
+          rep_unit: existing.rep_unit,
+          target_grade: existing.target_grade,
+          target_weight: existing.target_weight,
           duration: existing.duration,
           rest: existing.rest,
           notes: existing.notes
@@ -264,6 +272,10 @@ export default class extends Controller {
     if (this.hasNameTarget) this.nameTarget.value = exercise.name || exercise.title || ""
     if (this.hasSetsTarget) this.setsTarget.value = exercise.sets || ""
     if (this.hasRepsTarget) this.repsTarget.value = exercise.reps || ""
+    if (this.hasTargetRepsTarget) this.targetRepsTarget.value = exercise.target_reps || exercise.reps || ""
+    if (this.hasRepUnitTarget) this.repUnitTarget.value = exercise.rep_unit || "reps"
+    if (this.hasTargetGradeTarget) this.targetGradeTarget.value = exercise.target_grade || ""
+    if (this.hasTargetWeightTarget) this.targetWeightTarget.value = exercise.target_weight || ""
     if (this.hasDurationTarget) this.durationTarget.value = exercise.duration || ""
     if (this.hasRestTarget) this.restTarget.value = exercise.rest || ""
     if (this.hasDescriptionTarget) this.descriptionTarget.value = exercise.description || ""
@@ -271,10 +283,19 @@ export default class extends Controller {
   }
 
   exerciseFromForm() {
+    const targetReps = this.hasTargetRepsTarget ? this.stringValue(this.targetRepsTarget.value) : ""
+    const repUnit = this.hasRepUnitTarget ? this.stringValue(this.repUnitTarget.value) : "reps"
+    const targetGrade = this.hasTargetGradeTarget ? this.stringValue(this.targetGradeTarget.value) : ""
+    const targetWeight = this.hasTargetWeightTarget ? this.stringValue(this.targetWeightTarget.value) : ""
+
     return this.compactExercise({
       name: this.stringValue(this.nameTarget.value),
       sets: this.stringValue(this.setsTarget.value),
-      reps: this.stringValue(this.repsTarget.value),
+      reps: targetReps, // keep backward compat
+      target_reps: targetReps,
+      rep_unit: repUnit || "reps",
+      target_grade: targetGrade,
+      target_weight: targetWeight,
       duration: this.stringValue(this.durationTarget.value),
       rest: this.stringValue(this.restTarget.value),
       description: this.stringValue(this.descriptionTarget.value),
