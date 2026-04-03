@@ -6,7 +6,7 @@
     <div class="space-y-4" data-injury-fields-target="list">
       <% injuries = profile.injuries.presence || [] %>
       <% injuries.each do |injury| %>
-        <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4">
+        <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4" data-injury-field>
           <div class="grid md:grid-cols-2 gap-3">
             <div>
               <label class="text-xs text-slate-400">Area</label>
@@ -33,7 +33,7 @@
     </div>
 
     <template data-injury-fields-target="template">
-      <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4">
+      <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-4" data-injury-field>
         <div class="grid md:grid-cols-2 gap-3">
           <div>
             <label class="text-xs text-slate-400">Area</label>

@@ -9,7 +9,7 @@ export default class extends Controller {
   }
 
   remove(event) {
-    const item = event.currentTarget.closest(".bg-slate-800\/60")
+    const item = event.currentTarget.closest("[data-injury-field]")
     if (item) item.remove()
   }
 }
