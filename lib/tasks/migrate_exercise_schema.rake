@@ -83,7 +83,7 @@ namespace :exercises do
           remaining = reps_value.gsub(embedded_time[0], "").strip
           if remaining.present?
             existing_notes = exercise["notes"].to_s
-            exercise["notes"] = [existing_notes, remaining].reject(&:blank?).join(". ")
+            exercise["notes"] = [ existing_notes, remaining ].reject(&:blank?).join(". ")
           end
           changed = true
 

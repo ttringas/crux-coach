@@ -125,7 +125,7 @@ namespace :exercises do
         if parsed["_append_notes"].present?
           existing = ex["notes"].to_s
           unless existing.include?(parsed["_append_notes"])
-            ex["notes"] = [existing, parsed["_append_notes"]].reject(&:blank?).join(". ")
+            ex["notes"] = [ existing, parsed["_append_notes"] ].reject(&:blank?).join(". ")
           end
         end
 
