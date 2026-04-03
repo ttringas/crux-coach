@@ -95,20 +95,26 @@ export default class extends Controller {
   }
 
   showInputs() {
-    if (this.hasInputWrapperTarget) this.inputWrapperTarget.classList.remove("hidden")
-    if (this.hasDisplayWrapperTarget) this.displayWrapperTarget.classList.add("hidden")
+    if (this.hasInputWrapperTarget) this.inputWrapperTarget.style.display = ""
+    if (this.hasDisplayWrapperTarget) this.displayWrapperTarget.style.display = "none"
   }
 
   showDisplay() {
-    if (this.hasInputWrapperTarget) this.inputWrapperTarget.classList.add("hidden")
-    if (this.hasDisplayWrapperTarget) this.displayWrapperTarget.classList.remove("hidden")
+    if (this.hasInputWrapperTarget) this.inputWrapperTarget.style.display = "none"
+    if (this.hasDisplayWrapperTarget) this.displayWrapperTarget.style.display = ""
   }
 
   showButtons() {
     const running = Boolean(this.intervalId)
-    if (this.hasStartButtonTarget) this.startButtonTarget.classList.toggle("hidden", running)
-    if (this.hasStopButtonTarget) this.stopButtonTarget.classList.toggle("hidden", !running)
-    if (this.hasResetButtonTarget) this.resetButtonTarget.classList.toggle("hidden", !this.hasStarted)
+    if (this.hasStartButtonTarget) {
+      this.startButtonTarget.style.display = running ? "none" : "inline-flex"
+    }
+    if (this.hasStopButtonTarget) {
+      this.stopButtonTarget.style.display = running ? "inline-flex" : "none"
+    }
+    if (this.hasResetButtonTarget) {
+      this.resetButtonTarget.style.display = this.hasStarted ? "inline-flex" : "none"
+    }
   }
 
   triggerCompletionEffects() {
