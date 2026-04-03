@@ -88,7 +88,9 @@ class PlannedSessionsController < ApplicationController
       :finger_soreness,
       :general_soreness,
       exercise_logs: [
+        :set_key,
         :exercise_index,
+        :set_index,
         :completed,
         :actual_sets,
         :actual_reps,

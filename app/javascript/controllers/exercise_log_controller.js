@@ -18,19 +18,15 @@ export default class extends Controller {
 
   queueSave(event) {
     if (event && event.target) {
+      if (event.target.type === "checkbox") {
+        this.applyRecommendedValues(event.target)
+      }
       this.updateCardState(event.target)
     }
 
     if (this.saveTimeout) clearTimeout(this.saveTimeout)
     this.setSaveStatus("Saving...")
     this.saveTimeout = setTimeout(() => this.save(), this.debounceValue)
-  }
-
-  toggle(event) {
-    const card = event.currentTarget.closest("[data-exercise-index]")
-    if (!card) return
-    const details = card.querySelector("[data-exercise-details]")
-    if (details) details.classList.toggle("hidden")
   }
 
   handleSpeechResult(event) {
@@ -43,15 +39,34 @@ export default class extends Controller {
   updateCardState(target) {
     const card = target.closest("[data-exercise-index]")
     if (!card) return
-    const checkbox = card.querySelector("input[type='checkbox']")
-    if (!checkbox) return
+    const checkboxes = Array.from(card.querySelectorAll("input[type='checkbox']"))
+    if (checkboxes.length === 0) return
+    const anyChecked = checkboxes.some((checkbox) => checkbox.checked)
 
-    if (checkbox.checked) {
+    if (anyChecked) {
       card.classList.add("bg-green-500/5", "border-green-500/20")
       card.classList.remove("border-slate-800")
     } else {
       card.classList.remove("bg-green-500/5", "border-green-500/20")
       card.classList.add("border-slate-800")
+    }
+  }
+
+  applyRecommendedValues(checkbox) {
+    if (!checkbox.checked) return
+    const row = checkbox.closest("[data-set-key]")
+    if (!row) return
+
+    const repsInput = row.querySelector("[data-set-field='actual_reps']")
+    if (repsInput && !repsInput.value) {
+      const recommended = this.recommendedNumber(repsInput.dataset.recommendedValue || repsInput.placeholder)
+      if (recommended !== null) repsInput.value = recommended
+    }
+
+    const weightInput = row.querySelector("[data-set-field='actual_weight']")
+    if (weightInput && !weightInput.value) {
+      const recommended = this.recommendedNumber(weightInput.dataset.recommendedValue || weightInput.placeholder)
+      if (recommended !== null) weightInput.value = recommended
     }
   }
 
@@ -81,28 +96,33 @@ export default class extends Controller {
   }
 
   buildPayload() {
-    const exerciseLogs = Array.from(this.element.querySelectorAll("[data-exercise-index]")).map((card) => {
+    const exerciseLogs = []
+    Array.from(this.element.querySelectorAll("[data-exercise-index]")).forEach((card) => {
       const index = parseInt(card.dataset.exerciseIndex, 10)
-      const completed = card.querySelector("input[type='checkbox']")?.checked || false
-      const actualSets = this.integerValue(card.querySelector("[data-exercise-log-field='actual_sets']")?.value)
-      const actualReps = this.integerValue(card.querySelector("[data-exercise-log-field='actual_reps']")?.value)
-      const actualWeight = this.floatValue(card.querySelector("[data-exercise-log-field='actual_weight']")?.value)
-      const actualDuration = this.stringValue(card.querySelector("[data-exercise-log-field='actual_duration']")?.value)
       const notes = this.stringValue(card.querySelector("[data-exercise-log-field='notes']")?.value)
 
-      const hasData = completed || actualSets !== null || actualReps !== null || actualWeight !== null || actualDuration || notes
-      if (!hasData) return null
+      const setRows = Array.from(card.querySelectorAll("[data-set-key]"))
+      setRows.forEach((row) => {
+        const setKey = row.dataset.setKey
+        const setIndex = parseInt(row.dataset.setIndex, 10)
+        const completed = row.querySelector("input[type='checkbox']")?.checked || false
+        const actualReps = this.integerValue(row.querySelector("[data-set-field='actual_reps']")?.value)
+        const actualWeight = this.floatValue(row.querySelector("[data-set-field='actual_weight']")?.value)
 
-      return {
-        exercise_index: index,
-        completed: completed,
-        actual_sets: actualSets,
-        actual_reps: actualReps,
-        actual_weight: actualWeight,
-        actual_duration: actualDuration,
-        notes: notes
-      }
-    }).filter(Boolean)
+        const hasData = completed || actualReps !== null || actualWeight !== null || notes
+        if (!hasData) return
+
+        exerciseLogs.push({
+          set_key: setKey,
+          exercise_index: index,
+          set_index: Number.isNaN(setIndex) ? null : setIndex,
+          completed: completed,
+          actual_reps: actualReps,
+          actual_weight: actualWeight,
+          notes: notes
+        })
+      })
+    })
 
     return {
       exercise_logs: exerciseLogs,
@@ -130,6 +150,14 @@ export default class extends Controller {
     if (value === null || value === undefined) return null
     const trimmed = String(value).trim()
     return trimmed.length ? trimmed : null
+  }
+
+  recommendedNumber(value) {
+    if (!value) return null
+    const matches = String(value).match(/\d+/g)
+    if (!matches || matches.length === 0) return null
+    const parsed = parseInt(matches[matches.length - 1], 10)
+    return Number.isNaN(parsed) ? null : parsed
   }
 
   setSaveStatus(text) {
