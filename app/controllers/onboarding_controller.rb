@@ -11,6 +11,15 @@ class OnboardingController < ApplicationController
     if @profile.update(profile_params)
       if @step == 6
         @profile.update!(onboarding_completed: true)
+        GenerateTrainingBlockJob.perform_later(
+          climber_profile_id: @profile.id,
+          start_date: Date.current.to_s,
+          end_date: (Date.current + (@profile.weekly_training_days.to_i.clamp(1, 7) * 4).weeks).to_s,
+          weeks_planned: 4,
+          comments: "",
+          training_days: [],
+          activities: []
+        )
 
         respond_to do |format|
           format.turbo_stream { redirect_to training_blocks_path, status: :see_other }
@@ -73,7 +82,7 @@ class OnboardingController < ApplicationController
 
     if params.dig(:climber_profile, :injuries).is_a?(Array)
       sanitized = params[:climber_profile][:injuries].map do |injury|
-        injury.slice("area", "severity", "notes", "date_started", "still_active")
+        injury.permit("area", "severity", "notes", "date_started", "still_active").to_h
       end
       permitted[:injuries] = sanitized.reject do |injury|
         injury.values.all?(&:blank?)

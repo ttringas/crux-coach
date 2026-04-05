@@ -5,7 +5,8 @@ RSpec.describe "Authentication redirects", type: :request do
     user = create(:user, password: "password123!")
     create(:climber_profile, user: user, onboarding_completed: true)
 
-    post user_session_path, params: { user: { email: user.email, password: "password123!" } }
+    user.update!(magic_link_code: "123456", magic_link_sent_at: Time.current)
+    post verify_magic_link_code_path, params: { email: user.email, code: "123456" }
 
     expect(response).to redirect_to(calendar_path)
   end
@@ -41,5 +42,21 @@ RSpec.describe "Authentication redirects", type: :request do
     get root_path
 
     expect(response).to redirect_to(calendar_path)
+  end
+
+  it "redirects non-onboarded users to onboarding" do
+    user = create(:user)
+    create(:climber_profile, user: user, onboarding_completed: false)
+    sign_in user
+
+    get training_blocks_path
+
+    expect(response).to redirect_to(onboarding_path(1))
+  end
+
+  it "redirects unauthenticated users to sign in" do
+    get calendar_path
+
+    expect(response).to redirect_to(new_user_session_path)
   end
 end
