@@ -1,0 +1,15 @@
+BKUP TRAIN
+
+Hi <%= @user.name.presence || "there" %>,
+
+Your new training plan is ready to go!
+
+<%= @training_block.name %>
+<%= @training_block.focus.humanize %> · <%= @training_block.weeks_planned %> weeks
+<% if @training_block.started_at && @training_block.ends_at -%>
+<%= @training_block.started_at.strftime("%b %d, %Y") %> – <%= @training_block.ends_at.strftime("%b %d, %Y") %>
+<% end -%>
+
+View your training plan: <%= @url %>
+
+Time to train. Let's go!

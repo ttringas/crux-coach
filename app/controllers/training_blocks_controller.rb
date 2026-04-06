@@ -84,7 +84,24 @@ class TrainingBlocksController < ApplicationController
   def status
     case @profile.training_block_generation_status
     when "pending"
-      render json: { status: "pending" }
+      # If generation has been pending for more than 10 minutes, mark it as failed.
+      # This catches cases where the background job was killed without triggering rescue blocks.
+      if @profile.updated_at < 10.minutes.ago
+        @profile.update(
+          training_block_generation_status: "failed",
+          training_block_generation_error: "Plan generation timed out. Please try again."
+        )
+        render json: {
+          status: "failed",
+          html: render_to_string(
+            partial: "training_blocks/generation_error",
+            formats: [ :html ],
+            locals: { profile: @profile, message: @profile.training_block_generation_error }
+          )
+        }
+      else
+        render json: { status: "pending" }
+      end
     when "completed"
       training_block = @profile.training_blocks.find_by(id: @profile.training_block_generation_training_block_id) ||
         @profile.training_blocks.order(created_at: :desc).first
@@ -104,12 +121,15 @@ class TrainingBlocksController < ApplicationController
         render json: { status: "idle" }
       end
     when "failed"
+      error_message = @profile.training_block_generation_error
+      # Reset status so the form is ready for a new attempt
+      @profile.update(training_block_generation_status: nil, training_block_generation_error: nil)
       render json: {
         status: "failed",
         html: render_to_string(
           partial: "training_blocks/generation_error",
           formats: [ :html ],
-          locals: { profile: @profile, message: @profile.training_block_generation_error }
+          locals: { profile: @profile, message: error_message }
         )
       }
     else

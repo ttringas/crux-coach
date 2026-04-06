@@ -5,6 +5,7 @@ const PROGRESS_TICK_MS = 700
 const MESSAGE_TICK_MS = 5_500
 const DEFAULT_WEEKS = 8
 const MAX_WEEKS = 12
+const GENERATION_TIMEOUT_MS = 10 * 60 * 1_000 // 10 minutes
 
 export default class extends Controller {
   static targets = [
@@ -27,6 +28,7 @@ export default class extends Controller {
     this.pollInterval = null
     this.progressInterval = null
     this.messageInterval = null
+    this.generationTimeout = null
     this.progressValue = 6
     this.messageIndex = 0
     this.activeGeneration = false
@@ -42,6 +44,7 @@ export default class extends Controller {
     this.stopPolling()
     this.stopProgress()
     this.stopMessages()
+    this.stopGenerationTimeout()
   }
 
   submit(event) {
@@ -142,6 +145,7 @@ export default class extends Controller {
     this.startProgress()
     this.startMessages()
     this.startPolling()
+    this.startGenerationTimeout()
   }
 
   startProgress() {
@@ -207,6 +211,39 @@ export default class extends Controller {
     this.pollInterval = null
   }
 
+  startGenerationTimeout() {
+    if (this.generationTimeout) return
+
+    this.generationTimeout = window.setTimeout(() => {
+      this.stopPolling()
+      this.stopProgress()
+      this.stopMessages()
+      this.activeGeneration = false
+      this.showTimeoutError()
+    }, GENERATION_TIMEOUT_MS)
+  }
+
+  stopGenerationTimeout() {
+    if (!this.generationTimeout) return
+    window.clearTimeout(this.generationTimeout)
+    this.generationTimeout = null
+  }
+
+  showTimeoutError() {
+    if (!this.generationTargetIdValue) return
+
+    const container = document.getElementById(this.generationTargetIdValue)
+    if (!container) return
+
+    container.innerHTML = `
+      <div class="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
+        <div class="text-xs uppercase tracking-wide text-red-300">Generation failed</div>
+        <div class="text-sm text-slate-200 mt-1">Plan generation timed out. Please try again.</div>
+        <div class="text-xs text-slate-400 mt-2">If this keeps happening, contact support.</div>
+      </div>
+    `
+  }
+
   async pollStatus() {
     if (!this.statusUrlValue) return
 
@@ -225,6 +262,7 @@ export default class extends Controller {
       this.stopPolling()
       this.stopProgress()
       this.stopMessages()
+      this.stopGenerationTimeout()
       this.activeGeneration = false
 
       if (payload.status === "completed") {

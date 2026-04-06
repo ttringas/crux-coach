@@ -27,6 +27,7 @@ class GenerateTrainingBlockJob < ApplicationJob
     )
 
     broadcast_complete(profile, training_block)
+    send_completion_email(profile, training_block)
   rescue Ai::Client::Error, ArgumentError => e
     profile&.update(
       training_block_generation_status: "failed",
@@ -74,6 +75,15 @@ class GenerateTrainingBlockJob < ApplicationJob
       locals: { profile: profile, message: message }
     )
   end
+  def send_completion_email(profile, training_block)
+    user = profile.user
+    return unless user&.email.present?
+
+    TrainingBlockMailer.generation_complete(user, training_block).deliver_later
+  rescue StandardError => e
+    Rails.logger.error("TrainingBlockMailer failed: #{e.class} #{e.message}")
+  end
+
   def turbo_broadcast_available?
     defined?(ActionCable)
   end

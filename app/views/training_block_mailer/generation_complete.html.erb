@@ -1,0 +1,61 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff;padding:24px;font-family:Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden;">
+        <tr>
+          <td style="padding:28px 28px 8px;">
+            <div style="font-size:18px;font-weight:700;letter-spacing:1px;color:#111827;">BKUP TRAIN</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px;">Inspired by the outdoors, rooted in Brooklyn</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 28px;">
+            <p style="margin:0 0 12px;font-size:16px;color:#1f2937;">Hi <%= @user.name.presence || "there" %>,</p>
+            <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#374151;">
+              Your new training plan is ready to go!
+            </p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+              <tr>
+                <td align="center">
+                  <div style="background-color:#f3f4f6;border:1px solid #e5e7eb;border-radius:12px;padding:20px 32px;display:inline-block;text-align:center;">
+                    <div style="font-size:18px;font-weight:700;color:#111827;"><%= @training_block.name %></div>
+                    <div style="font-size:13px;color:#6b7280;margin-top:6px;">
+                      <%= @training_block.focus.humanize %> &middot; <%= @training_block.weeks_planned %> weeks
+                    </div>
+                    <% if @training_block.started_at && @training_block.ends_at %>
+                      <div style="font-size:12px;color:#9ca3af;margin-top:4px;">
+                        <%= @training_block.started_at.strftime("%b %d, %Y") %> &ndash; <%= @training_block.ends_at.strftime("%b %d, %Y") %>
+                      </div>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+              <tr>
+                <td align="center">
+                  <table role="presentation" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background-color:#f59e0b;border-radius:12px;">
+                        <a href="<%= @url %>" style="display:inline-block;padding:14px 22px;color:#111827;font-weight:700;text-decoration:none;font-size:14px;">View Your Training Plan</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:12px;color:#6b7280;">Time to train. Let's go!</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 28px 28px;color:#9ca3af;font-size:12px;">
+            BKUP TRAIN &mdash; Inspired by the outdoors, rooted in Brooklyn
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
