@@ -1,20 +1,20 @@
 FactoryBot.define do
   factory :session_log do
-    climber_profile { nil }
+    association :climber_profile
     planned_session { nil }
-    session_type { 1 }
-    date { "2026-03-28" }
-    duration_minutes { 1 }
-    perceived_exertion { 1 }
-    energy_level { 1 }
-    skin_condition { 1 }
-    finger_soreness { 1 }
-    general_soreness { 1 }
-    mood { 1 }
-    notes { "MyText" }
-    raw_input { "MyText" }
-    structured_data { "" }
-    climbs_logged { "" }
-    exercises_logged { "" }
+    session_type { :climbing }
+    date { Date.current }
+    duration_minutes { 60 }
+    perceived_exertion { 5 }
+    energy_level { 3 }
+    skin_condition { 3 }
+    finger_soreness { 2 }
+    general_soreness { 2 }
+    mood { 4 }
+    notes { "Good session" }
+    raw_input { nil }
+    structured_data { {} }
+    climbs_logged { [] }
+    exercises_logged { [] }
   end
 end

@@ -15,7 +15,7 @@ module CoachPortal
     def update
       @current_plan = @athlete.weekly_plans.current.first
       if @current_plan&.update(weekly_plan_params)
-        redirect_to coach_athlete_path(@athlete), notice: "Plan updated."
+        redirect_to coach_portal_athlete_path(@athlete), notice: "Plan updated."
       else
         render :edit, status: :unprocessable_entity
       end
