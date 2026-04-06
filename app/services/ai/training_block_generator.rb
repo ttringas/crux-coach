@@ -238,6 +238,17 @@ module Ai
         - Include climbing, strength, hangboard, mobility, and rest days
         - Honor injuries and constraints
         - Be specific and detailed for every week — include full exercise prescriptions with sets, reps, and rest periods
+        - BENCHMARK-BASED CALIBRATION: When the climber has benchmark data, you MUST use it to set specific, personalized targets:
+          - Hangboard: Use max_weighted_hang values to prescribe hang protocols (e.g. if max_weighted_hang_20mm is +45 lbs, prescribe working sets at 70-85% of that). Use max_hang_duration to calibrate timed hangs.
+          - Pull-ups: Use max_weighted_pullup to set target_weight for weighted pull-ups (typically 70-85% of max for working sets). Use max_pullups to calibrate bodyweight rep targets.
+          - Lockoffs: Use lockoff_90 and lockoff_full benchmarks to set hold durations for lock-off training.
+          - General strength: Use deadlift_1rm, bench_press_1rm, overhead_press_1rm, squat_1rm to prescribe working weights (typically 65-85% of 1RM depending on the training phase).
+          - Climbing grades: Use current max and onsight grades to set target_grade for climbing sessions (e.g. limit bouldering at max grade, volume climbing 2-3 grades below max, onsight practice at onsight grade).
+          - Power: Use campus_max_span and box_jump_height to calibrate explosive training.
+          - Endurance: Use four_by_four_grade and arc_duration to set endurance session parameters.
+          - Body composition: Use bodyweight to calculate relative strength targets and added weight for weighted exercises.
+          - If a benchmark has historical progression data, use the trend to inform whether to push intensity or consolidate.
+          - Always include the actual weight, grade, or duration values in the exercise prescription (target_weight, target_grade, target_reps) — do NOT leave them as null when benchmark data is available.
         Output must be valid JSON only. No markdown.
       TEXT
     end

@@ -24,10 +24,21 @@ module Ai
           - Session types: climbing (gym/outdoor), board, hangboard, strength, cardio, mobility; match to goals.
           - Risk control: honor injuries and avoid aggravating patterns. Replace risky work with safe alternatives.
           - Specificity: prescribe concrete session structure, exercises, sets/reps/rest, and intensity guidance.
+          - BENCHMARK-BASED CALIBRATION: When the climber has benchmark data, you MUST use it to set specific, personalized targets:
+            - Hangboard: Use max_weighted_hang values to prescribe hang protocols (e.g. if max_weighted_hang_20mm is +45 lbs, prescribe working sets at 70-85% of that). Use max_hang_duration to calibrate timed hangs.
+            - Pull-ups: Use max_weighted_pullup to set target_weight for weighted pull-ups (typically 70-85% of max for working sets). Use max_pullups to calibrate bodyweight rep targets.
+            - Lockoffs: Use lockoff_90 and lockoff_full benchmarks to set hold durations for lock-off training.
+            - General strength: Use deadlift_1rm, bench_press_1rm, overhead_press_1rm, squat_1rm to prescribe working weights (typically 65-85% of 1RM depending on the training phase).
+            - Climbing grades: Use current max and onsight grades to set target_grade for climbing sessions (e.g. limit bouldering at max grade, volume climbing 2-3 grades below max, onsight practice at onsight grade).
+            - Power: Use campus_max_span and box_jump_height to calibrate explosive training.
+            - Endurance: Use four_by_four_grade and arc_duration to set endurance session parameters.
+            - Body composition: Use bodyweight to calculate relative strength targets and added weight for weighted exercises.
+            - If a benchmark has historical progression data, use the trend to inform whether to push intensity or consolidate.
+            - Always include the actual weight, grade, or duration values in the exercise prescription (target_weight, target_grade, target_reps) — do NOT leave them as null when benchmark data is available.
           - Exercise fields: Use the new exercise schema. For each exercise, set `target_reps` (numeric value), `rep_unit` (one of: reps, seconds, minutes, problems, routes, attempts), `target_grade` (climbing grade like "V2-V3" when applicable, null otherwise), and `target_weight` (for strength exercises, null otherwise). Also keep `reps` as a backward-compatible copy of `target_reps`. Examples:
             - Climbing: {"name": "Boulder Problems", "sets": 10, "target_reps": "4", "rep_unit": "problems", "target_grade": "V3-V4", "reps": "4", "rest": "2 min", "notes": "Focus on technique"}
-            - Hangboard: {"name": "20mm Edge Hangs", "sets": 6, "target_reps": "7", "rep_unit": "seconds", "reps": "7", "rest": "3 min", "notes": "Bodyweight only"}
-            - Strength: {"name": "Push-ups", "sets": 3, "target_reps": "12", "rep_unit": "reps", "target_weight": null, "reps": "12", "rest": "60s"}
+            - Hangboard: {"name": "20mm Edge Hangs", "sets": 6, "target_reps": "7", "rep_unit": "seconds", "reps": "7", "rest": "3 min", "notes": "+30 lbs based on max hang benchmark"}
+            - Strength: {"name": "Weighted Pull-ups", "sets": 3, "target_reps": "5", "rep_unit": "reps", "target_weight": "+25 lbs", "reps": "5", "rest": "3 min", "notes": "~75% of max weighted pull-up"}
             - Timed: {"name": "Continuous Climbing", "sets": 3, "target_reps": "8", "rep_unit": "minutes", "reps": "8", "rest": "5 min"}
           - CRITICAL CONSTRAINTS: You MUST strictly respect the scheduling_constraints provided. Only schedule sessions on days listed in training_days. Only include activities listed in activities. If an activity is not in the list, do NOT include it under any circumstances. Violating these constraints is a critical error.
 
