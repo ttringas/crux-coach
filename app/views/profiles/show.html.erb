@@ -11,6 +11,7 @@
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 transition hover:border-slate-700">
       <div class="text-sm text-slate-400 uppercase tracking-wide">Basics</div>
       <div class="mt-2">Name: <span class="text-slate-100"><%= current_user.name.presence || "-" %></span></div>
+      <div>Email: <span class="text-slate-100"><%= current_user.email.presence || "-" %></span></div>
       <div>Years climbing: <span class="text-slate-100"><%= @profile.years_climbing || "-" %></span></div>
       <div>Max boulder: <span class="text-slate-100"><%= @profile.current_max_boulder_grade || "-" %></span></div>
       <div>Max sport: <span class="text-slate-100"><%= @profile.current_max_sport_grade || "-" %></span></div>
