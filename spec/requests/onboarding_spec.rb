@@ -35,12 +35,16 @@ RSpec.describe "Onboarding", type: :request do
     expect(profile.reload.weekly_training_days).to eq(3)
   end
 
-  it "redirects to plans after the final step" do
-    allow(GenerateTrainingBlockJob).to receive(:perform_later)
+  it "completes onboarding and redirects to training blocks on the final step" do
+    patch onboarding_path(6), params: { climber_profile: {} }
 
-    patch onboarding_path(7), params: { climber_profile: {} }
-
-    expect(GenerateTrainingBlockJob).to have_received(:perform_later)
+    expect(profile.reload.onboarding_completed).to be true
     expect(response).to redirect_to(training_blocks_path)
+  end
+
+  it "advances to the next step for intermediate steps" do
+    patch onboarding_path(3), params: { climber_profile: { goals_short_term: "Send V6" } }
+
+    expect(response).to redirect_to(onboarding_path(4))
   end
 end

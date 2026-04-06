@@ -1,12 +1,12 @@
 FactoryBot.define do
   factory :coach do
-    user { nil }
-    bio { "MyText" }
-    specialties { "MyText" }
-    years_coaching { 1 }
-    max_grade_boulder { "MyString" }
-    max_grade_sport { "MyString" }
-    rate_per_month { "9.99" }
-    accepting_athletes { false }
+    association :user, role: :coach
+    bio { "Experienced climbing coach" }
+    specialties { [ "bouldering", "sport climbing" ] }
+    years_coaching { 5 }
+    max_grade_boulder { "V10" }
+    max_grade_sport { "5.13a" }
+    rate_per_month { 99.99 }
+    accepting_athletes { true }
   end
 end

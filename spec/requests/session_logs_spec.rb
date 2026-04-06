@@ -6,7 +6,55 @@ RSpec.describe "SessionLogs", type: :request do
 
   before { sign_in user }
 
+  describe "GET /log" do
+    it "returns 200" do
+      get session_logs_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "filters by type and date range" do
+      create(:session_log, climber_profile: profile, session_type: :climbing, date: Date.current - 10.days)
+      target = create(:session_log, climber_profile: profile, session_type: :hangboard, date: Date.current - 2.days)
+      create(:session_log, climber_profile: profile, session_type: :hangboard, date: Date.current - 30.days)
+
+      get session_logs_path, params: {
+        session_type: "hangboard",
+        date_from: (Date.current - 5.days).to_s,
+        date_to: Date.current.to_s
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(target.session_type.humanize)
+      expect(response.body).to include(target.date.strftime("%b %d, %Y"))
+      expect(response.body).not_to include((Date.current - 30.days).strftime("%b %d, %Y"))
+    end
+  end
+
+  describe "GET /log/new" do
+    it "returns 200" do
+      get new_session_log_path
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   describe "POST /log" do
+    it "creates a session log and redirects" do
+      expect {
+        post session_logs_path, params: {
+          session_log: {
+            session_type: "climbing",
+            date: Date.current.to_s,
+            duration_minutes: 60,
+            perceived_exertion: 5,
+            energy_level: 3,
+            notes: "Good session"
+          }
+        }
+      }.to change(SessionLog, :count).by(1)
+
+      expect(response).to redirect_to(session_log_path(SessionLog.last))
+    end
+
     it "creates a session log from parsed payload and ignores overridden fields" do
       parsed = {
         "session_type" => "weird",
@@ -103,22 +151,11 @@ RSpec.describe "SessionLogs", type: :request do
     end
   end
 
-  describe "GET /log" do
-    it "filters by type and date range" do
-      create(:session_log, climber_profile: profile, session_type: :climbing, date: Date.current - 10.days)
-      target = create(:session_log, climber_profile: profile, session_type: :hangboard, date: Date.current - 2.days)
-      create(:session_log, climber_profile: profile, session_type: :hangboard, date: Date.current - 30.days)
-
-      get session_logs_path, params: {
-        session_type: "hangboard",
-        date_from: (Date.current - 5.days).to_s,
-        date_to: Date.current.to_s
-      }
-
+  describe "GET /log/:id" do
+    it "returns 200" do
+      session_log = create(:session_log, climber_profile: profile)
+      get session_log_path(session_log)
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include(target.session_type.humanize)
-      expect(response.body).to include(target.date.strftime("%b %d, %Y"))
-      expect(response.body).not_to include((Date.current - 30.days).strftime("%b %d, %Y"))
     end
   end
 
