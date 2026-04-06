@@ -63,6 +63,7 @@ export default class extends Controller {
     if (!this.draggedSession) return
 
     const newDayOfWeek = parseInt(dayCell?.dataset.dayOfWeek ?? "0", 10)
+    const targetDate = dayCell?.dataset.date
     const updateUrl = this.draggedSession.dataset.updateUrl
     const token = document.querySelector("meta[name='csrf-token']")?.getAttribute("content")
 
@@ -77,7 +78,7 @@ export default class extends Controller {
           "Accept": "application/json",
           "X-CSRF-Token": token
         },
-        body: JSON.stringify({ planned_session: { day_of_week: newDayOfWeek } })
+        body: JSON.stringify({ planned_session: { day_of_week: newDayOfWeek, target_date: targetDate } })
       })
 
       if (!response.ok) throw new Error("Update failed")

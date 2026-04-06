@@ -13,6 +13,10 @@ class PlannedSessionsController < ApplicationController
     status_before = @planned_session.status
     @planned_session.assign_attributes(planned_session_params)
 
+    if params.dig(:planned_session, :target_date).present?
+      move_to_target_date(params[:planned_session][:target_date])
+    end
+
     if params.dig(:planned_session, :status).present?
       apply_status_transition
     end
@@ -100,6 +104,22 @@ class PlannedSessionsController < ApplicationController
         :timer_seconds
       ]
     )
+  end
+
+  def move_to_target_date(target_date_str)
+    target_date = Date.parse(target_date_str)
+    target_week_of = target_date.beginning_of_week(:monday)
+
+    return if @weekly_plan.week_of == target_week_of
+
+    target_plan = @profile.weekly_plans.find_by(week_of: target_week_of)
+    target_plan ||= @profile.weekly_plans.create!(
+      week_of: target_week_of,
+      training_block: @weekly_plan.training_block,
+      status: :active
+    )
+
+    @planned_session.weekly_plan = target_plan
   end
 
   def apply_status_transition
