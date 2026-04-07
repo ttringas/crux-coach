@@ -1,9 +1,28 @@
 class GenerateTrainingBlockJob < ApplicationJob
   queue_as :default
 
+  # Retry transient AI errors with exponential backoff (wait 2s, 4s, then give up)
+  retry_on Ai::Client::Error, wait: ->(executions) { (2**executions).seconds }, attempts: 3 do |job, error|
+    # This block runs after all retries are exhausted
+    profile = ClimberProfile.find_by(id: job.arguments.first[:climber_profile_id])
+    if profile
+      profile.update(
+        training_block_generation_status: "failed",
+        training_block_generation_error: error.message,
+        training_block_generation_training_block_id: nil
+      )
+      job.send(:broadcast_error, profile, error.message)
+    end
+  end
+
+  discard_on ActiveJob::DeserializationError
+
   def perform(climber_profile_id:, start_date:, end_date:, weeks_planned:, comments:, training_days:, activities:)
     profile = ClimberProfile.find_by(id: climber_profile_id)
     return unless profile
+
+    # Update started_at so timeout detection knows the job is actively running
+    profile.update_column(:training_block_generation_started_at, Time.current)
 
     parsed_start = parse_date(start_date)
     parsed_end = parse_date(end_date)
@@ -28,24 +47,27 @@ class GenerateTrainingBlockJob < ApplicationJob
 
     broadcast_complete(profile, training_block)
     send_completion_email(profile, training_block)
-  rescue Ai::Client::Error, ArgumentError => e
-    profile&.update(
-      training_block_generation_status: "failed",
-      training_block_generation_error: e.message,
-      training_block_generation_training_block_id: nil
-    )
+  rescue ArgumentError => e
+    mark_failed(profile, e.message)
     broadcast_error(profile, e.message)
   rescue StandardError => e
-    profile&.update(
-      training_block_generation_status: "failed",
-      training_block_generation_error: "Something went wrong while generating your plan. Please try again.",
-      training_block_generation_training_block_id: nil
-    )
+    # Don't catch Ai::Client::Error here — retry_on handles that
+    raise if e.is_a?(Ai::Client::Error)
+
+    mark_failed(profile, "Something went wrong while generating your plan. Please try again.")
     broadcast_error(profile, "Something went wrong while generating your plan. Please try again.")
-    Rails.logger.error("GenerateTrainingBlockJob failed: #{e.class} #{e.message}")
+    Rails.logger.error("GenerateTrainingBlockJob failed: #{e.class} #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}")
   end
 
   private
+
+  def mark_failed(profile, message)
+    profile&.update(
+      training_block_generation_status: "failed",
+      training_block_generation_error: message,
+      training_block_generation_training_block_id: nil
+    )
+  end
 
   def parse_date(value)
     return value if value.is_a?(Date)
@@ -75,6 +97,7 @@ class GenerateTrainingBlockJob < ApplicationJob
       locals: { profile: profile, message: message }
     )
   end
+
   def send_completion_email(profile, training_block)
     user = profile.user
     return unless user&.email.present?

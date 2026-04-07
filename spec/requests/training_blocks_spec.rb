@@ -54,7 +54,10 @@ RSpec.describe "TrainingBlocks", type: :request do
   end
 
   it "returns a pending status payload while generation is running" do
-    profile.update!(training_block_generation_status: "pending")
+    profile.update!(
+      training_block_generation_status: "pending",
+      training_block_generation_started_at: Time.current
+    )
 
     get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
 
@@ -144,5 +147,114 @@ RSpec.describe "TrainingBlocks", type: :request do
 
     expect(response).to redirect_to(training_blocks_path)
     expect(flash[:alert]).to eq("Regeneration failed: No credits")
+  end
+
+  # --- New reliability tests ---
+
+  describe "double-submit guard" do
+    it "rejects duplicate generation when one is already in progress" do
+      allow(GenerateTrainingBlockJob).to receive(:perform_later)
+
+      profile.update!(
+        training_block_generation_status: "pending",
+        training_block_generation_started_at: 1.minute.ago
+      )
+
+      post training_blocks_path,
+        params: {
+          start_date: Date.current.beginning_of_week(:monday).to_s,
+          end_date: (Date.current.beginning_of_week(:monday) + 4.weeks).to_s
+        },
+        headers: { "ACCEPT" => "text/vnd.turbo-stream.html" }
+
+      expect(response).to have_http_status(:ok)
+      expect(GenerateTrainingBlockJob).not_to have_received(:perform_later)
+    end
+
+    it "allows new generation when previous pending has timed out" do
+      allow(GenerateTrainingBlockJob).to receive(:perform_later)
+
+      profile.update!(
+        training_block_generation_status: "pending",
+        training_block_generation_started_at: 15.minutes.ago
+      )
+
+      post training_blocks_path,
+        params: {
+          start_date: Date.current.beginning_of_week(:monday).to_s,
+          end_date: (Date.current.beginning_of_week(:monday) + 4.weeks).to_s
+        },
+        headers: { "ACCEPT" => "text/vnd.turbo-stream.html" }
+
+      expect(response).to have_http_status(:ok)
+      expect(GenerateTrainingBlockJob).to have_received(:perform_later)
+    end
+  end
+
+  describe "timeout detection" do
+    it "marks pending generation as failed after timeout using generation_started_at" do
+      profile.update!(
+        training_block_generation_status: "pending",
+        training_block_generation_started_at: 11.minutes.ago
+      )
+
+      get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
+
+      expect(response).to have_http_status(:ok)
+      payload = response.parsed_body
+      expect(payload["status"]).to eq("failed")
+      expect(payload["html"]).to include("timed out")
+
+      profile.reload
+      expect(profile.training_block_generation_status).to eq("failed")
+    end
+
+    it "does not timeout a generation that started recently" do
+      profile.update!(
+        training_block_generation_status: "pending",
+        training_block_generation_started_at: 5.minutes.ago
+      )
+
+      get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
+
+      expect(response.parsed_body["status"]).to eq("pending")
+    end
+  end
+
+  describe "failed status persistence" do
+    it "keeps failed status across multiple polls" do
+      profile.update!(
+        training_block_generation_status: "failed",
+        training_block_generation_error: "API limit exceeded"
+      )
+
+      # First poll
+      get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
+      expect(response.parsed_body["status"]).to eq("failed")
+
+      # Second poll should still return failed (not reset to idle)
+      get status_training_blocks_path, headers: { "ACCEPT" => "application/json" }
+      expect(response.parsed_body["status"]).to eq("failed")
+      expect(response.parsed_body["html"]).to include("API limit exceeded")
+    end
+  end
+
+  describe "sets generation_started_at on create" do
+    it "records the generation start time" do
+      allow(GenerateTrainingBlockJob).to receive(:perform_later)
+
+      post training_blocks_path,
+        params: {
+          start_date: Date.current.beginning_of_week(:monday).to_s,
+          end_date: (Date.current.beginning_of_week(:monday) + 4.weeks).to_s,
+          training_days: [ "Monday" ],
+          activities: [ "Bouldering" ]
+        },
+        headers: { "ACCEPT" => "text/vnd.turbo-stream.html" }
+
+      profile.reload
+      expect(profile.training_block_generation_started_at).to be_present
+      expect(profile.training_block_generation_started_at).to be_within(5.seconds).of(Time.current)
+    end
   end
 end

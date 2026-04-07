@@ -3,6 +3,8 @@ require "ostruct"
 class TrainingBlocksController < ApplicationController
   before_action :set_profile
 
+  GENERATION_TIMEOUT = 10.minutes
+
   def index
     all_blocks = @profile.training_blocks.includes(weekly_plans: :planned_sessions).order(created_at: :desc)
 
@@ -28,6 +30,23 @@ class TrainingBlocksController < ApplicationController
   end
 
   def create
+    # Double-submit guard: reject if generation is already in progress
+    if @profile.training_block_generation_status == "pending" &&
+       @profile.training_block_generation_started_at.present? &&
+       @profile.training_block_generation_started_at > GENERATION_TIMEOUT.ago
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            ActionView::RecordIdentifier.dom_id(@profile, :training_block_generation),
+            partial: "training_blocks/generation_pending",
+            locals: { profile: @profile }
+          )
+        end
+        format.html { redirect_to training_blocks_path, notice: "Plan generation is already in progress." }
+      end
+      return
+    end
+
     start_date = Date.parse(params[:start_date])
     end_date = Date.parse(params[:end_date])
     comments = params[:comments].to_s
@@ -40,7 +59,8 @@ class TrainingBlocksController < ApplicationController
     @profile.update!(
       training_block_generation_status: "pending",
       training_block_generation_error: nil,
-      training_block_generation_training_block_id: nil
+      training_block_generation_training_block_id: nil,
+      training_block_generation_started_at: Time.current
     )
 
     GenerateTrainingBlockJob.perform_later(
@@ -84,9 +104,8 @@ class TrainingBlocksController < ApplicationController
   def status
     case @profile.training_block_generation_status
     when "pending"
-      # If generation has been pending for more than 10 minutes, mark it as failed.
-      # This catches cases where the background job was killed without triggering rescue blocks.
-      if @profile.updated_at < 10.minutes.ago
+      started_at = @profile.training_block_generation_started_at || @profile.updated_at
+      if started_at < GENERATION_TIMEOUT.ago
         @profile.update(
           training_block_generation_status: "failed",
           training_block_generation_error: "Plan generation timed out. Please try again."
@@ -121,15 +140,13 @@ class TrainingBlocksController < ApplicationController
         render json: { status: "idle" }
       end
     when "failed"
-      error_message = @profile.training_block_generation_error
-      # Reset status so the form is ready for a new attempt
-      @profile.update(training_block_generation_status: nil, training_block_generation_error: nil)
+      # Keep failed status — it resets only when user submits a new generation
       render json: {
         status: "failed",
         html: render_to_string(
           partial: "training_blocks/generation_error",
           formats: [ :html ],
-          locals: { profile: @profile, message: error_message }
+          locals: { profile: @profile, message: @profile.training_block_generation_error }
         )
       }
     else

@@ -18,6 +18,7 @@ module Ai
       )
 
       parsed = parse_json_response(response.content)
+      validate_parsed_response!(parsed)
       create_training_block!(climber_profile, parsed, start_date, end_date, weeks_planned)
     end
 
@@ -255,10 +256,9 @@ module Ai
     private_class_method :system_prompt
 
     def self.create_training_block!(climber_profile, parsed, start_date, end_date, weeks_planned)
-      # Deactivate any current blocks
-      climber_profile.training_blocks.current.update_all(status: :completed)
-
       ActiveRecord::Base.transaction do
+        # Deactivate any current blocks (inside transaction so it rolls back on failure)
+        climber_profile.training_blocks.current.update_all(status: :completed)
         block = climber_profile.training_blocks.create!(
           name: parsed["name"] || "Training Block",
           focus: normalize_focus(parsed["focus"]),
@@ -391,6 +391,27 @@ module Ai
       end
     end
     private_class_method :benchmarks_payload
+
+    def self.validate_parsed_response!(parsed)
+      raise Ai::Client::Error, "AI response missing 'name' field" unless parsed.is_a?(Hash)
+      raise Ai::Client::Error, "AI response missing 'name' field" unless parsed["name"].present?
+
+      weeks = parsed["weeks"]
+      raise Ai::Client::Error, "AI response missing 'weeks' field" if weeks.nil?
+      raise Ai::Client::Error, "AI response 'weeks' must be an array" unless weeks.is_a?(Array)
+      raise Ai::Client::Error, "AI response 'weeks' is empty" if weeks.empty?
+
+      weeks.each_with_index do |week, i|
+        sessions = week["sessions"]
+        raise Ai::Client::Error, "Week #{i + 1} missing 'sessions'" if sessions.nil?
+        raise Ai::Client::Error, "Week #{i + 1} 'sessions' must be an array" unless sessions.is_a?(Array)
+
+        sessions.each_with_index do |session, j|
+          raise Ai::Client::Error, "Week #{i + 1} session #{j + 1} missing 'session_type'" unless session["session_type"].present?
+        end
+      end
+    end
+    private_class_method :validate_parsed_response!
 
     def self.parse_json_response(text)
       JSON.parse(text)

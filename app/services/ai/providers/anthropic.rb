@@ -8,6 +8,8 @@ module Ai
     class Anthropic
       ENDPOINT = URI("https://api.anthropic.com/v1/messages")
       DEFAULT_MODEL = "claude-sonnet-4-20250514"
+      MAX_RETRIES = 3
+      RETRYABLE_STATUS_CODES = %w[429 500 502 503 504].freeze
 
       def self.generate(prompt:, system: nil, model: nil, max_tokens: nil)
         api_key = ENV.fetch("ANTHROPIC_API_KEY")
@@ -24,19 +26,35 @@ module Ai
         }
         request_body[:system] = system if system.present?
 
-        http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
-        http.use_ssl = true
-        http.open_timeout = request_timeout
-        http.read_timeout = request_timeout
+        response = nil
+        parsed = nil
+        retries = 0
 
-        request = Net::HTTP::Post.new(ENDPOINT)
-        request["Content-Type"] = "application/json"
-        request["x-api-key"] = api_key
-        request["anthropic-version"] = "2023-06-01"
-        request.body = JSON.generate(request_body)
+        loop do
+          http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
+          http.use_ssl = true
+          http.open_timeout = request_timeout
+          http.read_timeout = request_timeout
 
-        response = http.request(request)
-        parsed = JSON.parse(response.body)
+          request = Net::HTTP::Post.new(ENDPOINT)
+          request["Content-Type"] = "application/json"
+          request["x-api-key"] = api_key
+          request["anthropic-version"] = "2023-06-01"
+          request.body = JSON.generate(request_body)
+
+          response = http.request(request)
+          parsed = JSON.parse(response.body)
+
+          if !response.is_a?(Net::HTTPSuccess) && RETRYABLE_STATUS_CODES.include?(response.code) && retries < MAX_RETRIES
+            retries += 1
+            sleep_time = (2**retries) # 2s, 4s, 8s
+            Rails.logger.warn("Anthropic retryable error (#{response.code}), attempt #{retries}/#{MAX_RETRIES}, sleeping #{sleep_time}s")
+            sleep(sleep_time)
+            next
+          end
+
+          break
+        end
 
         unless response.is_a?(Net::HTTPSuccess)
           error_message = parsed.dig("error", "message") || response.body
@@ -59,7 +77,7 @@ module Ai
       rescue JSON::ParserError => e
         raise Ai::Client::Error.new("Anthropic response parse error", provider: "anthropic", model: model, cause: e)
       rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNRESET, Errno::ECONNREFUSED => e
-        raise Ai::Client::Error.new("Anthropic network error", provider: "anthropic", model: model, cause: e)
+        raise Ai::Client::Error.new("Anthropic network error: #{e.class.name}", provider: "anthropic", model: model, cause: e)
       end
 
       def self.request_timeout

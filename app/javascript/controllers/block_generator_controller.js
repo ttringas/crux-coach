@@ -1,11 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 const POLL_INTERVAL_MS = 4_000
+const MAX_POLL_INTERVAL_MS = 30_000
 const PROGRESS_TICK_MS = 700
 const MESSAGE_TICK_MS = 5_500
 const DEFAULT_WEEKS = 8
 const MAX_WEEKS = 12
 const GENERATION_TIMEOUT_MS = 10 * 60 * 1_000 // 10 minutes
+const MAX_CONSECUTIVE_ERRORS = 5
 
 export default class extends Controller {
   static targets = [
@@ -32,6 +34,8 @@ export default class extends Controller {
     this.progressValue = 6
     this.messageIndex = 0
     this.activeGeneration = false
+    this.currentPollIntervalMs = POLL_INTERVAL_MS
+    this.consecutiveErrors = 0
 
     this.syncDateRange({ resetEndDate: !this.hasEndDateTarget || !this.endDateTarget.value })
 
@@ -109,7 +113,7 @@ export default class extends Controller {
     if (endDate < startDate) {
       endDate = desiredDefaultEndDate
       this.endDateTarget.value = this.formatDate(endDate)
-      this.showDateError("End date can’t be earlier than start date, so I reset it to 8 weeks later.")
+      this.showDateError("End date can't be earlier than start date, so I reset it to 8 weeks later.")
       this.updateDateHelper(startDate, endDate)
       return
     }
@@ -142,6 +146,8 @@ export default class extends Controller {
     if (this.activeGeneration) return
 
     this.activeGeneration = true
+    this.consecutiveErrors = 0
+    this.currentPollIntervalMs = POLL_INTERVAL_MS
     this.startProgress()
     this.startMessages()
     this.startPolling()
@@ -202,12 +208,21 @@ export default class extends Controller {
     if (!this.statusUrlValue) return
     if (this.pollInterval) return
 
-    this.pollInterval = window.setInterval(() => this.pollStatus(), POLL_INTERVAL_MS)
+    this.schedulePoll()
+  }
+
+  schedulePoll() {
+    if (this.pollInterval) return
+
+    this.pollInterval = window.setTimeout(() => {
+      this.pollInterval = null
+      this.pollStatus()
+    }, this.currentPollIntervalMs)
   }
 
   stopPolling() {
     if (!this.pollInterval) return
-    window.clearInterval(this.pollInterval)
+    window.clearTimeout(this.pollInterval)
     this.pollInterval = null
   }
 
@@ -240,6 +255,11 @@ export default class extends Controller {
         <div class="text-xs uppercase tracking-wide text-red-300">Generation failed</div>
         <div class="text-sm text-slate-200 mt-1">Plan generation timed out. Please try again.</div>
         <div class="text-xs text-slate-400 mt-2">If this keeps happening, contact support.</div>
+        <div class="mt-3">
+          <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="bg-amber-400 text-slate-950 px-4 py-2 rounded-md text-sm font-semibold hover:bg-amber-300 transition">
+            Try Again
+          </button>
+        </div>
       </div>
     `
   }
@@ -251,11 +271,19 @@ export default class extends Controller {
       const response = await fetch(this.statusUrlValue, {
         headers: { Accept: "application/json" }
       })
-      if (!response.ok) return
+      if (!response.ok) {
+        this.handlePollError()
+        return
+      }
+
+      // Reset backoff on successful response
+      this.consecutiveErrors = 0
+      this.currentPollIntervalMs = POLL_INTERVAL_MS
 
       const payload = await response.json()
 
       if (payload.status === "pending" || payload.status === "idle") {
+        this.schedulePoll()
         return
       }
 
@@ -279,8 +307,26 @@ export default class extends Controller {
         }
       }
     } catch (error) {
-      // Ignore transient polling errors and keep polling.
+      this.handlePollError()
     }
+  }
+
+  handlePollError() {
+    this.consecutiveErrors += 1
+
+    // Exponential backoff: double interval on each error, cap at MAX_POLL_INTERVAL_MS
+    this.currentPollIntervalMs = Math.min(
+      this.currentPollIntervalMs * 2,
+      MAX_POLL_INTERVAL_MS
+    )
+
+    // Show warning after too many consecutive errors
+    if (this.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS && this.hasStatusMessageTarget) {
+      this.statusMessageTarget.textContent = "Having trouble connecting — your plan may still be generating…"
+    }
+
+    // Continue polling (job may still be running server-side)
+    this.schedulePoll()
   }
 
   updateDateHelper(startDate = this.parseDate(this.startDateTarget?.value), endDate = this.parseDate(this.endDateTarget?.value)) {

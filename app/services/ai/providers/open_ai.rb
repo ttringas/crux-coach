@@ -6,6 +6,7 @@ module Ai
   module Providers
     class OpenAi
       DEFAULT_MODEL = "gpt-4o"
+      MAX_RETRIES = 3
 
       def self.generate(prompt:, system: nil, model: nil, max_tokens: nil)
         api_key = ENV.fetch("OPENAI_API_KEY")
@@ -17,14 +18,36 @@ module Ai
         messages << { role: "system", content: system } if system.present?
         messages << { role: "user", content: prompt }
 
-        response = client.chat(
-          parameters: {
-            model: model,
-            messages: messages,
-            max_tokens: max_tokens,
-            temperature: 0.2
-          }
-        )
+        response = nil
+        retries = 0
+
+        loop do
+          response = client.chat(
+            parameters: {
+              model: model,
+              messages: messages,
+              max_tokens: max_tokens,
+              temperature: 0.2
+            }
+          )
+
+          # Retry on transient errors (rate limits, server errors)
+          if response.is_a?(Hash) && response["error"].present?
+            error_type = response.dig("error", "type").to_s
+            error_code = response.dig("error", "code").to_s
+            retryable = error_type.include?("server_error") || error_code == "rate_limit_exceeded"
+
+            if retryable && retries < MAX_RETRIES
+              retries += 1
+              sleep_time = (2**retries)
+              Rails.logger.warn("OpenAI retryable error (#{error_type}), attempt #{retries}/#{MAX_RETRIES}, sleeping #{sleep_time}s")
+              sleep(sleep_time)
+              next
+            end
+          end
+
+          break
+        end
 
         if response.is_a?(Hash) && response["error"].present?
           raise Ai::Client::Error.new("OpenAI error: #{response.dig("error", "message")}", provider: "openai", model: model)
@@ -45,9 +68,9 @@ module Ai
           provider: "openai"
         }
       rescue OpenAI::Error => e
-        raise Ai::Client::Error.new("OpenAI API error", provider: "openai", model: model, cause: e)
+        raise Ai::Client::Error.new("OpenAI API error: #{e.message}", provider: "openai", model: model, cause: e)
       rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNRESET, Errno::ECONNREFUSED => e
-        raise Ai::Client::Error.new("OpenAI network error", provider: "openai", model: model, cause: e)
+        raise Ai::Client::Error.new("OpenAI network error: #{e.class.name}", provider: "openai", model: model, cause: e)
       end
 
       def self.request_timeout

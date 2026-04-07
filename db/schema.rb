@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_02_175100) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_07_150556) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_02_175100) do
     t.text "training_block_generation_error"
     t.bigint "training_block_generation_training_block_id"
     t.decimal "training_age_years", precision: 4, scale: 2
+    t.datetime "training_block_generation_started_at"
     t.index ["user_id"], name: "index_climber_profiles_on_user_id", unique: true
   end
 
