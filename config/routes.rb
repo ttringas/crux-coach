@@ -42,6 +42,7 @@ Rails.application.routes.draw do
   end
   resources :benchmarks, only: [ :index, :update ]
   get "progress", to: "progress#show"
+  get "find-a-coach", to: "pages#find_a_coach", as: :find_a_coach
   resources :coaches, only: %i[index show]
 
   namespace :coach_portal do

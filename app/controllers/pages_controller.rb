@@ -8,4 +8,7 @@ class PagesController < ApplicationController
   def authenticated_root
     redirect_to authenticated_root_path_for(current_user.climber_profile)
   end
+
+  def find_a_coach
+  end
 end

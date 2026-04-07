@@ -61,6 +61,10 @@
                 <%= render "shared/nav_icon", name: "profile" %>
                 <span>Profile</span>
               <% end %>
+              <%= link_to find_a_coach_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70" do %>
+                <%= render "shared/nav_icon", name: "coaches" %>
+                <span>Find a Coach</span>
+              <% end %>
               <% if current_user.admin? %>
                 <div class="pt-4 mt-4 border-t border-slate-800 text-xs uppercase tracking-wide text-slate-500">Admin</div>
                 <%= link_to admin_plans_path, class: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70" do %>
