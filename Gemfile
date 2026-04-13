@@ -61,7 +61,7 @@ gem "rspec-rails", "~> 8.0"
 gem "factory_bot_rails", "~> 6.5"
 gem "faker", "~> 3.6"
 gem "ruby-openai", "~> 8.3"
-gem "resend", "~> 0.8"
+gem "resend", "~> 1.2"
 
 gem "shoulda-matchers", "~> 7.0", group: :test
 
