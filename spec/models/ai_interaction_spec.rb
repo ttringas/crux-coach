@@ -50,7 +50,7 @@ RSpec.describe AiInteraction, type: :model do
   describe "enums" do
     it "supports expected interaction types" do
       expect(AiInteraction.interaction_types.keys).to contain_exactly(
-        "plan_generation", "session_parsing", "profile_analysis", "coach_suggestion"
+        "plan_generation", "session_parsing", "profile_analysis", "coach_suggestion", "session_calibration"
       )
     end
   end

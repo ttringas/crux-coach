@@ -1,40 +1,139 @@
-<div class="max-w-5xl mx-auto">
-  <h1 class="text-2xl font-semibold mb-4">AI Usage (Today)</h1>
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-2xl font-semibold mb-6">AI Usage</h1>
 
-  <div class="grid md:grid-cols-3 gap-4 mb-8">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
-      <div class="text-sm text-slate-400 uppercase tracking-wide">Total spend</div>
-      <div class="text-2xl font-semibold text-slate-100">$<%= ((@total_spend_cents || 0) / 100.0).round(2) %></div>
+  <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Today</h2>
+  <div class="grid md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Spend</div>
+      <div class="text-2xl font-semibold text-slate-100">$<%= ((@total_spend_cents_today || 0) / 100.0).round(2) %></div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
-      <div class="text-sm text-slate-400 uppercase tracking-wide">Total calls</div>
-      <div class="text-2xl font-semibold text-slate-100"><%= @total_calls %></div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Calls</div>
+      <div class="text-2xl font-semibold text-slate-100"><%= @total_calls_today %></div>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 transition hover:border-slate-700">
-      <div class="text-sm text-slate-400 uppercase tracking-wide">Daily budget</div>
-      <div class="text-2xl font-semibold text-slate-100">$<%= (Rails.configuration.x.ai.daily_budget_cents / 100.0).round(2) %></div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Tokens</div>
+      <div class="text-2xl font-semibold text-slate-100"><%= number_with_delimiter(@total_tokens_today.to_i) %></div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Daily budget</div>
+      <div class="text-2xl font-semibold text-slate-100">
+        <% if Rails.configuration.x.ai.daily_budget_cents %>
+          $<%= (Rails.configuration.x.ai.daily_budget_cents / 100.0).round(2) %>
+        <% else %>
+          —
+        <% end %>
+      </div>
     </div>
   </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 transition hover:border-slate-700">
-    <h2 class="text-lg font-semibold mb-4">Top Users</h2>
+  <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Last 30 Days</h2>
+  <div class="grid md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Spend</div>
+      <div class="text-2xl font-semibold text-slate-100">$<%= ((@total_spend_cents_window || 0) / 100.0).round(2) %></div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Calls</div>
+      <div class="text-2xl font-semibold text-slate-100"><%= @total_calls_window %></div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <div class="text-xs text-slate-400 uppercase tracking-wide">Tokens</div>
+      <div class="text-2xl font-semibold text-slate-100"><%= number_with_delimiter(@total_tokens_window.to_i) %></div>
+    </div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8">
+    <h2 class="text-lg font-semibold mb-4">Breakdown by Interaction Type (30 days)</h2>
+    <% if @breakdown_by_type.any? %>
+      <table class="w-full text-sm text-slate-300">
+        <thead class="text-xs uppercase tracking-wide text-slate-500 border-b border-slate-800">
+          <tr><th class="text-left py-2">Type</th><th class="text-right py-2">Calls</th><th class="text-right py-2">Tokens</th><th class="text-right py-2">Spend</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <% @breakdown_by_type.each do |row| %>
+            <tr>
+              <td class="py-2 text-slate-100"><%= row[:type].to_s.humanize %></td>
+              <td class="py-2 text-right"><%= row[:calls] %></td>
+              <td class="py-2 text-right"><%= number_with_delimiter(row[:tokens].to_i) %></td>
+              <td class="py-2 text-right">$<%= (row[:spend_cents].to_i / 100.0).round(2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-slate-400 text-sm">No interactions in the last 30 days.</div>
+    <% end %>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8">
+    <h2 class="text-lg font-semibold mb-4">Top Users (30 days)</h2>
     <% if @top_users.any? %>
-      <div class="divide-y divide-slate-800">
-        <% @top_users.each do |row| %>
-          <div class="flex items-center justify-between py-3 text-sm text-slate-300">
-            <div>
-              <div class="text-slate-100 font-medium"><%= row.name.presence || row.email %></div>
-              <div class="text-slate-500"><%= row.email %></div>
-            </div>
-            <div class="text-right">
-              <div class="text-slate-100"><%= row.calls %> calls</div>
-              <div class="text-slate-400">$<%= (row.spend_cents.to_i / 100.0).round(2) %></div>
-            </div>
-          </div>
-        <% end %>
+      <table class="w-full text-sm text-slate-300">
+        <thead class="text-xs uppercase tracking-wide text-slate-500 border-b border-slate-800">
+          <tr>
+            <th class="text-left py-2">User</th>
+            <th class="text-right py-2">Plans</th>
+            <th class="text-right py-2">Calibrations</th>
+            <th class="text-right py-2">Total calls</th>
+            <th class="text-right py-2">Tokens</th>
+            <th class="text-right py-2">Spend</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <% @top_users.each do |row| %>
+            <tr>
+              <td class="py-2">
+                <div class="text-slate-100 font-medium"><%= row.name.presence || row.email %></div>
+                <div class="text-xs text-slate-500"><%= row.email %></div>
+              </td>
+              <td class="py-2 text-right"><%= row.plan_calls %></td>
+              <td class="py-2 text-right"><%= row.calibration_calls %></td>
+              <td class="py-2 text-right"><%= row.calls %></td>
+              <td class="py-2 text-right"><%= number_with_delimiter(row.tokens.to_i) %></td>
+              <td class="py-2 text-right">$<%= (row.spend_cents.to_i / 100.0).round(2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-slate-400 text-sm">No usage in the last 30 days.</div>
+    <% end %>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-lg font-semibold mb-4">Recent Interactions</h2>
+    <% if @recent_interactions.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-300">
+          <thead class="text-xs uppercase tracking-wide text-slate-500 border-b border-slate-800">
+            <tr>
+              <th class="text-left py-2">When</th>
+              <th class="text-left py-2">User</th>
+              <th class="text-left py-2">Type</th>
+              <th class="text-left py-2">Model</th>
+              <th class="text-right py-2">Tokens</th>
+              <th class="text-right py-2">Cost</th>
+              <th class="text-right py-2">Duration</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <% @recent_interactions.each do |interaction| %>
+              <tr>
+                <td class="py-2 text-slate-400 text-xs whitespace-nowrap"><%= interaction.created_at.strftime("%b %d %H:%M") %></td>
+                <td class="py-2 text-slate-100"><%= interaction.user&.email %></td>
+                <td class="py-2"><%= interaction.interaction_type.to_s.humanize %></td>
+                <td class="py-2 text-xs text-slate-400"><%= interaction.model %></td>
+                <td class="py-2 text-right"><%= number_with_delimiter(interaction.tokens_used.to_i) %></td>
+                <td class="py-2 text-right">$<%= (interaction.cost_cents.to_i / 100.0).round(4) %></td>
+                <td class="py-2 text-right text-xs text-slate-400"><%= interaction.duration_ms %>ms</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     <% else %>
-      <div class="text-slate-400 text-sm">No AI usage recorded today.</div>
+      <div class="text-slate-400 text-sm">No interactions yet.</div>
     <% end %>
   </div>
 </div>

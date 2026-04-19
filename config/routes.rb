@@ -33,6 +33,9 @@ Rails.application.routes.draw do
     resources :planned_sessions, path: "session", only: %i[show update] do
       member do
         patch :update_exercises
+        post :calibrate
+        post :revert_calibration
+        get :calibration_status
       end
     end
   end

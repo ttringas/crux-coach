@@ -1,5 +1,9 @@
 <% logs_by_index = @planned_session.exercise_logs.index_by { |log| log["exercise_index"].to_i } %>
 
+<% if defined?(ActionCable) %>
+  <%= turbo_stream_from @planned_session %>
+<% end %>
+
 <div
   class="min-h-screen bg-slate-950 text-slate-100 px-4 py-6"
   data-controller="session-timer exercise-log session-completion demo-modal session-exercises"
@@ -50,21 +54,6 @@
         <%= @planned_session.description %>
       </div>
     <% end %>
-  </div>
-
-  <div class="grid gap-3 mb-8 sm:flex sm:flex-wrap">
-    <%= button_tag "Start Session",
-      type: "button",
-      class: "w-full sm:w-auto min-h-11 bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition #{@planned_session.todo? ? "" : "hidden"}",
-      data: { action: "session-completion#start", session_completion_target: "startButton" } %>
-    <%= button_tag "Complete Session",
-      type: "button",
-      class: "w-full sm:w-auto min-h-11 bg-emerald-400 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-emerald-300 active:bg-emerald-500 transition #{@planned_session.in_progress? ? "" : "hidden"}",
-      data: { action: "session-completion#complete", session_completion_target: "completeButton" } %>
-    <%= button_tag "Skip Session",
-      type: "button",
-      class: "w-full sm:w-auto min-h-11 border border-slate-700 px-4 py-2 rounded-md text-slate-300 hover:border-slate-500 #{@planned_session.completed? || @planned_session.skipped? ? "hidden" : ""}",
-      data: { action: "session-completion#skip", session_completion_target: "skipButton" } %>
   </div>
 
   <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-4">
@@ -124,7 +113,20 @@
     </div>
   </div>
 
-  <div class="flex items-center justify-between mb-3">
+  <%= render "planned_sessions/calibration_panel", planned_session: @planned_session %>
+
+  <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+    <%= button_tag "Start Session",
+      type: "button",
+      class: "w-full sm:w-auto min-h-11 bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 active:bg-amber-600 transition #{@planned_session.todo? ? "" : "hidden"}",
+      data: { action: "session-completion#start", session_completion_target: "startButton" } %>
+    <%= button_tag "Skip Session",
+      type: "button",
+      class: "w-full sm:w-auto min-h-11 border border-slate-700 px-4 py-2 rounded-md text-slate-300 hover:border-slate-500 #{@planned_session.todo? ? "" : "hidden"}",
+      data: { action: "session-completion#skip", session_completion_target: "skipButton" } %>
+  </div>
+
+  <div class="flex items-center justify-between mb-3 mt-6">
     <h2 class="text-lg font-semibold">Exercises</h2>
     <div class="text-xs text-slate-500" data-exercise-log-target="saveStatus"></div>
   </div>
@@ -343,8 +345,15 @@
             <% if work_seconds.present? %>
               <% work_minutes = work_seconds / 60 %>
               <% work_remaining = work_seconds % 60 %>
-              <div class="rounded-lg border border-slate-800 bg-slate-800/40 p-3" data-controller="countdown-timer" data-countdown-timer-target="container">
-                <div class="text-xs uppercase tracking-wide text-slate-400">Work Timer</div>
+              <details class="rounded-lg border border-slate-800 bg-slate-800/40 [&[open]_svg.timer-chevron]:rotate-90" data-controller="countdown-timer" data-countdown-timer-target="container">
+                <summary class="cursor-pointer select-none list-none flex items-center justify-between p-3">
+                  <div class="flex items-center gap-2">
+                    <svg width="12" height="12" class="transition-transform timer-chevron text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    <span class="text-xs uppercase tracking-wide text-slate-400">Work Timer</span>
+                  </div>
+                  <span class="text-[11px] text-slate-500"><%= exercise["duration"].presence || "#{work_minutes}m #{work_remaining}s" %></span>
+                </summary>
+                <div class="px-3 pb-3">
                 <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-400" data-countdown-timer-target="inputWrapper">
                   <label class="flex items-center gap-2">
                     <input type="number" min="0" inputmode="numeric" class="h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-2 text-base text-slate-100" value="<%= work_minutes %>" data-countdown-timer-target="minutes" />
@@ -369,13 +378,21 @@
                     Reset
                   </button>
                 </div>
-              </div>
+                </div>
+              </details>
             <% end %>
             <% if rest_seconds.present? %>
               <% rest_minutes = rest_seconds / 60 %>
               <% rest_remaining = rest_seconds % 60 %>
-              <div class="rounded-lg border border-slate-800 bg-slate-800/40 p-3" data-controller="countdown-timer" data-countdown-timer-target="container">
-                <div class="text-xs uppercase tracking-wide text-slate-400">Rest Timer</div>
+              <details class="rounded-lg border border-slate-800 bg-slate-800/40 [&[open]_svg.timer-chevron]:rotate-90" data-controller="countdown-timer" data-countdown-timer-target="container">
+                <summary class="cursor-pointer select-none list-none flex items-center justify-between p-3">
+                  <div class="flex items-center gap-2">
+                    <svg width="12" height="12" class="transition-transform timer-chevron text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    <span class="text-xs uppercase tracking-wide text-slate-400">Rest Timer</span>
+                  </div>
+                  <span class="text-[11px] text-slate-500"><%= exercise["rest"].presence || "#{rest_minutes}m #{rest_remaining}s" %></span>
+                </summary>
+                <div class="px-3 pb-3">
                 <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-400" data-countdown-timer-target="inputWrapper">
                   <label class="flex items-center gap-2">
                     <input type="number" min="0" inputmode="numeric" class="h-11 w-full rounded-md border border-slate-700 bg-slate-950 px-2 text-base text-slate-100" value="<%= rest_minutes %>" data-countdown-timer-target="minutes" />
@@ -400,7 +417,8 @@
                     Reset
                   </button>
                 </div>
-              </div>
+                </div>
+              </details>
             <% end %>
           </div>
         <% end %>
@@ -460,6 +478,7 @@
           <span>RPE</span>
           <span class="text-slate-200" data-range-value-target="output"></span>
         </div>
+        <p class="text-[11px] text-slate-500 mt-1">Rate of Perceived Exertion — how hard the session felt overall on a 1-10 scale.</p>
         <input
           type="range"
           min="1"
@@ -473,6 +492,13 @@
         <div class="flex justify-between text-[10px] text-slate-500 mt-1"><span>Easy</span><span>Max effort</span></div>
       </label>
     </div>
+  </div>
+
+  <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+    <%= button_tag "Complete Session",
+      type: "button",
+      class: "w-full sm:w-auto min-h-11 bg-emerald-400 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-emerald-300 active:bg-emerald-500 transition #{@planned_session.in_progress? ? "" : "hidden"}",
+      data: { action: "session-completion#complete", session_completion_target: "completeButton" } %>
   </div>
 
   <div class="fixed inset-0 z-50 hidden bg-slate-950/80 p-4 backdrop-blur flex items-center justify-center" data-session-exercises-target="modal" data-action="click->session-exercises#closeOnBackdrop keydown@window->session-exercises#handleKeydown">

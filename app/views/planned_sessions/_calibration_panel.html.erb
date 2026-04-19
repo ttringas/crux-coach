@@ -1,0 +1,62 @@
+<%# Replaceable panel with state for: idle | in_progress | completed | failed %>
+<div id="<%= dom_id(planned_session, :calibration) %>" class="mt-6 rounded-2xl border border-amber-500/20 bg-slate-900 p-4"
+  data-controller="session-calibrator"
+  data-session-calibrator-status-url-value="<%= calibration_status_weekly_plan_planned_session_path(planned_session.weekly_plan, planned_session) %>"
+  data-session-calibrator-status-value="<%= planned_session.calibration_status || 'idle' %>">
+
+  <% if planned_session.calibration_status == "in_progress" %>
+    <div class="flex items-start gap-3">
+      <div class="mt-1 h-2 w-2 rounded-full bg-amber-400 animate-pulse"></div>
+      <div class="flex-1">
+        <div class="text-sm font-semibold text-amber-200">Coach is calibrating today's session…</div>
+        <div class="text-xs text-slate-400 mt-1" data-session-calibrator-target="statusMessage">
+          Reviewing your inputs, recent sessions, and the block plan…
+        </div>
+        <div class="mt-3 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+          <div class="h-full w-1/3 bg-gradient-to-r from-amber-400 to-emerald-300 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  <% elsif planned_session.calibration_status == "completed" %>
+    <div class="space-y-3">
+      <div class="flex items-baseline gap-2">
+        <div class="text-xs uppercase tracking-wide text-emerald-300">Calibrated</div>
+        <% if planned_session.calibration_completed_at %>
+          <div class="text-xs text-slate-500">· <%= time_ago_in_words(planned_session.calibration_completed_at) %> ago</div>
+        <% end %>
+      </div>
+      <% if planned_session.calibration_reasoning.present? %>
+        <div class="text-sm text-slate-200 whitespace-pre-line"><%= planned_session.calibration_reasoning %></div>
+      <% end %>
+
+      <div class="pt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button type="button"
+          class="text-xs text-slate-400 underline underline-offset-2 hover:text-slate-200 transition"
+          data-action="session-calibrator#revert"
+          data-session-calibrator-revert-url-param="<%= revert_calibration_weekly_plan_planned_session_path(planned_session.weekly_plan, planned_session) %>">
+          Revert to original exercises
+        </button>
+        <button type="button"
+          class="text-xs text-slate-400 underline underline-offset-2 hover:text-slate-200 transition"
+          data-action="session-calibrator#showRecalibrate"
+          data-session-calibrator-target="recalibrateLink">
+          Recalibrate again
+        </button>
+      </div>
+
+      <div class="hidden" data-session-calibrator-target="recalibrateForm">
+        <%= render "planned_sessions/calibration_form", planned_session: planned_session, label: "Calibrate again" %>
+      </div>
+    </div>
+  <% elsif planned_session.calibration_status == "failed" %>
+    <div class="space-y-3">
+      <div class="text-xs uppercase tracking-wide text-rose-300">Calibration failed</div>
+      <div class="text-sm text-slate-200">
+        <%= planned_session.calibration_error.presence || "Something went wrong while calibrating today's session." %>
+      </div>
+      <%= render "planned_sessions/calibration_form", planned_session: planned_session, label: "Try again" %>
+    </div>
+  <% else %>
+    <%= render "planned_sessions/calibration_form", planned_session: planned_session, label: "Calibrate Training Plan" %>
+  <% end %>
+</div>

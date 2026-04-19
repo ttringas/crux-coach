@@ -2,11 +2,82 @@ class PlannedSessionsController < ApplicationController
   before_action :set_profile
   before_action :set_weekly_plan
   before_action :set_planned_session
+  before_action :enforce_calibration_timeout!, only: %i[show calibrate calibration_status]
+
+  CALIBRATION_TIMEOUT = 5.minutes
 
   def show
     @immersive_layout = true
-    @exercise_library_matches = ExerciseLibrary::Matcher.new.match_exercises(@planned_session.exercises)
-    @exercise_library_entries = ExerciseLibraryEntry.order(:name).select(:id, :name, :category, :description)
+    if @planned_session.completed? || @planned_session.skipped?
+      render :show_completed
+    else
+      @exercise_library_matches = ExerciseLibrary::Matcher.new.match_exercises(@planned_session.exercises)
+      @exercise_library_entries = ExerciseLibraryEntry.order(:name).select(:id, :name, :category, :description)
+    end
+  end
+
+  def calibrate
+    if @planned_session.calibration_status == "in_progress"
+      respond_with_calibration(status: :unprocessable_entity)
+      return
+    end
+
+    if Ai::UsageGuard.calibration_limit_reached?(@profile.user)
+      @planned_session.update!(
+        calibration_status: "failed",
+        calibration_error: Ai::UsageGuard.calibration_limit_message,
+        calibration_completed_at: Time.current
+      )
+      respond_with_calibration(status: :too_many_requests)
+      return
+    end
+
+    feedback = params[:feedback].to_s.strip
+
+    @planned_session.update!(
+      calibration_status: "in_progress",
+      calibration_error: nil,
+      calibration_feedback: feedback.presence,
+      calibration_requested_at: Time.current,
+      calibration_completed_at: nil
+    )
+
+    CalibrateSessionJob.perform_later(
+      planned_session_id: @planned_session.id,
+      feedback: feedback
+    )
+
+    respond_with_calibration
+  end
+
+  def revert_calibration
+    if @planned_session.previous_exercises.present?
+      @planned_session.update!(
+        exercises: @planned_session.previous_exercises,
+        previous_exercises: nil,
+        calibration_status: nil,
+        calibration_error: nil,
+        calibration_feedback: nil,
+        calibration_reasoning: nil,
+        calibration_requested_at: nil,
+        calibration_completed_at: nil
+      )
+    end
+
+    respond_to do |format|
+      format.turbo_stream { head :ok }
+      format.html { redirect_to weekly_plan_planned_session_path(@weekly_plan, @planned_session), notice: "Reverted to original session." }
+      format.json { render json: { ok: true } }
+    end
+  end
+
+  def calibration_status
+    render json: {
+      status: @planned_session.calibration_status || "idle",
+      error: @planned_session.calibration_error,
+      reasoning: @planned_session.calibration_reasoning,
+      can_revert: @planned_session.previous_exercises.present?
+    }
   end
 
   def update
@@ -132,6 +203,37 @@ class PlannedSessionsController < ApplicationController
     when "skipped"
       @planned_session.completed_at ||= Time.zone.now
     end
+  end
+
+  def respond_with_calibration(status: :ok)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          ActionView::RecordIdentifier.dom_id(@planned_session, :calibration),
+          partial: "planned_sessions/calibration_panel",
+          locals: { planned_session: @planned_session }
+        ), status: status
+      end
+      format.html { redirect_to weekly_plan_planned_session_path(@weekly_plan, @planned_session) }
+      format.json do
+        render json: {
+          status: @planned_session.calibration_status || "idle",
+          error: @planned_session.calibration_error
+        }, status: status
+      end
+    end
+  end
+
+  def enforce_calibration_timeout!
+    return unless @planned_session.calibration_status == "in_progress"
+    return unless @planned_session.calibration_requested_at.present?
+    return if @planned_session.calibration_requested_at > CALIBRATION_TIMEOUT.ago
+
+    @planned_session.update!(
+      calibration_status: "failed",
+      calibration_error: "Calibration timed out. Please try again.",
+      calibration_completed_at: Time.current
+    )
   end
 
   def normalize_exercises(raw)

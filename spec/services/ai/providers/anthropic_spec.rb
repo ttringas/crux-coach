@@ -65,7 +65,7 @@ RSpec.describe Ai::Providers::Anthropic do
 
     it "raises Ai::Client::Error on API error response" do
       error_body = { "error" => { "message" => "Rate limited" } }.to_json
-      mock_response = instance_double(Net::HTTPTooManyRequests, body: error_body)
+      mock_response = instance_double(Net::HTTPTooManyRequests, body: error_body, code: "400")
       allow(mock_response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(false)
 
       mock_http = instance_double(Net::HTTP)

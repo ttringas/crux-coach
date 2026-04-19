@@ -36,6 +36,10 @@ export default class extends Controller {
       const data = await response.json()
       this.applyStatus(data.status || status)
       this.element.dispatchEvent(new CustomEvent("session-status:updated", { detail: data, bubbles: true }))
+
+      if (data.status === "completed" || data.status === "skipped") {
+        window.location.reload()
+      }
     } catch (error) {
       // no-op
     }
@@ -53,7 +57,7 @@ export default class extends Controller {
       this.completeButtonTarget.classList.toggle("hidden", status !== "in_progress")
     }
     if (this.hasSkipButtonTarget) {
-      this.skipButtonTarget.classList.toggle("hidden", status === "completed" || status === "skipped")
+      this.skipButtonTarget.classList.toggle("hidden", status !== "todo")
     }
   }
 }

@@ -4,6 +4,7 @@ module Ai
   class UsageGuard
     PLAN_LIMIT_PER_DAY = 5
     SESSION_LIMIT_PER_DAY = 20
+    SESSION_CALIBRATION_LIMIT_PER_DAY = 5
     TOTAL_LIMIT_PER_DAY = 50
 
     def self.check!(user:, interaction_type:, provider: nil)
@@ -67,8 +68,24 @@ module Ai
         if parse_calls >= SESSION_LIMIT_PER_DAY
           raise Ai::Client::Error.new("Daily session parsing limit reached (#{SESSION_LIMIT_PER_DAY}). Please try again tomorrow.")
         end
+      when :session_calibration
+        if calibration_count_today(user) >= SESSION_CALIBRATION_LIMIT_PER_DAY
+          raise Ai::Client::Error.new(calibration_limit_message)
+        end
       end
     end
     private_class_method :ensure_user_limits!
+
+    def self.calibration_count_today(user)
+      AiInteraction.where(user: user, interaction_type: :session_calibration, created_at: Date.current.all_day).count
+    end
+
+    def self.calibration_limit_reached?(user)
+      calibration_count_today(user) >= SESSION_CALIBRATION_LIMIT_PER_DAY
+    end
+
+    def self.calibration_limit_message
+      "You've reached today's calibration limit of #{SESSION_CALIBRATION_LIMIT_PER_DAY}. To keep things sustainable for both you and the AI coach, calibrations reset each day — please try again tomorrow."
+    end
   end
 end

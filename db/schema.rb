@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_07_150556) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_19_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -155,6 +155,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_150556) do
     t.integer "finger_soreness"
     t.integer "general_soreness"
     t.integer "position", default: 0, null: false
+    t.string "calibration_status"
+    t.text "calibration_error"
+    t.text "calibration_feedback"
+    t.text "calibration_reasoning"
+    t.datetime "calibration_requested_at"
+    t.datetime "calibration_completed_at"
+    t.jsonb "previous_exercises"
     t.index ["session_type"], name: "index_planned_sessions_on_session_type"
     t.index ["weekly_plan_id", "day_of_week", "position"], name: "index_planned_sessions_on_plan_day_position"
     t.index ["weekly_plan_id", "day_of_week"], name: "index_planned_sessions_on_weekly_plan_id_and_day_of_week"

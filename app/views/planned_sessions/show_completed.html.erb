@@ -1,0 +1,185 @@
+<% logs_by_index = @planned_session.exercise_logs.index_by { |log| log["exercise_index"].to_i } %>
+<% session_date = @planned_session.weekly_plan.week_of + @planned_session.day_of_week %>
+<% is_skipped = @planned_session.skipped? %>
+
+<div class="min-h-screen bg-slate-950 text-slate-100 px-4 py-6 max-w-3xl mx-auto">
+  <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div class="flex items-start gap-3">
+      <%= link_to calendar_path(view: "weekly", week_of: @weekly_plan.week_of), class: "flex items-center justify-center h-11 w-11 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-slate-100 hover:border-slate-600 transition" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+      <% end %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-400"><%= @planned_session.session_type %> · <%= session_date.strftime("%a %b %-d, %Y") %></div>
+        <h1 class="text-2xl font-semibold mt-1"><%= @planned_session.title %></h1>
+      </div>
+    </div>
+    <div>
+      <% if is_skipped %>
+        <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-600/60 bg-slate-800/40 px-3 py-1 text-xs font-medium text-slate-300">
+          <span>Skipped</span>
+        </div>
+      <% else %>
+        <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          <span>Completed</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
+      <div><span class="text-slate-500">Type:</span> <%= @planned_session.session_type.humanize %></div>
+      <div><span class="text-slate-500">Intensity:</span> <%= @planned_session.intensity.humanize %></div>
+      <% if @planned_session.started_at && @planned_session.completed_at %>
+        <% duration_min = ((@planned_session.completed_at - @planned_session.started_at) / 60).round %>
+        <div><span class="text-slate-500">Duration:</span> <%= duration_min %> min</div>
+      <% elsif @planned_session.estimated_duration_minutes %>
+        <div><span class="text-slate-500">Planned:</span> <%= @planned_session.estimated_duration_minutes %> min</div>
+      <% end %>
+      <% if @planned_session.completed_at %>
+        <div><span class="text-slate-500">Finished:</span> <%= @planned_session.completed_at.strftime("%-l:%M %p") %></div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @planned_session.calibration_reasoning.present? %>
+    <div class="bg-slate-900 border border-amber-500/20 rounded-2xl p-4 mb-6">
+      <div class="text-xs uppercase tracking-wide text-amber-300 mb-2">Pre-Session Calibration</div>
+      <div class="text-sm text-slate-200 whitespace-pre-line"><%= @planned_session.calibration_reasoning %></div>
+    </div>
+  <% end %>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+    <div class="text-xs uppercase tracking-wide text-slate-400 mb-3">Pre-Session Check-in</div>
+    <div class="grid grid-cols-3 gap-3 text-sm">
+      <div>
+        <div class="text-slate-500 text-xs">Energy</div>
+        <div class="text-slate-100 font-semibold mt-1"><%= @planned_session.energy_level || "—" %><%= " / 5" if @planned_session.energy_level %></div>
+      </div>
+      <div>
+        <div class="text-slate-500 text-xs">Finger soreness</div>
+        <div class="text-slate-100 font-semibold mt-1"><%= @planned_session.finger_soreness || "—" %><%= " / 5" if @planned_session.finger_soreness %></div>
+      </div>
+      <div>
+        <div class="text-slate-500 text-xs">General soreness</div>
+        <div class="text-slate-100 font-semibold mt-1"><%= @planned_session.general_soreness || "—" %><%= " / 5" if @planned_session.general_soreness %></div>
+      </div>
+    </div>
+  </div>
+
+  <% unless is_skipped %>
+    <h2 class="text-lg font-semibold mb-3">Logged Exercises</h2>
+    <div class="space-y-3 mb-6">
+      <% @planned_session.exercises.each_with_index do |exercise, index| %>
+        <% log = logs_by_index[index] || {} %>
+        <% exercise_name = exercise["name"] || exercise["title"] || "Exercise" %>
+        <% target_reps = exercise["target_reps"].presence || exercise["reps"].presence %>
+        <% rep_unit = exercise["rep_unit"].presence || "reps" %>
+        <% target_grade = exercise["target_grade"].presence %>
+        <% target_weight = exercise["target_weight"].presence || exercise["weight"].presence %>
+
+        <%# Per-set logs for this exercise, sorted by set_index %>
+        <% set_logs = @planned_session.exercise_logs
+              .select { |l| l["exercise_index"].to_i == index && l["set_key"].present? }
+              .sort_by { |l| l["set_index"].to_i } %>
+        <% any_set_data = set_logs.any? { |l| l["completed"] || l["actual_reps"].present? || l["actual_weight"].present? } %>
+
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-semibold text-base text-slate-100"><%= exercise_name %></div>
+              <div class="mt-1 text-xs text-slate-400 flex flex-wrap gap-x-3 gap-y-1">
+                <% if exercise["sets"].present? && target_reps.present? %>
+                  <span>Planned: <%= exercise["sets"] %> × <%= target_reps %> <%= rep_unit %></span>
+                <% elsif target_reps.present? %>
+                  <span>Planned: <%= target_reps %> <%= rep_unit %></span>
+                <% end %>
+                <% if target_grade.present? %><span>Grade: <%= target_grade %></span><% end %>
+                <% if target_weight.present? %><span>Weight: <%= target_weight %></span><% end %>
+                <% if exercise["duration"].present? %><span>Duration: <%= exercise["duration"] %></span><% end %>
+              </div>
+            </div>
+          </div>
+
+          <% if any_set_data %>
+            <div class="mt-3 border-t border-slate-800 pt-3">
+              <table class="w-full text-sm text-slate-300">
+                <thead class="text-xs text-slate-500 uppercase tracking-wide">
+                  <tr>
+                    <th class="text-left py-1 font-medium">Set</th>
+                    <th class="text-right py-1 font-medium"><%= rep_unit.humanize %></th>
+                    <% if set_logs.any? { |l| l["actual_weight"].present? } %>
+                      <th class="text-right py-1 font-medium">Weight</th>
+                    <% end %>
+                    <th class="text-right py-1 font-medium">Done</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60">
+                  <% set_logs.each do |l| %>
+                    <tr>
+                      <td class="py-1.5"><%= (l["set_index"].to_i + 1) %></td>
+                      <td class="py-1.5 text-right text-slate-100"><%= l["actual_reps"].presence || "—" %></td>
+                      <% if set_logs.any? { |x| x["actual_weight"].present? } %>
+                        <td class="py-1.5 text-right text-slate-100"><%= l["actual_weight"].presence || "—" %></td>
+                      <% end %>
+                      <td class="py-1.5 text-right">
+                        <% if l["completed"] %>
+                          <span class="text-emerald-400">✓</span>
+                        <% else %>
+                          <span class="text-slate-600">—</span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="mt-3 text-xs text-slate-500 italic">No set-level logs recorded.</div>
+          <% end %>
+
+          <% exercise_notes = log["notes"].presence %>
+          <% if exercise_notes.present? %>
+            <div class="mt-3 border-t border-slate-800 pt-3">
+              <div class="text-xs uppercase tracking-wide text-slate-500 mb-1">Notes</div>
+              <div class="text-sm text-slate-200 whitespace-pre-line"><%= exercise_notes %></div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6">
+    <div class="text-xs uppercase tracking-wide text-slate-400 mb-3">Post-Session</div>
+    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+      <div>
+        <div class="text-slate-500 text-xs">RPE</div>
+        <div class="text-slate-100 font-semibold mt-1">
+          <%= @planned_session.perceived_exertion || "—" %><%= " / 10" if @planned_session.perceived_exertion %>
+        </div>
+      </div>
+    </div>
+    <% if @planned_session.session_notes.present? %>
+      <div class="mt-4 border-t border-slate-800 pt-3">
+        <div class="text-xs uppercase tracking-wide text-slate-500 mb-1">Session notes</div>
+        <div class="text-sm text-slate-200 whitespace-pre-line"><%= @planned_session.session_notes %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= link_to calendar_path(view: "weekly", week_of: @weekly_plan.week_of),
+      class: "inline-flex items-center justify-center min-h-11 bg-amber-500 text-slate-950 px-4 py-2 rounded-md font-semibold hover:bg-amber-400 transition" do %>
+      Back to Calendar
+    <% end %>
+    <%= button_to "Reopen Session",
+      weekly_plan_planned_session_path(@weekly_plan, @planned_session),
+      method: :patch,
+      params: { planned_session: { status: "todo" } },
+      class: "inline-flex items-center justify-center min-h-11 border border-slate-700 px-4 py-2 rounded-md text-sm text-slate-300 hover:border-slate-500 transition",
+      form: { class: "inline" },
+      data: { turbo_confirm: "Reopen this session for editing?" } %>
+  </div>
+</div>

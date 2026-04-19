@@ -7,8 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files.
+# Ignore all environment files (but keep .envrc, which is the committed direnv config).
 /.env*
+!/.envrc
+/.envrc.local
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -36,3 +38,4 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 .claude/worktrees/
+.claude/launch.json

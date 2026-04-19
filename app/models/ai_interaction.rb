@@ -5,7 +5,8 @@ class AiInteraction < ApplicationRecord
     plan_generation: 0,
     session_parsing: 1,
     profile_analysis: 2,
-    coach_suggestion: 3
+    coach_suggestion: 3,
+    session_calibration: 4
   }
 
   validates :interaction_type, :provider, :model, presence: true
